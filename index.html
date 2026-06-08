@@ -1227,5 +1227,20 @@ function saveCfg(){S.sheetsUrl=document.getElementById('sheetsInput').value.trim
 // ── INIT ─────────────────────────────────────────────────────
 drawHoy();
 </script>
+
+<script>
+// Unregister any old Service Workers that might be causing blank screen
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    regs.forEach(function(reg){ reg.unregister(); });
+  });
+  // Clear all caches
+  if('caches' in window){
+    caches.keys().then(function(names){
+      names.forEach(function(name){ caches.delete(name); });
+    });
+  }
+}
+</script>
 </body>
 </html>
