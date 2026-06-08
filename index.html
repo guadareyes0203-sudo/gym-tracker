@@ -8,11 +8,15 @@
 <meta name="apple-mobile-web-app-title" content="GYM BIGG">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23111'/><text y='.9em' font-size='80' x='10'>🏋️</text></svg>">
 <title>GYM TRACKER — BIGG</title>
+<!-- Cache control: always fetch fresh -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#f2f2f0;font-family:'Barlow','Helvetica Neue',sans-serif;min-height:100vh;padding-bottom:calc(70px + env(safe-area-inset-bottom));font-size:14px}
+body{background:#f2f2f0;font-family:'Barlow','Helvetica Neue',sans-serif;min-height:100vh;padding-bottom:calc(70px + env(safe-area-inset-bottom));font-size:16px}
 :root{--lime:#b5ea4a;--lime2:#3a6010;--card:linear-gradient(145deg,#888 0%,#666 60%,#555 100%)}
 *{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 input,select,textarea{-webkit-appearance:none;border-radius:8px}
@@ -33,7 +37,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1.5px solid #ddd;display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom)}
 .bnav-btn{flex:1;padding:10px 4px 8px;border:none;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:inherit}
 .bnav-icon{font-size:18px}
-.bnav-lbl{font-size:9px;font-weight:700;color:#aaa;letter-spacing:.04em}
+.bnav-lbl{font-size:10px;font-weight:700;color:#aaa;letter-spacing:.04em}
 .bnav-btn.active .bnav-lbl{color:#111}
 .bnav-btn.active .bnav-icon{filter:saturate(2)}
 
@@ -41,7 +45,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
 .config-panel{background:#fff;border:1.5px solid #ddd;border-radius:14px;padding:14px;margin-bottom:12px;display:none}
 .config-panel.open{display:block}
 .config-title{font-size:12px;font-weight:700;color:#111;margin-bottom:6px}
-.config-help{font-size:11px;color:#888;margin-bottom:8px;line-height:1.5}
+.config-help{font-size:13px;color:#888;margin-bottom:8px;line-height:1.5}
 .config-row{display:flex;gap:8px;margin-bottom:8px}
 .config-input{flex:1;border:1.5px solid #ddd;border-radius:8px;padding:7px 10px;font-size:12px;outline:none;font-family:inherit}
 .config-save{background:#111;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer}
@@ -51,7 +55,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
 /* CONTENT */
 .content{padding:0 14px}
 .panel{display:none}.panel.active{display:block}
-.section-title{font-size:11px;color:#999;font-weight:700;letter-spacing:.12em;margin-bottom:10px;margin-top:16px}
+.section-title{font-size:12px;color:#999;font-weight:700;letter-spacing:.10em;margin-bottom:10px;margin-top:16px}
 
 /* TOAST */
 .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;display:none;white-space:nowrap}
@@ -70,7 +74,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
 /* HERO */
 .hero{background:linear-gradient(135deg,#c8f06a,#a8d840,#7ab020);border-radius:20px;padding:16px 16px 12px;margin-bottom:16px}
 .hero-top{display:flex;justify-content:space-between;align-items:flex-start}
-.hero-day{font-size:11px;font-weight:700;color:#3a6010;letter-spacing:.1em}
+.hero-day{font-size:13px;font-weight:700;color:#3a6010;letter-spacing:.1em}
 .hero-title{font-size:28px;font-weight:900;color:#111;font-family:'Barlow Condensed',sans-serif;line-height:1.1}
 .hero-sub{font-size:11px;color:#4a7a18;margin-top:3px}
 .hero-pct{font-size:40px;font-weight:900;color:#111;font-family:'Barlow Condensed',sans-serif;line-height:1;text-align:right}
@@ -87,20 +91,20 @@ button{-webkit-appearance:none;touch-action:manipulation}
 .block-num-bg{position:absolute;bottom:-10px;right:4px;font-size:110px;font-weight:900;line-height:1;color:var(--lime);opacity:.5;font-family:'Barlow Condensed',sans-serif;user-select:none;pointer-events:none;transition:opacity .2s}
 .block-num-bg.done{opacity:.9}
 .block-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
-.block-tipo{font-size:32px;font-weight:900;color:#fff;font-family:'Barlow Condensed',sans-serif;line-height:1.05;max-width:74%}
+.block-tipo{font-size:34px;font-weight:900;color:#fff;font-family:'Barlow Condensed',sans-serif;line-height:1.05;max-width:74%}
 .block-tipo.midline{font-size:26px}
 .clock-badge{background:#fff;border-radius:10px;padding:5px 9px;text-align:center;min-width:46px;flex-shrink:0}
 .clock-icon{font-size:14px}
 .clock-line{width:80%;height:1px;background:#ddd;margin:2px auto}
 .clock-mins{font-size:12px;font-weight:800;color:#111}
 .badge-lime{display:inline-block;background:var(--lime);border-radius:6px;padding:3px 9px;margin-bottom:12px}
-.badge-lime span{font-size:9px;font-weight:800;color:#111;letter-spacing:.07em}
+.badge-lime span{font-size:11px;font-weight:800;color:#111;letter-spacing:.05em}
 
 /* EX ROW */
 .ex-row{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #fff2}
 .ex-row:last-child{border-bottom:none;margin-bottom:0}
 .ex-top{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.ex-name{flex:1;font-size:14px;color:#fff}
+.ex-name{flex:1;font-size:18px;color:#fff;line-height:1.3}
 .btn-video{background:#fff2;border:1px solid #fff4;border-radius:7px;padding:3px 8px;font-size:10px;color:#fff;text-decoration:none;flex-shrink:0}
 .btn-muscle{background:#fff1;border:1px solid #fff3;border-radius:7px;padding:3px 8px;font-size:10px;color:#ddd;cursor:pointer;flex-shrink:0;font-family:inherit}
 .muscles-row{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px}
@@ -110,8 +114,8 @@ button{-webkit-appearance:none;touch-action:manipulation}
 .sets-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px}
 .set-col{display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff1;border-radius:10px;padding:7px 7px 5px;border:1px solid #fff2;min-width:50px}
 .set-col.filled{background:#b5ea4a22;border-color:#b5ea4a66}
-.set-lbl{font-size:9px;color:#ccc;font-weight:700;letter-spacing:.06em}
-.set-select{background:#1a1a1a;border:1px solid #fff3;border-radius:7px;padding:5px 4px;color:#fff;font-size:13px;font-weight:700;outline:none;font-family:inherit;cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;text-align:center;text-align-last:center;width:100%}
+.set-lbl{font-size:11px;color:#ccc;font-weight:700;letter-spacing:.04em}
+.set-select{background:#1a1a1a;border:1px solid #fff3;border-radius:7px;padding:6px 4px;color:#fff;font-size:15px;font-weight:700;outline:none;font-family:inherit;cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;text-align:center;text-align-last:center;width:100%}
 .set-select:focus{border-color:var(--lime)}
 .set-select option{background:#1a1a1a;color:#fff}
 .set-done-dot{width:6px;height:6px;border-radius:50%;background:#fff2}
@@ -132,15 +136,15 @@ button{-webkit-appearance:none;touch-action:manipulation}
 
 /* FILTROS */
 .filter-row{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
-.filter-btn{flex:0 0 auto;padding:5px 12px;border-radius:20px;border:1.5px solid #ddd;background:#fff;font-size:11px;font-weight:700;cursor:pointer;color:#888;font-family:inherit;white-space:nowrap}
+.filter-btn{flex:0 0 auto;padding:7px 14px;border-radius:20px;border:1.5px solid #ddd;background:#fff;font-size:12px;font-weight:700;cursor:pointer;color:#888;font-family:inherit;white-space:nowrap}
 .filter-btn.active{background:#111;border-color:#111;color:#fff}
 
 /* STATS GRID */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .stat-card{background:#fff;border:1.5px solid #eee;border-radius:14px;padding:12px 13px}
 .stat-icon{font-size:17px;margin-bottom:3px}
-.stat-val{font-size:22px;font-weight:800;color:#111;font-family:'Barlow Condensed',sans-serif}
-.stat-lbl{font-size:10px;color:#999;font-weight:700;letter-spacing:.06em}
+.stat-val{font-size:26px;font-weight:800;color:#111;font-family:'Barlow Condensed',sans-serif}
+.stat-lbl{font-size:11px;color:#999;font-weight:700;letter-spacing:.05em}
 .stat-trend{font-size:10px;margin-top:2px}
 .stat-trend.up{color:#22c55e}
 .stat-trend.down{color:#ef4444}
@@ -148,8 +152,8 @@ button{-webkit-appearance:none;touch-action:manipulation}
 
 /* HISTORIAL LOG */
 .log-entry{background:#fff;border:1.5px solid #eee;border-radius:12px;padding:10px 13px;margin-bottom:6px}
-.log-ej{font-size:13px;font-weight:600;color:#111}
-.log-meta{font-size:11px;color:#999;margin-top:1px}
+.log-ej{font-size:15px;font-weight:600;color:#111}
+.log-meta{font-size:12px;color:#999;margin-top:1px}
 .log-pesos{font-size:12px;font-weight:600;color:#3a6010;margin-top:3px}
 .log-muscs{font-size:10px;color:#bbb;margin-top:2px}
 
@@ -157,7 +161,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
 .medidas-form{background:#fff;border:1.5px solid #eee;border-radius:16px;padding:14px;margin-bottom:12px}
 .med-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .med-field{display:flex;flex-direction:column;gap:4px}
-.med-label{font-size:11px;font-weight:700;color:#666;letter-spacing:.05em}
+.med-label{font-size:13px;font-weight:700;color:#666;letter-spacing:.03em}
 .med-input{border:1.5px solid #ddd;border-radius:8px;padding:7px 10px;font-size:14px;font-weight:600;outline:none;font-family:inherit;color:#111}
 .med-input:focus{border-color:var(--lime2)}
 .med-unit{font-size:11px;color:#aaa}
@@ -166,7 +170,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
 /* COACH */
 .coach-bubble{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:20px;padding:16px;margin-bottom:12px;color:#fff;position:relative}
 .coach-avatar{width:44px;height:44px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:10px}
-.coach-msg{font-size:14px;line-height:1.6;color:#e0e0e0}
+.coach-msg{font-size:15px;line-height:1.6;color:#e0e0e0}
 .coach-msg strong{color:var(--lime)}
 .coach-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin:2px 2px 0 0}
 .coach-tag.warn{background:#ef444422;color:#fca5a5;border:1px solid #ef444444}
@@ -195,7 +199,7 @@ button{-webkit-appearance:none;touch-action:manipulation}
 .plan-mini-badge{display:inline-block;background:var(--lime);border-radius:4px;padding:2px 7px;margin:3px 0 6px}
 .plan-mini-badge span{font-size:9px;font-weight:800;color:#111}
 .plan-ex-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
-.plan-ex-name{font-size:12px;color:#fff;flex:1}
+.plan-ex-name{font-size:14px;color:#fff;flex:1}
 .plan-ex-vid{font-size:10px;color:var(--lime);text-decoration:none}
 
 /* CHARTS */
@@ -283,6 +287,7 @@ select.filter-select{border:1.5px solid #ddd;border-radius:8px;padding:6px 10px;
   <div id="panel-med"   class="panel"></div>
   <div id="panel-coach" class="panel"></div>
   <div id="panel-libre"  class="panel"></div>
+  <div id="panel-4w"    class="panel"></div>
 </div>
 
 <!-- BOTTOM NAV -->
@@ -293,6 +298,7 @@ select.filter-select{border:1.5px solid #ddd;border-radius:8px;padding:6px 10px;
   <button class="bnav-btn"        id="bn-hist"  onclick="switchPanel('hist')"> <span class="bnav-icon">📅</span><span class="bnav-lbl">HISTORIAL</span></button>
   <button class="bnav-btn"        id="bn-med"   onclick="switchPanel('med')">  <span class="bnav-icon">⚖️</span><span class="bnav-lbl">MEDIDAS</span></button>
   <button class="bnav-btn"        id="bn-libre" onclick="switchPanel('libre')"><span class="bnav-icon">✏️</span><span class="bnav-lbl">LIBRE</span></button>
+  <button class="bnav-btn"        id="bn-4w"    onclick="switchPanel('4w')">   <span class="bnav-icon">📆</span><span class="bnav-lbl">4 SEM.</span></button>
   <button class="bnav-btn"        id="bn-coach" onclick="switchPanel('coach')"><span class="bnav-icon">🤖</span><span class="bnav-lbl">COACH</span></button>
 </div>
 
@@ -400,6 +406,153 @@ const PLAN=[
   ]}
 ];
 
+
+// ═══════════════════════════════════════════════════════════════
+// PLAN 4 SEMANAS
+// ═══════════════════════════════════════════════════════════════
+const PROGRAM_4W = [
+  // SEMANA 1 — Base / Aprendizaje de movimientos
+  { semana: 1, nombre: "BASE", subtitulo: "Aprender los movimientos, cargas moderadas", color: "#6366f1",
+    dias: [
+      { dia: "LUN", tipo: "Fuerza — Tren Superior", bloques: [
+        { num:1, badge:"ACTIVACIÓN 3×8 EN 8'", mins:8, movs:["8 Remo con mancuerna (c/brazo)","8 Press de hombro unilateral","30" Plank","12 Face Pull en polea"] },
+        { num:2, badge:"UPPER A — 4 SERIES EN 14'", mins:14, movs:["4×10 DDB Chest Press","4×10 Barbell Bent Over Row","3×10 DDB Push Press","4×12 Jalón en polea","3×15 Curl de bíceps","3×15 Extensión tríceps"] },
+        { num:3, badge:"HRX ONE WAY EN 14'", mins:14, movs:["40 DDB Chest Press","10 DDB Thruster","30 DDB Bent Over Row","10 DDB Thruster","20 DDB Deadlift","10 DDB Thruster","15/15 DDB Front Rack Lunges","5 DDB Devil Press"] },
+        { num:4, badge:"MIDLINE AMRAP 5'", mins:5, movs:["20 Sit Ups","15 V-Sit Ups","20"/20" Side Plank","30" Plank"] }
+      ]},
+      { dia: "MAR", tipo: "HRX — Resistencia", bloques: [
+        { num:1, badge:"LOWER ACTIVATION 3×8 EN 8'", mins:8, movs:["20 Glute Bridge","10/10 Lunge","10 Goblet Squat (hold 15")","12 Hip Hinge"] },
+        { num:2, badge:"LOWER A — 5 SERIES EN 14'", mins:14, movs:["5×6 Barbell Back Squat","3×10 DDB Front Rack Lunges","4×8 Barbell Deadlift","3×12 Goblet Squat pausa 3"","3×15 Elevación lateral"] },
+        { num:3, badge:"HRX AMRAP 12': HYBRID", mins:12, movs:["60" Bicicleta estática","30 DDB Front Squat","40 DDB Push Press","20 DDB Bent Over Row","20 DDB Dead Snatch","20 Burpee"] },
+        { num:4, badge:"MIDLINE EVERY 60" × 5'", mins:5, movs:["8 V-Sit Ups","6/6 Lateral Hip Raise","30" Mountain Climbers","20" Hollow Hold"] }
+      ]},
+      { dia: "MIÉ", tipo: "Fuerza — Full Body", bloques: [
+        { num:1, badge:"PULL PREHAB 3 ROUNDS EN 6'", mins:6, movs:["8 DDB Pullover","12 Dead Bug","10 DDB Renegade Row","12 Face Pull"] },
+        { num:2, badge:"FULL BODY EN 14'", mins:14, movs:["4×10 DDB Push Press","4×10 DDB Renegade Row","4×10 DDB Arnold Press","4×10 Barbell Bent Over Row"] },
+        { num:3, badge:"HYBRID EN 14': EVERY 90"", mins:14, movs:["Every 90"","8 Barbell Deadlift","8 Barbell Bent Over Row","8 Barbell Front Squat","6 Burpee sobre la barra"] },
+        { num:4, badge:"MIDLINE AMRAP 5'", mins:5, movs:["20"/20" Side Plank","30 Sit Ups","8 V-Sit Ups","40" Plank"] }
+      ]},
+      { dia: "JUE", tipo: "HRX — Metabólico", bloques: [
+        { num:1, badge:"HYBRID STRENGTH 3 ROUNDS EN 8'", mins:8, movs:["10 DDB Bent Over Row","10 Goblet Squat","12 Dead Bug","12 Hip Hinge"] },
+        { num:2, badge:"4 ROUNDS EN 12'", mins:12, movs:["4×8 Barbell Deadlift","4×10 DDB Bent Over Row","4×10 Jalón en polea","4×10 Goblet Squat + salto"] },
+        { num:3, badge:"AMRAP 13': HYBRID", mins:13, movs:["30 DDB Front Rack Lunges","5 DDB Thruster","5 DDB Devil Press","20 DDB Dead Snatch","15 Burpee"] },
+        { num:4, badge:"MIDLINE 3 ROUNDS EN 5'", mins:5, movs:["15 Sit Ups","10 V-Sit Ups","15"/15" Side Plank","30" Mountain Climbers"] }
+      ]},
+      { dia: "VIE", tipo: "Fuerza — Tren Superior B", bloques: [
+        { num:1, badge:"TRADITIONAL DB AMRAP 8'", mins:8, movs:["8/brazo DDB Bent Over Row","6 DDB Push Press unilateral","10 Hip Hinge","4 DDB Devil Press"] },
+        { num:2, badge:"UPPER B EN 14'", mins:14, movs:["4×12-10-8-8 DDB Chest Press","4×12-10-8-8 DDB Renegade Row","4×12-10-8-8 DDB Arnold Press","4×12-10-8-8 Barbell Bent Over Row"] },
+        { num:3, badge:"HYBRID EN 12'", mins:12, movs:["3× 12-10-8 Burpee","3× 30-20-10 DDB Deadlift","3× 20-18-16 DDB Farmer Carry (20m)","3× 3-2-1 DDB Man-Maker"] },
+        { num:4, badge:"MIDLINE 40"/20" × 5'", mins:5, movs:["1': V-Sit Ups max","2': Side Plank c/lado","3': Sit Ups max","4': Mountain Climbers 40"","5': Plank 40""] }
+      ]}
+    ]
+  },
+  // SEMANA 2 — Volumen / Subida de carga
+  { semana: 2, nombre: "VOLUMEN", subtitulo: "Aumentar 2.5-5 kg en ejercicios compuestos", color: "#f59e0b",
+    dias: [
+      { dia: "LUN", tipo: "Fuerza — Tren Superior", bloques: [
+        { num:1, badge:"PUSH PREHAB 3×10 EN 8'", mins:8, movs:["10 DDB Renegade Row","10 DDB Arnold Press","30" Plank","15 Face Pull"] },
+        { num:2, badge:"UPPER A — 4 SERIES EN 14'", mins:14, movs:["4×8 DDB Chest Press (+2.5kg vs S1)","4×8 Barbell Bent Over Row (+2.5kg)","3×10 DDB Push Press (+2.5kg)","4×10 Jalón en polea","3×12 Curl de bíceps","3×12 Extensión tríceps"] },
+        { num:3, badge:"ONE WAY EN 14' (más peso)", mins:14, movs:["50 DDB Chest Press","10 DDB Thruster","40 DDB Bent Over Row","10 DDB Thruster","30 DDB Deadlift","10 DDB Thruster","20/20 DDB Front Rack Lunges","5 DDB Devil Press"] },
+        { num:4, badge:"MIDLINE AMRAP 5'", mins:5, movs:["20 Sit Ups","15 V-Sit Ups","20"/20" Side Plank","30" Plank"] }
+      ]},
+      { dia: "MAR", tipo: "HRX — Resistencia +carga", bloques: [
+        { num:1, badge:"GLUTE BURN 3 ROUNDS EN 8'", mins:8, movs:["20 Glute Bridge con mancuerna","10/10 Lunge con mancuerna","10 Goblet Squat","12 Hip Hinge"] },
+        { num:2, badge:"LOWER A +2.5kg EN 14'", mins:14, movs:["5×5 Barbell Back Squat (+2.5kg)","3×10 DDB Front Rack Lunges","4×8 Barbell Deadlift (+2.5kg)","3×10 Goblet Squat pausa 3"","3×15 Elevación lateral"] },
+        { num:3, badge:"COMPLETE 4 ROUNDS EN 12'", mins:12, movs:["3 Strict Chin Ups","4 DDB Thruster","5 DDB Devil Press","6 Burpees","60" Bicicleta estática"] },
+        { num:4, badge:"MIDLINE STABILIZERS 5'", mins:5, movs:["8 V-Sit Ups","6/6 Lateral Hip Raise","30" Mountain Climbers","20" Hollow Hold"] }
+      ]},
+      { dia: "MIÉ", tipo: "Fuerza — Full Body +carga", bloques: [
+        { num:1, badge:"PULL PREHAB EN 6'", mins:6, movs:["8 DDB Pullover","12 Dead Bug","10 DDB Renegade Row","12 Face Pull"] },
+        { num:2, badge:"PRIMARY MOVEMENTS +carga EN 14'", mins:14, movs:["4×8 DDB Push Press (+2.5kg)","4×8 DDB Renegade Row (+2.5kg)","4×10 DDB Arnold Press","4×8 Barbell Bent Over Row (+2.5kg)"] },
+        { num:3, badge:"HYBRID EN 14': EVERY 90"", mins:14, movs:["Every 90"","8 Barbell Deadlift (+2.5kg)","8 Barbell Bent Over Row","8 Barbell Front Squat","6 Burpee sobre la barra","Every 90" — 60" Caminadora inclinada"] },
+        { num:4, badge:"MIDLINE ON FIRE AMRAP 5'", mins:5, movs:["20"/20" Side Plank","30 Sit Ups","10 V-Sit Ups","40" Plank"] }
+      ]},
+      { dia: "JUE", tipo: "HRX — Metabólico +carga", bloques: [
+        { num:1, badge:"HYBRID STRENGTH 3×10 EN 8'", mins:8, movs:["10 DDB Bent Over Row","10 Goblet Squat","12 Dead Bug","12 Hip Hinge"] },
+        { num:2, badge:"4 ROUNDS +carga EN 12'", mins:12, movs:["4×8 Barbell Deadlift (+2.5kg)","4×10 DDB Bent Over Row (+2.5kg)","4×10 Jalón en polea","4×10 Goblet Squat + salto"] },
+        { num:3, badge:"AMRAP 14': CHIPPER", mins:14, movs:["1-2-3 DDB Man-Maker","1-2-3-4 Strict Pull Ups (o asistido)","1-2-3-4-5 DDB Dead Snatch","1-2-3-4-5-6 Burpees","1-2-3-4-5-6-7 DDB Thruster"] },
+        { num:4, badge:"MIDLINE FINISHER 5'", mins:5, movs:["15 Sit Ups","10 V-Sit Ups","15"/15" Side Plank","30" Mountain Climbers"] }
+      ]},
+      { dia: "VIE", tipo: "Fuerza — Tren Superior B +carga", bloques: [
+        { num:1, badge:"TRADITIONAL DB AMRAP 8'", mins:8, movs:["8/brazo DDB Bent Over Row","6 DDB Push Press unilateral","10 Hip Hinge","4 DDB Devil Press"] },
+        { num:2, badge:"UPPER B +carga EN 14'", mins:14, movs:["4×10-8-8-6 DDB Chest Press (+2.5kg)","4×10-8-8-6 DDB Renegade Row","4×10 DDB Arnold Press","4×10-8-8-6 Barbell Bent Over Row (+2.5kg)"] },
+        { num:3, badge:"HYBRID EN 12' +carga", mins:12, movs:["12-10-8 Burpee","30-20-10 DDB Deadlift (+2.5kg)","20-18-16 DDB Farmer Carry (20m)","3-2-1 DDB Man-Maker"] },
+        { num:4, badge:"CORE CONTROL 40"/20" × 5'", mins:5, movs:["1': V-Sit Ups max","2': Side Plank c/lado","3': Sit Ups max","4': Mountain Climbers","5': Plank"] }
+      ]}
+    ]
+  },
+  // SEMANA 3 — Intensidad / PR
+  { semana: 3, nombre: "INTENSIDAD", subtitulo: "Buscar nuevos máximos, series pesadas", color: "#ef4444",
+    dias: [
+      { dia: "LUN", tipo: "Fuerza — Heavy Upper", bloques: [
+        { num:1, badge:"PUSH PREHAB 3×10 EN 8'", mins:8, movs:["10 DDB Renegade Row","10 DDB Arnold Press","30" Plank","15 Face Pull"] },
+        { num:2, badge:"UPPER HEAVY EN 14'", mins:14, movs:["5×5 DDB Chest Press (PESO MÁXIMO)","5×5 Barbell Bent Over Row (PESO MÁXIMO)","3×8 DDB Push Press","4×8 Jalón en polea","3×10 Curl de bíceps","3×10 Extensión tríceps"] },
+        { num:3, badge:"ONE WAY PESADO EN 14'", mins:14, movs:["50 DDB Chest Press (peso máximo)","10 DDB Thruster","40 DDB Bent Over Row","10 DDB Thruster","30 DDB Deadlift (pesado)","10 DDB Thruster","20/20 DDB Front Rack Lunges","5 DDB Devil Press"] },
+        { num:4, badge:"MIDLINE AMRAP 5'", mins:5, movs:["20 Sit Ups","15 V-Sit Ups","20"/20" Side Plank","30" Plank"] }
+      ]},
+      { dia: "MAR", tipo: "HRX — Potencia", bloques: [
+        { num:1, badge:"LOWER HEAVY ACTIVATION EN 8'", mins:8, movs:["5/5 Movilidad de tobillo","15" Goblet Squat hold","8 Barbell Back Squat (warm up)","3 Burpees explosivos"] },
+        { num:2, badge:"LOWER HEAVY EN 14' — PR", mins:14, movs:["3 Rounds","4 Barbell Back Squat (PESO DESAFIANTE)","90" Descanso","2 Rounds","3 Barbell Back Squat (PESO MÁXIMO)","90" Descanso"] },
+        { num:3, badge:"AMRAP 12': MAX INTENSITY", mins:12, movs:["60" Bicicleta sprint","20 DDB Front Squat (pesado)","15 DDB Push Press","10 DDB Bent Over Row","10 Burpee"] },
+        { num:4, badge:"MIDLINE FIRE 5'", mins:5, movs:["10 V-Sit Ups","6/6 Lateral Hip Raise","30" Mountain Climbers","20" Hollow Hold"] }
+      ]},
+      { dia: "MIÉ", tipo: "Fuerza — Heavy Full Body", bloques: [
+        { num:1, badge:"PULL PREHAB EN 6'", mins:6, movs:["8 DDB Pullover","12 Dead Bug","10 DDB Renegade Row","12 Face Pull"] },
+        { num:2, badge:"HEAVY MOVEMENTS EN 14'", mins:14, movs:["4×6 DDB Push Press (PESO MÁXIMO)","4×6 DDB Renegade Row","4×8 DDB Arnold Press","4×6 Barbell Bent Over Row (PESO MÁXIMO)"] },
+        { num:3, badge:"HYBRID HEAVY EN 14'", mins:14, movs:["Every 90"","6 Barbell Deadlift (PESO MÁXIMO)","6 Barbell Bent Over Row","6 Barbell Front Squat","6 Burpee sobre la barra"] },
+        { num:4, badge:"MIDLINE AMRAP 5'", mins:5, movs:["20"/20" Side Plank","30 Sit Ups","10 V-Sit Ups","40" Plank"] }
+      ]},
+      { dia: "JUE", tipo: "HRX — Alta Intensidad", bloques: [
+        { num:1, badge:"HYBRID STRENGTH EN 8'", mins:8, movs:["10 DDB Bent Over Row (pesado)","10 Goblet Squat (pesado)","12 Dead Bug","12 Hip Hinge"] },
+        { num:2, badge:"4 ROUNDS HEAVY EN 12'", mins:12, movs:["4×6 Barbell Deadlift (PESO MÁXIMO)","4×8 DDB Bent Over Row (pesado)","4×8 Jalón en polea","4×8 Goblet Squat pesado + salto"] },
+        { num:3, badge:"LADDER AMRAP 14'", mins:14, movs:["3-4-5-6-7 Box Jumps (o salto en suelo)","3-4-5-5-5 DDB Thruster (pesado)","5-5-5-5-5 DDB Devil Press","Max Machine 100 mts c/ronda","Max Burpees restantes"] },
+        { num:4, badge:"MIDLINE HEAVY 5'", mins:5, movs:["20 Sit Ups con mancuerna","10 V-Sit Ups","15"/15" Side Plank","30" Mountain Climbers"] }
+      ]},
+      { dia: "VIE", tipo: "Fuerza — Heavy Upper B", bloques: [
+        { num:1, badge:"TRADITIONAL DB AMRAP 8'", mins:8, movs:["8/brazo DDB Bent Over Row","6 DDB Push Press unilateral","8 Hip Hinge (pesado)","3 DDB Devil Press"] },
+        { num:2, badge:"UPPER B HEAVY EN 14'", mins:14, movs:["5×6-5-5-5 DDB Chest Press (MÁXIMO)","5×6-5-5-5 DDB Renegade Row","3×8 DDB Arnold Press","5×6-5-5-5 Barbell Bent Over Row (MÁXIMO)"] },
+        { num:3, badge:"HYBRID PESADO EN 12'", mins:12, movs:["10-8-6 Burpee","30-20-10 DDB Deadlift (pesado)","20-16-12 DDB Farmer Carry (20m) pesado","2-2-2 DDB Man-Maker (pesado)"] },
+        { num:4, badge:"CORE CONTROL 40"/20" × 5'", mins:5, movs:["1': V-Sit Ups max","2': Side Plank c/lado","3': Sit Ups max","4': Mountain Climbers","5': Plank"] }
+      ]}
+    ]
+  },
+  // SEMANA 4 — Deload / Recuperación activa
+  { semana: 4, nombre: "DELOAD", subtitulo: "Recuperación activa — 60% de la carga habitual", color: "#22c55e",
+    dias: [
+      { dia: "LUN", tipo: "Recuperación — Upper", bloques: [
+        { num:1, badge:"MOVILIDAD 3 ROUNDS EN 8'", mins:8, movs:["10 Rotación torácica","10 Apertura de caderas","10 Rotación de hombros con mancuerna","30" Plank activo"] },
+        { num:2, badge:"UPPER DELOAD EN 14' (60% carga)", mins:14, movs:["3×12 DDB Chest Press (60%)","3×12 Barbell Bent Over Row (60%)","3×12 DDB Push Press (60%)","3×15 Jalón en polea (60%)","2×15 Curl de bíceps","2×15 Extensión tríceps"] },
+        { num:3, badge:"HRX SUAVE EN 14'", mins:14, movs:["30 DDB Chest Press (60%)","10 DDB Thruster (liviano)","20 DDB Bent Over Row","10 DDB Thruster","15 DDB Deadlift","10 DDB Thruster","10/10 DDB Front Rack Lunges","3 DDB Devil Press (liviano)"] },
+        { num:4, badge:"MIDLINE SUAVE 5'", mins:5, movs:["15 Sit Ups","10 V-Sit Ups","20" Side Plank c/lado","20" Plank"] }
+      ]},
+      { dia: "MAR", tipo: "Recuperación — Lower", bloques: [
+        { num:1, badge:"MOVILIDAD LOWER EN 8'", mins:8, movs:["5/5 Movilidad de tobillo","20 Glute Bridge (sin peso)","10 Goblet Squat (liviano, hold 5")","10 Hip Hinge (sin peso)"] },
+        { num:2, badge:"LOWER DELOAD EN 14' (60% carga)", mins:14, movs:["3×10 Barbell Back Squat (60%)","3×12 DDB Front Rack Lunges (liviano)","3×10 Barbell Deadlift (60%)","3×15 Goblet Squat","2×15 Elevación lateral"] },
+        { num:3, badge:"HRX TÉCNICA EN 12'", mins:12, movs:["60" Bicicleta estática (ritmo suave)","20 DDB Front Squat (técnica)","20 DDB Push Press (técnica)","15 DDB Bent Over Row","10 Burpee suave"] },
+        { num:4, badge:"MIDLINE SUAVE 5'", mins:5, movs:["6 V-Sit Ups","5/5 Lateral Hip Raise","20" Mountain Climbers","15" Hollow Hold"] }
+      ]},
+      { dia: "MIÉ", tipo: "Recuperación — Full Body", bloques: [
+        { num:1, badge:"ACTIVACIÓN SUAVE EN 6'", mins:6, movs:["8 DDB Pullover (liviano)","10 Dead Bug","8 DDB Renegade Row (liviano)","10 Face Pull"] },
+        { num:2, badge:"FULL BODY DELOAD EN 14'", mins:14, movs:["3×12 DDB Push Press (60%)","3×12 DDB Renegade Row (60%)","3×12 DDB Arnold Press (60%)","3×12 Barbell Bent Over Row (60%)"] },
+        { num:3, badge:"TÉCNICA EN 14': FOCO FORMA", mins:14, movs:["Every 90" — técnica perfecta","6 Barbell Deadlift (60%)","6 Barbell Bent Over Row","6 Barbell Front Squat","4 Burpee controlado"] },
+        { num:4, badge:"MIDLINE SUAVE 5'", mins:5, movs:["15" Side Plank c/lado","15 Sit Ups","6 V-Sit Ups","20" Plank"] }
+      ]},
+      { dia: "JUE", tipo: "Recuperación — HRX suave", bloques: [
+        { num:1, badge:"ACTIVACIÓN 3 ROUNDS EN 8'", mins:8, movs:["8 DDB Bent Over Row (liviano)","10 Goblet Squat (liviano)","10 Dead Bug","10 Hip Hinge"] },
+        { num:2, badge:"3 ROUNDS DELOAD EN 12'", mins:12, movs:["3×10 Barbell Deadlift (60%)","3×12 DDB Bent Over Row (60%)","3×12 Jalón en polea","3×12 Goblet Squat liviano"] },
+        { num:3, badge:"HRX SUAVE 13'", mins:13, movs:["20 DDB Front Rack Lunges (liviano)","5 DDB Thruster (liviano)","5 Burpee suave","10 DDB Dead Snatch (liviano)","10 Sit Ups"] },
+        { num:4, badge:"MIDLINE SUAVE 5'", mins:5, movs:["10 Sit Ups","8 V-Sit Ups","15" Side Plank c/lado","20" Mountain Climbers"] }
+      ]},
+      { dia: "VIE", tipo: "Recuperación — Upper suave", bloques: [
+        { num:1, badge:"MOVILIDAD + ACTIVACIÓN EN 8'", mins:8, movs:["10 Apertura pectoral con mancuerna","10 Face Pull","10 Hip Hinge","8 DDB Renegade Row (liviano)"] },
+        { num:2, badge:"UPPER SUAVE EN 14' (60% carga)", mins:14, movs:["3×12 DDB Chest Press (60%)","3×12 DDB Renegade Row (60%)","3×12 DDB Arnold Press (60%)","3×12 Barbell Bent Over Row (60%)"] },
+        { num:3, badge:"SUAVE EN 12'", mins:12, movs:["8-6-4 Burpee suave","20-15-10 DDB Deadlift (liviano)","15-12-10 DDB Farmer Carry (20m)","2-1-1 DDB Man-Maker (liviano)"] },
+        { num:4, badge:"MIDLINE FINAL 5'", mins:5, movs:["1': Sit Ups max","2': Side Plank c/lado","3': V-Sit Ups","4': Mountain Climbers suave","5': Plank final"] }
+      ]}
+    ]
+  }
+];
+
 const CAT_COLOR={warmup:"#f97316",strength:"#ef4444",hrx:"#ef4444",midline:"#eab308"};
 const REPS_VALS=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,25,28,30,32,35,40,45,50,60,70,80,90,100];
 const KG_VALS=[1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10,10.5,11,11.5,12,12.5,13,13.5,14,14.5,15,15.5,16,16.5,17,17.5,18,18.5,19,19.5,20,21,22,22.5,23,24,25,26,27,27.5,28,29,30,32.5,35,37.5,40,42.5,45,47.5,50,52.5,55,57.5,60,62.5,65,67.5,70,72.5,75,77.5,80,82.5,85,87.5,90,92.5,95,97.5,100,105,110,115,120,125,130,135,140,145,150];
@@ -430,8 +583,19 @@ let S={
 try{
   const c=JSON.parse(localStorage.getItem('gym_config')||'{}');
   if(c.sheetsUrl) S.sheetsUrl=c.sheetsUrl;
-  // demás keys reseteadas — empezar limpio
-}catch(e){}
+  const logs=localStorage.getItem('gym_logs');
+  if(logs) S.allLogs=JSON.parse(logs);
+  const ld=localStorage.getItem('gym_logdata');
+  if(ld) S.logData=JSON.parse(ld);
+  const comp=localStorage.getItem('gym_completed');
+  if(comp) S.completed=JSON.parse(comp);
+  const med=localStorage.getItem('gym_medidas');
+  if(med) S.medidas=JSON.parse(med);
+  const chat=localStorage.getItem('gym_chat');
+  if(chat) S.chatHistory=JSON.parse(chat);
+  const libre=localStorage.getItem('gym_libre');
+  if(libre) S.libreWorkouts=JSON.parse(libre);
+}catch(e){ console.warn('Error loading state:', e); }
 
 function persist(){
   try{
@@ -509,6 +673,7 @@ function switchPanel(p){
   else if(p==='med') renderMed();
   else if(p==='coach') renderCoach();
   else if(p==='libre') renderLibre();
+  else if(p==='4w') render4W();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -533,7 +698,7 @@ function renderHoy(){
     <div class="hero-top">
       <div>
         <div class="hero-day">${day.label.toUpperCase()}</div>
-        <div class="hero-title" id="hero-title">${done===4?'¡COMPLETADO! 🔥':'Tu reserva'}</div>
+        <div class="hero-title" id="hero-title">${done===4?'¡COMPLETADO! 🔥':''}</div>
         <div class="hero-sub">4 bloques · ~60 min</div>
       </div>
       <div>
@@ -542,8 +707,7 @@ function renderHoy(){
       </div>
     </div>
     <div class="hero-bar-bg"><div class="hero-bar" id="hero-bar" style="width:${pct}%"></div></div>
-  </div>
-  <div class="banner-lime">Bloques elegidos</div>`;
+  </div>`;
 
   day.bloques.forEach(b=>{
     const k=`${di}-${b.num}`, isComp=!!S.completed[k];
@@ -629,7 +793,7 @@ function toggleComplete(di,bn){
   const done=day.bloques.filter(b=>!!S.completed[`${di}-${b.num}`]).length;
   const pct=Math.round((done/day.bloques.length)*100);
   const ht=document.getElementById('hero-title'), hp=document.getElementById('hero-pct'), hb=document.getElementById('hero-bar');
-  if(ht) ht.textContent=done===4?'¡COMPLETADO! 🔥':'Tu reserva';
+  if(ht) ht.textContent=done===4?'¡COMPLETADO! 🔥':'';
   if(hp) hp.innerHTML=pct+'<span>%</span>';
   if(hb) hb.style.width=pct+'%';
 }
@@ -1745,10 +1909,132 @@ function deleteLibre(idx){
   renderLibre();
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+// PROGRAMA 4 SEMANAS
+// ═══════════════════════════════════════════════════════════════
+function render4W(){
+  const s4w = S.active4WSemana || 1;
+  const s4d = S.active4WDia   || 0;
+  const week = PROGRAM_4W.find(w=>w.semana===s4w) || PROGRAM_4W[0];
+  const diaData = week.dias[s4d] || week.dias[0];
+
+  // Week selector
+  let weekSel = '<div class="day-grid" style="margin-bottom:12px">';
+  PROGRAM_4W.forEach(w=>{
+    const isAct = w.semana===s4w;
+    weekSel += `<button class="day-btn${isAct?' active':''}" style="${isAct?'background:'+w.color+';border-color:'+w.color:''}" onclick="set4WSemana(${w.semana})">
+      <span class="dname" style="${isAct?'color:#fff':''}">${w.semana}</span>
+      <span class="dprog" style="${isAct?'color:#ffffffaa':''}">SEM</span>
+    </button>`;
+  });
+  weekSel += '</div>';
+
+  // Week hero
+  const hero = `<div style="background:${week.color}22;border:1.5px solid ${week.color}55;border-radius:16px;padding:14px 16px;margin-bottom:14px">
+    <div style="font-size:10px;font-weight:700;color:${week.color};letter-spacing:.1em">SEMANA ${week.semana}</div>
+    <div style="font-size:28px;font-weight:900;color:#111;font-family:'Barlow Condensed',sans-serif;line-height:1.1">${week.nombre}</div>
+    <div style="font-size:12px;color:#666;margin-top:3px">${week.subtitulo}</div>
+  </div>`;
+
+  // Day selector
+  let daySel = '<div class="day-grid" style="margin-bottom:14px">';
+  week.dias.forEach((d,i)=>{
+    const isAct = i===s4d;
+    daySel += `<button class="day-btn${isAct?' active':''}" onclick="set4WDia(${i})">
+      <span class="dname">${d.dia}</span>
+      <span class="dprog" style="font-size:8px">${d.tipo.split('—')[0].trim()}</span>
+    </button>`;
+  });
+  daySel += '</div>';
+
+  // Blocks
+  let bloques = '';
+  diaData.bloques.forEach(b=>{
+    const isMidline = b.num===4;
+    const movsList = b.movs.map(m=>{
+      const isNote = m.startsWith('Every')||m.startsWith('3 Rounds')||m.startsWith('2 Rounds')||m.startsWith('1 Round')||m.startsWith('Si ');
+      return `<div style="font-size:${isNote?'12px':'16px'};color:${isNote?'#ccc':'#fff'};line-height:1.4;padding:2px 0;font-style:${isNote?'italic':'normal'};font-weight:${isNote?'400':'400'}">${m}</div>`;
+    }).join('');
+
+    bloques += `<div class="block-wrap">
+      <div class="block-label">BLOQUE ${b.num}</div>
+      <div class="block-card">
+        <div class="block-num-bg" style="opacity:.4">${b.num}</div>
+        <div class="block-header">
+          <div class="block-tipo${isMidline?' midline':''}">${isMidline?'Midline':b.num===1?'Warmup':b.num===3?'HRX Training':'Strength'}</div>
+          <div class="clock-badge"><div class="clock-icon">⏱</div><div class="clock-line"></div><div class="clock-mins">${b.mins}'</div></div>
+        </div>
+        <div class="badge-lime"><span>${b.badge}</span></div>
+        <div style="margin-bottom:12px">${movsList}</div>
+        <div class="block-footer">
+          <div style="display:flex;gap:7px">
+            <div class="icon-circle" style="background:#ef4444">💪</div>
+            <div class="icon-circle" style="background:#eab308">❤️</div>
+          </div>
+          <button onclick="load4WDay(${s4w-1},${s4d},${b.num})" style="background:var(--lime);border:none;border-radius:10px;padding:7px 12px;font-size:11px;font-weight:700;color:#111;cursor:pointer;font-family:inherit">
+            ➕ Usar hoy
+          </button>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  // "Usar todo el día" button
+  const useDay = `<button onclick="load4WFullDay(${s4w-1},${s4d})"
+    style="width:100%;padding:14px;background:#111;color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;letter-spacing:.04em">
+    🏋️ CARGAR DÍA COMPLETO EN HOY
+  </button>`;
+
+  document.getElementById('panel-4w').innerHTML = `<div style="margin-top:12px">${weekSel}${hero}${daySel}${bloques}${useDay}</div>`;
+}
+
+function set4WSemana(n){ S.active4WSemana=n; S.active4WDia=0; render4W(); }
+function set4WDia(i){ S.active4WDia=i; render4W(); }
+
+function load4WFullDay(weekIdx, diaIdx){
+  const week = PROGRAM_4W[weekIdx];
+  const dia  = week.dias[diaIdx];
+  // Switch to HOY tab and show a modal-like confirmation
+  showToast(`✓ Podés registrar ${dia.dia} S${week.semana} desde la pestaña 🏋️ HOY`);
+  // Store as reference for the user
+  S.refDay = { semana: week.semana, nombre: week.nombre, dia: dia };
+  switchPanel('hoy');
+}
+
+function load4WDay(weekIdx, diaIdx, bloqueNum){
+  showToast('✓ Referencia cargada — usala en la pestaña 🏋️ HOY');
+  switchPanel('hoy');
+}
+
 // ═══════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════
 renderHoy();
+</script>
+
+<script>
+// Service Worker registration — network first, always fresh
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/gym-tracker/sw.js').then(reg=>{
+    // Check for updates every time app opens
+    reg.update();
+    // If new SW is waiting, activate immediately
+    reg.addEventListener('updatefound',()=>{
+      const newWorker = reg.installing;
+      newWorker.addEventListener('statechange',()=>{
+        if(newWorker.state==='installed' && navigator.serviceWorker.controller){
+          // New version available — reload automatically
+          newWorker.postMessage({action:'skipWaiting'});
+        }
+      });
+    });
+  });
+  // Reload when new SW takes control
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    window.location.reload();
+  });
+}
 </script>
 </body>
 </html>
