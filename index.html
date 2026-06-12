@@ -441,25 +441,65 @@ const S={
 // ── LOAD FROM localStorage ───────────────────────────────────
 (function loadState(){
   try{
+    // ── Primary keys (current version) ──
     const cfg=JSON.parse(localStorage.getItem('gbc')||'{}');
     if(cfg.url) S.sheetsUrl=cfg.url;
+
     const al=localStorage.getItem('gbl'); if(al) S.allLogs=JSON.parse(al);
     const lg=localStorage.getItem('gbd'); if(lg) S.logs=JSON.parse(lg);
     const cp=localStorage.getItem('gbcp'); if(cp) S.completed=JSON.parse(cp);
     const md=localStorage.getItem('gbm'); if(md) S.medidas=JSON.parse(md);
     const lw=localStorage.getItem('gblw'); if(lw) S.libreWO=JSON.parse(lw);
     const ct=localStorage.getItem('gbct'); if(ct) S.chat=JSON.parse(ct);
+
+    // ── Migration: recover data from older key names ──
+    const OLD_KEYS = {
+      'gym_logs':    (v)=>{ if(!S.allLogs.length) S.allLogs=JSON.parse(v); },
+      'gym_logdata': (v)=>{ if(!Object.keys(S.logs).length) S.logs=JSON.parse(v); },
+      'gym_completed':(v)=>{ if(!Object.keys(S.completed).length) S.completed=JSON.parse(v); },
+      'gym_medidas': (v)=>{ if(!S.medidas.length) S.medidas=JSON.parse(v); },
+      'gym_libre':   (v)=>{ if(!S.libreWO.length) S.libreWO=JSON.parse(v); },
+      'gym_chat':    (v)=>{ if(!S.chat.length) S.chat=JSON.parse(v); },
+      'gym_config':  (v)=>{ const o=JSON.parse(v); if(!S.sheetsUrl&&o.sheetsUrl) S.sheetsUrl=o.sheetsUrl; },
+    };
+    Object.entries(OLD_KEYS).forEach(([key, fn])=>{
+      try{ const v=localStorage.getItem(key); if(v) fn(v); }catch(e){}
+    });
+
+    // ── After migration: persist into new keys so next load is fast ──
+    if(S.allLogs.length||Object.keys(S.logs).length){
+      try{
+        localStorage.setItem('gbl',JSON.stringify(S.allLogs));
+        localStorage.setItem('gbd',JSON.stringify(S.logs));
+        localStorage.setItem('gbcp',JSON.stringify(S.completed));
+        localStorage.setItem('gbm',JSON.stringify(S.medidas));
+        localStorage.setItem('gblw',JSON.stringify(S.libreWO));
+        localStorage.setItem('gbct',JSON.stringify(S.chat));
+      }catch(e){}
+    }
   }catch(e){console.warn('load err',e);}
 })();
 
 function save(){
   try{
-    localStorage.setItem('gbl',JSON.stringify(S.allLogs.slice(-1000)));
-    localStorage.setItem('gbd',JSON.stringify(S.logs));
+    const logs = S.allLogs.slice(-1000);
+    const med  = S.medidas.slice(-200);
+    const lib  = S.libreWO.slice(-100);
+    const chat = S.chat.slice(-50);
+    // Save under current keys
+    localStorage.setItem('gbl', JSON.stringify(logs));
+    localStorage.setItem('gbd', JSON.stringify(S.logs));
     localStorage.setItem('gbcp',JSON.stringify(S.completed));
-    localStorage.setItem('gbm',JSON.stringify(S.medidas.slice(-200)));
-    localStorage.setItem('gblw',JSON.stringify(S.libreWO.slice(-100)));
-    localStorage.setItem('gbct',JSON.stringify(S.chat.slice(-50)));
+    localStorage.setItem('gbm', JSON.stringify(med));
+    localStorage.setItem('gblw',JSON.stringify(lib));
+    localStorage.setItem('gbct',JSON.stringify(chat));
+    // Also keep legacy keys in sync so downgrade is safe
+    localStorage.setItem('gym_logs',    JSON.stringify(logs));
+    localStorage.setItem('gym_logdata', JSON.stringify(S.logs));
+    localStorage.setItem('gym_completed',JSON.stringify(S.completed));
+    localStorage.setItem('gym_medidas', JSON.stringify(med));
+    localStorage.setItem('gym_libre',   JSON.stringify(lib));
+    localStorage.setItem('gym_chat',    JSON.stringify(chat));
   }catch(e){}
 }
 function saveCfgStore(){try{localStorage.setItem('gbc',JSON.stringify({url:S.sheetsUrl}));}catch(e){}}
