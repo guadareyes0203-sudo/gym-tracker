@@ -336,154 +336,276 @@ function getInfo(n){
 }
 
 const PLAN=[
-  // ══════════════════════════════════════════════
-  // SEMANA A
-  // ══════════════════════════════════════════════
+  // ══════════════════════════════════════════════════
+  // SEMANA A — Definición Upper Body
+  // Lógica: 12-20 reps · descanso 45-60" · superseries
+  // ══════════════════════════════════════════════════
 
-  // LUN A — Upper Push A + HRX Finisher
+  // LUN A — Pecho + Tríceps (definición)
   {dia:"LUN",label:"Lunes",semana:"A",bloques:[
     {n:1,tipo:"Cardio",badge:"BICICLETA FIJA — 10 MIN WARM UP",mins:10,cat:"cardio",
-     exs:[{nm:"Bicicleta fija",s:1,r:"10 min — ritmo moderado, últimos 2 min sprint"}]},
-    {n:2,tipo:"Strength",badge:"UPPER PUSH A — 4 SERIES EN 18'",mins:18,cat:"strength",
-     exs:[{nm:"DDB Chest Press",s:4,r:"10-12"},{nm:"DDB Push Press",s:4,r:"10"},{nm:"DDB Arnold Press",s:3,r:"12"},{nm:"Extension triceps",s:4,r:"12-15"},{nm:"Elevacion lateral",s:3,r:"15"}]},
-    {n:3,tipo:"HRX Training",badge:"COMPLETE 3 ROUNDS EN 12': UPPER FINISHER",mins:12,cat:"hrx",
-     exs:[{nm:"DDB Man-Maker",s:3,r:"5"},{nm:"DDB Thruster",s:3,r:"10"},{nm:"DDB Devil Press",s:3,r:"5"},{nm:"Elevacion lateral",s:3,r:"12 (liviano)"}]},
+     exs:[{nm:"Bicicleta fija",s:1,r:"10 min — ritmo moderado"}]},
+    {n:2,tipo:"Strength",badge:"PECHO · DEFINICIÓN — 4 SERIES EN 18'",mins:18,cat:"strength",
+     exs:[
+       {nm:"DDB Chest Press",s:4,r:"15-12-12-15 (descanso 45\")"},
+       {nm:"DDB Chest Press",s:3,r:"20 (liviano, pausa 1\" arriba)"},
+       {nm:"DDB Pullover",s:3,r:"15 (estiramiento pectoral)"},
+       {nm:"DDB Renegade Row",s:3,r:"10/10 (estabilización)"}
+     ]},
+    {n:3,tipo:"HRX Training",badge:"SUPERSERIE TRÍCEPS + PECHO FINISHER — 3R EN 12'",mins:12,cat:"hrx",
+     exs:[
+       {nm:"Extension triceps",s:3,r:"15 + DDB Chest Press 15 (sin descanso)"},
+       {nm:"DDB Thruster",s:3,r:"12 (hombro → pecho en un mov)"},
+       {nm:"DDB Devil Press",s:3,r:"5 (explosivo)"},
+       {nm:"Burpee",s:3,r:"8"}
+     ]},
     {n:4,tipo:"Midline",badge:"AMRAP 5': CORE FINISHER",mins:5,cat:"midline",
      exs:[{nm:"Sit Up",s:3,r:"20"},{nm:"V-Sit Up",s:3,r:"15"},{nm:"Side Plank",s:3,r:"20\"/20\""},{nm:"Plank",s:3,r:"30\""}]}
   ]},
 
-  // MAR A — HRX A (Lower focus)
+  // MAR A — HRX (cardio + full body funcional)
   {dia:"MAR",label:"Martes",semana:"A",bloques:[
     {n:1,tipo:"Cardio",badge:"BICICLETA FIJA — 10 MIN WARM UP",mins:10,cat:"cardio",
      exs:[{nm:"Bicicleta fija",s:1,r:"10 min — últimos 3 min a fondo"}]},
-    {n:2,tipo:"HRX Training",badge:"LOWER ACTIVATION 3 ROUNDS EN 8'",mins:8,cat:"warmup",
-     exs:[{nm:"Goblet Squat",s:3,r:"10"},{nm:"Hip Hinge",s:3,r:"12"},{nm:"Glute Bridge",s:3,r:"15"},{nm:"Lunge",s:3,r:"8/8"}]},
+    {n:2,tipo:"HRX Training",badge:"ACTIVATION 3 ROUNDS EN 8'",mins:8,cat:"warmup",
+     exs:[{nm:"DDB Renegade Row",s:3,r:"8"},{nm:"DDB Arnold Press",s:3,r:"10"},{nm:"Goblet Squat",s:3,r:"10"},{nm:"Plank",s:3,r:"30\""}]},
     {n:3,tipo:"HRX Training",badge:"1 ROUND EN 18': ONE WAY",mins:18,cat:"hrx",
-     exs:[{nm:"DDB Chest Press",s:1,r:"50"},{nm:"DDB Thruster",s:1,r:"10"},{nm:"DDB Bent Over Row",s:1,r:"40"},{nm:"DDB Thruster",s:1,r:"10"},{nm:"Barbell Deadlift",s:1,r:"30"},{nm:"DDB Thruster",s:1,r:"10"},{nm:"DDB Front Rack Lunges",s:1,r:"20/20"},{nm:"DDB Devil Press",s:1,r:"5"}]},
+     exs:[
+       {nm:"DDB Chest Press",s:1,r:"50"},
+       {nm:"DDB Thruster",s:1,r:"10"},
+       {nm:"DDB Bent Over Row",s:1,r:"40"},
+       {nm:"DDB Thruster",s:1,r:"10"},
+       {nm:"Barbell Deadlift",s:1,r:"30"},
+       {nm:"DDB Thruster",s:1,r:"10"},
+       {nm:"DDB Front Rack Lunges",s:1,r:"20/20"},
+       {nm:"DDB Devil Press",s:1,r:"5"}
+     ]},
     {n:4,tipo:"Midline",badge:"AMRAP 5': STABILIZERS",mins:5,cat:"midline",
      exs:[{nm:"V-Sit Up",s:4,r:"10"},{nm:"Lateral Hip Raise",s:4,r:"8/8"},{nm:"Mountain Climber",s:4,r:"30\""},{nm:"Hollow Hold",s:4,r:"20\""}]}
   ]},
 
-  // MIÉ A — Upper Pull A + HRX Finisher
+  // MIÉ A — Espalda + Bíceps (definición)
   {dia:"MIÉ",label:"Miércoles",semana:"A",bloques:[
     {n:1,tipo:"Cardio",badge:"BICICLETA FIJA — 10 MIN WARM UP",mins:10,cat:"cardio",
      exs:[{nm:"Bicicleta fija",s:1,r:"10 min — cadencia alta"}]},
-    {n:2,tipo:"Strength",badge:"UPPER PULL A — 4-5 SERIES EN 18'",mins:18,cat:"strength",
-     exs:[{nm:"Barbell Bent Over Row",s:5,r:"8-10"},{nm:"Jalon en polea",s:4,r:"10-12"},{nm:"DDB Renegade Row",s:4,r:"10"},{nm:"Curl de biceps",s:4,r:"12-15"},{nm:"Face Pull",s:3,r:"15"}]},
-    {n:3,tipo:"HRX Training",badge:"AMRAP 12': PULL HRX FINISHER",mins:12,cat:"hrx",
-     exs:[{nm:"DDB Dead Snatch",s:1,r:"15"},{nm:"DDB Renegade Row",s:1,r:"10"},{nm:"DDB Man-Maker",s:1,r:"4"},{nm:"Curl de biceps",s:1,r:"15 (liviano — pump)"}]},
+    {n:2,tipo:"Strength",badge:"ESPALDA · DEFINICIÓN — 4 SERIES EN 18'",mins:18,cat:"strength",
+     exs:[
+       {nm:"Barbell Bent Over Row",s:4,r:"15-12-12-15 (descanso 45\")"},
+       {nm:"DDB Renegade Row",s:3,r:"12/12 (pausa 1\" en contracción)"},
+       {nm:"Jalon en polea",s:4,r:"15-15-12-12 (aprieta espalda arriba)"},
+       {nm:"DDB Pullover",s:3,r:"15 (estiramiento dorsal)"}
+     ]},
+    {n:3,tipo:"HRX Training",badge:"SUPERSERIE BÍCEPS + ESPALDA FINISHER — 3R EN 12'",mins:12,cat:"hrx",
+     exs:[
+       {nm:"Curl de biceps",s:3,r:"21s (7 abajo + 7 arriba + 7 completos)"},
+       {nm:"DDB Dead Snatch",s:3,r:"12 (explosivo)"},
+       {nm:"DDB Man-Maker",s:3,r:"4 (full pull + push)"},
+       {nm:"Face Pull",s:3,r:"20 (liviano — definir deltoides post.)"}
+     ]},
     {n:4,tipo:"Midline",badge:"AMRAP 5': MIDLINE ON FIRE",mins:5,cat:"midline",
      exs:[{nm:"Side Plank",s:3,r:"25\"/25\""},{nm:"Sit Up",s:3,r:"25"},{nm:"V-Sit Up",s:3,r:"10"},{nm:"Plank",s:3,r:"40\""}]}
   ]},
 
-  // JUE A — HRX B (Upper focus)
+  // JUE A — HRX (upper focus)
   {dia:"JUE",label:"Jueves",semana:"A",bloques:[
     {n:1,tipo:"Cardio",badge:"BICICLETA FIJA — 10 MIN WARM UP",mins:10,cat:"cardio",
      exs:[{nm:"Bicicleta fija",s:1,r:"10 min — intervalos 1' rápido / 1' suave"}]},
     {n:2,tipo:"HRX Training",badge:"UPPER ACTIVATION 3 ROUNDS EN 8'",mins:8,cat:"warmup",
-     exs:[{nm:"DDB Renegade Row",s:3,r:"8"},{nm:"DDB Arnold Press",s:3,r:"10"},{nm:"Face Pull",s:3,r:"12"},{nm:"Plank",s:3,r:"30\""}]},
+     exs:[{nm:"DDB Renegade Row",s:3,r:"8"},{nm:"DDB Arnold Press",s:3,r:"10"},{nm:"Face Pull",s:3,r:"15"},{nm:"Plank",s:3,r:"30\""}]},
     {n:3,tipo:"HRX Training",badge:"AMRAP 18': HYBRID UPPER",mins:18,cat:"hrx",
-     exs:[{nm:"DDB Man-Maker",s:1,r:"3"},{nm:"DDB Chest Press",s:1,r:"15"},{nm:"DDB Renegade Row",s:1,r:"10"},{nm:"DDB Thruster",s:1,r:"10"},{nm:"DDB Dead Snatch",s:1,r:"10"},{nm:"DDB Devil Press",s:1,r:"5"},{nm:"Burpee",s:1,r:"8"}]},
+     exs:[
+       {nm:"DDB Man-Maker",s:1,r:"3"},
+       {nm:"DDB Chest Press",s:1,r:"15"},
+       {nm:"DDB Renegade Row",s:1,r:"10"},
+       {nm:"DDB Thruster",s:1,r:"10"},
+       {nm:"DDB Dead Snatch",s:1,r:"10"},
+       {nm:"DDB Devil Press",s:1,r:"5"},
+       {nm:"Burpee",s:1,r:"8"}
+     ]},
     {n:4,tipo:"Midline",badge:"3 ROUNDS EN 5': FINISHER",mins:5,cat:"midline",
      exs:[{nm:"Sit Up",s:3,r:"20"},{nm:"V-Sit Up",s:3,r:"12"},{nm:"Side Plank",s:3,r:"20\"/20\""},{nm:"Mountain Climber",s:3,r:"30\""}]}
   ]},
 
-  // VIE A — Upper Full A + HRX Finisher
+  // VIE A — Hombros + Tríceps (definición)
   {dia:"VIE",label:"Viernes",semana:"A",bloques:[
     {n:1,tipo:"Cardio",badge:"BICICLETA FIJA — 10 MIN WARM UP",mins:10,cat:"cardio",
      exs:[{nm:"Bicicleta fija",s:1,r:"10 min — ritmo constante"}]},
-    {n:2,tipo:"Strength",badge:"UPPER FULL A — 4 SERIES EN 18'",mins:18,cat:"strength",
-     exs:[{nm:"DDB Chest Press",s:4,r:"10-12"},{nm:"Barbell Bent Over Row",s:4,r:"8-10"},{nm:"DDB Push Press",s:4,r:"10"},{nm:"Jalon en polea",s:4,r:"10-12"},{nm:"Curl de biceps",s:3,r:"12"},{nm:"Extension triceps",s:3,r:"12"}]},
-    {n:3,tipo:"HRX Training",badge:"COMPLETE 4 ROUNDS EN 12': UPPER METCON",mins:12,cat:"hrx",
-     exs:[{nm:"DDB Man-Maker",s:4,r:"3"},{nm:"DDB Arnold Press",s:4,r:"10"},{nm:"DDB Dead Snatch",s:4,r:"8"},{nm:"Face Pull",s:4,r:"12"}]},
+    {n:2,tipo:"Strength",badge:"HOMBROS · DEFINICIÓN — 4 SERIES EN 18'",mins:18,cat:"strength",
+     exs:[
+       {nm:"DDB Arnold Press",s:4,r:"15-12-12-15 (descanso 45\")"},
+       {nm:"Elevacion lateral",s:4,r:"20-15-15-20 (3\" negativo)"},
+       {nm:"Barbell Push Press",s:3,r:"12 (potencia + definición)"},
+       {nm:"Face Pull",s:4,r:"20 (deltoides posterior)"},
+       {nm:"Extension triceps",s:4,r:"15-15-12-12"}
+     ]},
+    {n:3,tipo:"HRX Training",badge:"SUPERSERIE HOMBROS FINISHER — 3R EN 12'",mins:12,cat:"hrx",
+     exs:[
+       {nm:"DDB Thruster",s:3,r:"15 (hombros + piernas)"},
+       {nm:"Elevacion lateral",s:3,r:"15 (liviano — quema)"},
+       {nm:"DDB Devil Press",s:3,r:"5"},
+       {nm:"Face Pull",s:3,r:"20 (liviano)"}
+     ]},
     {n:4,tipo:"Midline",badge:"40\"/20\" × 5': CORE CONTROL",mins:5,cat:"midline",
      exs:[{nm:"V-Sit Up",s:1,r:"1' max"},{nm:"Side Plank",s:1,r:"2' c/lado"},{nm:"Sit Up",s:1,r:"3' max"},{nm:"Mountain Climber",s:1,r:"4' 40\""},{nm:"Plank",s:1,r:"5' 40\""}]}
   ]},
 
-  // SÁB A — Shoulders & Arms A + HRX Finisher
+  // SÁB A — Bíceps + Upper Full pump (definición total)
   {dia:"SÁB",label:"Sábado",semana:"A",bloques:[
     {n:1,tipo:"Cardio",badge:"BICICLETA FIJA — 10 MIN WARM UP",mins:10,cat:"cardio",
      exs:[{nm:"Bicicleta fija",s:1,r:"10 min — sprints 30\"/30\" × 5"}]},
-    {n:2,tipo:"Strength",badge:"SHOULDERS & ARMS A — 4 SERIES EN 18'",mins:18,cat:"strength",
-     exs:[{nm:"Barbell Push Press",s:4,r:"8"},{nm:"DDB Arnold Press",s:4,r:"10-12"},{nm:"Elevacion lateral",s:4,r:"15"},{nm:"Curl de biceps",s:4,r:"12-15"},{nm:"Extension triceps",s:4,r:"12-15"},{nm:"Face Pull",s:3,r:"20"}]},
-    {n:3,tipo:"HRX Training",badge:"AMRAP 12': ARMS & CARDIO FINISHER",mins:12,cat:"hrx",
-     exs:[{nm:"DDB Thruster",s:1,r:"12"},{nm:"DDB Devil Press",s:1,r:"5"},{nm:"Curl de biceps",s:1,r:"15 (liviano)"},{nm:"Extension triceps",s:1,r:"15 (liviano)"},{nm:"Burpee",s:1,r:"8"}]},
+    {n:2,tipo:"Strength",badge:"BÍCEPS · DEFINICIÓN — 4 SERIES EN 18'",mins:18,cat:"strength",
+     exs:[
+       {nm:"Curl de biceps",s:4,r:"15-12-12-15 (descanso 45\")"},
+       {nm:"Curl de biceps",s:3,r:"21s (7+7+7) — pico bíceps"},
+       {nm:"DDB Renegade Row",s:3,r:"12/12 (bíceps + espalda)"},
+       {nm:"Jalon en polea",s:3,r:"15 (liviano — aislamiento)"},
+       {nm:"Extension triceps",s:4,r:"20 (liviano — pump tríceps)"}
+     ]},
+    {n:3,tipo:"HRX Training",badge:"FULL UPPER PUMP FINISHER — 3R EN 12'",mins:12,cat:"hrx",
+     exs:[
+       {nm:"DDB Man-Maker",s:3,r:"4"},
+       {nm:"DDB Dead Snatch",s:3,r:"10"},
+       {nm:"DDB Arnold Press",s:3,r:"12 (liviano — pump hombros)"},
+       {nm:"Curl de biceps",s:3,r:"15 (liviano — fallo muscular)"}
+     ]},
     {n:4,tipo:"Midline",badge:"AMRAP 5': CIERRE SEMANA A",mins:5,cat:"midline",
      exs:[{nm:"Sit Up",s:3,r:"25"},{nm:"V-Sit Up",s:3,r:"15"},{nm:"Plank",s:3,r:"45\""},{nm:"Side Plank",s:3,r:"20\"/20\""}]}
   ]},
 
-  // ══════════════════════════════════════════════
-  // SEMANA B
-  // ══════════════════════════════════════════════
+  // ══════════════════════════════════════════════════
+  // SEMANA B — Definición Upper Body (variantes)
+  // Lógica: drop sets · tempo lento · más volumen
+  // ══════════════════════════════════════════════════
 
-  // LUN B — Upper Push B + HRX Finisher
+  // LUN B — Pecho + Hombros (definición variante)
   {dia:"LUN",label:"Lunes",semana:"B",bloques:[
     {n:1,tipo:"Cardio",badge:"BICICLETA FIJA — 10 MIN WARM UP",mins:10,cat:"cardio",
      exs:[{nm:"Bicicleta fija",s:1,r:"10 min — cadencia progresiva"}]},
-    {n:2,tipo:"Strength",badge:"UPPER PUSH B — 5 SERIES EN 18'",mins:18,cat:"strength",
-     exs:[{nm:"DDB Chest Press",s:5,r:"8"},{nm:"Barbell Push Press",s:4,r:"8"},{nm:"DDB Arnold Press",s:4,r:"10"},{nm:"Extension triceps",s:4,r:"12"},{nm:"Elevacion lateral",s:4,r:"12"}]},
-    {n:3,tipo:"HRX Training",badge:"3 ROUNDS EN 12': PUSH HRX FINISHER",mins:12,cat:"hrx",
-     exs:[{nm:"DDB Thruster",s:3,r:"12"},{nm:"DDB Man-Maker",s:3,r:"4"},{nm:"DDB Devil Press",s:3,r:"5"},{nm:"DDB Arnold Press",s:3,r:"10 (liviano — fallo)"}]},
+    {n:2,tipo:"Strength",badge:"PECHO + HOMBROS · DEFINICIÓN — 4 SERIES EN 18'",mins:18,cat:"strength",
+     exs:[
+       {nm:"DDB Chest Press",s:4,r:"12 (tempo 3-1-1: 3\" baja, 1 pausa, 1 sube)"},
+       {nm:"DDB Arnold Press",s:4,r:"15 (tempo 2-1-2)"},
+       {nm:"Elevacion lateral",s:4,r:"15 + drop set 15 liviano sin descanso"},
+       {nm:"DDB Pullover",s:3,r:"15 (pecho + espalda)"},
+       {nm:"Face Pull",s:3,r:"20"}
+     ]},
+    {n:3,tipo:"HRX Training",badge:"3R EN 12': PUSH METCON",mins:12,cat:"hrx",
+     exs:[
+       {nm:"DDB Thruster",s:3,r:"15 (explosivo)"},
+       {nm:"DDB Man-Maker",s:3,r:"5"},
+       {nm:"DDB Devil Press",s:3,r:"5"},
+       {nm:"Elevacion lateral",s:3,r:"15 (liviano)"}
+     ]},
     {n:4,tipo:"Midline",badge:"AMRAP 5': CORE FINISHER",mins:5,cat:"midline",
      exs:[{nm:"Sit Up",s:3,r:"20"},{nm:"V-Sit Up",s:3,r:"15"},{nm:"Side Plank",s:3,r:"20\"/20\""},{nm:"Hollow Hold",s:3,r:"30\""}]}
   ]},
 
-  // MAR B — HRX C (Full Body chipper)
+  // MAR B — HRX (full body funcional)
   {dia:"MAR",label:"Martes",semana:"B",bloques:[
     {n:1,tipo:"Cardio",badge:"BICICLETA FIJA — 10 MIN WARM UP",mins:10,cat:"cardio",
      exs:[{nm:"Bicicleta fija",s:1,r:"10 min — últimos 3 min a fondo"}]},
     {n:2,tipo:"HRX Training",badge:"FULL BODY ACTIVATION 3R EN 8'",mins:8,cat:"warmup",
      exs:[{nm:"DDB Renegade Row",s:3,r:"8"},{nm:"Goblet Squat",s:3,r:"10"},{nm:"Hip Hinge",s:3,r:"12"},{nm:"Plank",s:3,r:"30\""}]},
     {n:3,tipo:"HRX Training",badge:"AMRAP 18': FULL BODY CHIPPER",mins:18,cat:"hrx",
-     exs:[{nm:"DDB Man-Maker",s:1,r:"5"},{nm:"DDB Front Rack Lunges",s:1,r:"20/20"},{nm:"DDB Dead Snatch",s:1,r:"15"},{nm:"Barbell Bent Over Row",s:1,r:"15"},{nm:"DDB Devil Press",s:1,r:"5"},{nm:"Burpee",s:1,r:"10"}]},
+     exs:[
+       {nm:"DDB Man-Maker",s:1,r:"5"},
+       {nm:"DDB Front Rack Lunges",s:1,r:"20/20"},
+       {nm:"DDB Dead Snatch",s:1,r:"15"},
+       {nm:"Barbell Bent Over Row",s:1,r:"15"},
+       {nm:"DDB Devil Press",s:1,r:"5"},
+       {nm:"Burpee",s:1,r:"10"}
+     ]},
     {n:4,tipo:"Midline",badge:"EVERY 60\" × 5': STABILIZERS",mins:5,cat:"midline",
      exs:[{nm:"V-Sit Up",s:5,r:"10"},{nm:"Lateral Hip Raise",s:5,r:"8/8"},{nm:"Mountain Climber",s:5,r:"20\""},{nm:"Plank",s:5,r:"20\""}]}
   ]},
 
-  // MIÉ B — Upper Pull B + HRX Finisher
+  // MIÉ B — Espalda + Bíceps (definición variante)
   {dia:"MIÉ",label:"Miércoles",semana:"B",bloques:[
     {n:1,tipo:"Cardio",badge:"BICICLETA FIJA — 10 MIN WARM UP",mins:10,cat:"cardio",
      exs:[{nm:"Bicicleta fija",s:1,r:"10 min — ritmo moderado"}]},
-    {n:2,tipo:"Strength",badge:"UPPER PULL B — 4-5 SERIES EN 18'",mins:18,cat:"strength",
-     exs:[{nm:"DDB Renegade Row",s:5,r:"10"},{nm:"Barbell Bent Over Row",s:4,r:"10"},{nm:"Jalon en polea",s:4,r:"12"},{nm:"DDB Bent Over Row",s:4,r:"12"},{nm:"Curl de biceps",s:4,r:"15"},{nm:"Face Pull",s:3,r:"20"}]},
-    {n:3,tipo:"HRX Training",badge:"AMRAP 12': PULL + FUNCTIONAL FINISHER",mins:12,cat:"hrx",
-     exs:[{nm:"DDB Dead Snatch",s:1,r:"15"},{nm:"DDB Man-Maker",s:1,r:"4"},{nm:"DDB Renegade Row",s:1,r:"10"},{nm:"Curl de biceps",s:1,r:"20 (liviano)"},{nm:"Burpee",s:1,r:"6"}]},
+    {n:2,tipo:"Strength",badge:"ESPALDA + BÍCEPS · DEFINICIÓN — 4 SERIES EN 18'",mins:18,cat:"strength",
+     exs:[
+       {nm:"DDB Renegade Row",s:4,r:"12/12 (tempo 3-1-1)"},
+       {nm:"Barbell Bent Over Row",s:4,r:"15 (agarre supino — bíceps)"},
+       {nm:"Jalon en polea",s:4,r:"15-15-12-12 (codos a cadera)"},
+       {nm:"Curl de biceps",s:4,r:"15 + drop set 15 liviano"},
+       {nm:"Face Pull",s:3,r:"20 (deltoides post. + romboides)"}
+     ]},
+    {n:3,tipo:"HRX Training",badge:"SUPERSERIE PULL FINISHER — 3R EN 12'",mins:12,cat:"hrx",
+     exs:[
+       {nm:"DDB Dead Snatch",s:3,r:"12"},
+       {nm:"DDB Man-Maker",s:3,r:"4"},
+       {nm:"Curl de biceps",s:3,r:"21s (7+7+7)"},
+       {nm:"DDB Renegade Row",s:3,r:"10/10 (liviano — pump)"}
+     ]},
     {n:4,tipo:"Midline",badge:"AMRAP 5': MIDLINE ON FIRE",mins:5,cat:"midline",
      exs:[{nm:"Side Plank",s:3,r:"25\"/25\""},{nm:"Sit Up",s:3,r:"25"},{nm:"V-Sit Up",s:3,r:"12"},{nm:"Plank",s:3,r:"40\""}]}
   ]},
 
-  // JUE B — HRX D (Upper ladder)
+  // JUE B — HRX (ladder upper)
   {dia:"JUE",label:"Jueves",semana:"B",bloques:[
     {n:1,tipo:"Cardio",badge:"BICICLETA FIJA — 10 MIN WARM UP",mins:10,cat:"cardio",
      exs:[{nm:"Bicicleta fija",s:1,r:"10 min — sprints 40\"/20\" × 5"}]},
     {n:2,tipo:"HRX Training",badge:"UPPER ACTIVATION 3R EN 8'",mins:8,cat:"warmup",
      exs:[{nm:"DDB Arnold Press",s:3,r:"10"},{nm:"DDB Renegade Row",s:3,r:"8"},{nm:"Face Pull",s:3,r:"15"},{nm:"Plank",s:3,r:"30\""}]},
     {n:3,tipo:"HRX Training",badge:"LADDER AMRAP 18': UPPER",mins:18,cat:"hrx",
-     exs:[{nm:"DDB Man-Maker",s:1,r:"1-2-3-4-5"},{nm:"DDB Thruster",s:1,r:"3-6-9-12-15"},{nm:"DDB Dead Snatch",s:1,r:"5-5-5-5-5"},{nm:"DDB Devil Press",s:1,r:"2-2-2-2-2"},{nm:"Burpee",s:1,r:"2-4-6-8-10"}]},
+     exs:[
+       {nm:"DDB Man-Maker",s:1,r:"1-2-3-4-5"},
+       {nm:"DDB Thruster",s:1,r:"3-6-9-12-15"},
+       {nm:"DDB Dead Snatch",s:1,r:"5-5-5-5-5"},
+       {nm:"DDB Devil Press",s:1,r:"2-2-2-2-2"},
+       {nm:"Burpee",s:1,r:"2-4-6-8-10"}
+     ]},
     {n:4,tipo:"Midline",badge:"3 ROUNDS EN 5': FINISHER",mins:5,cat:"midline",
      exs:[{nm:"Sit Up",s:3,r:"20"},{nm:"V-Sit Up",s:3,r:"12"},{nm:"Side Plank",s:3,r:"25\"/25\""},{nm:"Mountain Climber",s:3,r:"30\""}]}
   ]},
 
-  // VIE B — Upper Full B + HRX Finisher
+  // VIE B — Hombros + Bíceps (definición variante)
   {dia:"VIE",label:"Viernes",semana:"B",bloques:[
     {n:1,tipo:"Cardio",badge:"BICICLETA FIJA — 10 MIN WARM UP",mins:10,cat:"cardio",
      exs:[{nm:"Bicicleta fija",s:1,r:"10 min — ritmo constante"}]},
-    {n:2,tipo:"Strength",badge:"UPPER FULL B — 4 SERIES EN 18'",mins:18,cat:"strength",
-     exs:[{nm:"DDB Chest Press",s:4,r:"12-10-8-8"},{nm:"DDB Renegade Row",s:4,r:"12-10-8-8"},{nm:"DDB Arnold Press",s:4,r:"12-10-8-8"},{nm:"Barbell Bent Over Row",s:4,r:"12-10-8-8"},{nm:"Curl de biceps",s:3,r:"15"},{nm:"Extension triceps",s:3,r:"15"}]},
-    {n:3,tipo:"HRX Training",badge:"4 ROUNDS EN 12': UPPER METCON",mins:12,cat:"hrx",
-     exs:[{nm:"DDB Man-Maker",s:4,r:"4"},{nm:"DDB Thruster",s:4,r:"10"},{nm:"DDB Dead Snatch",s:4,r:"8"},{nm:"Face Pull",s:4,r:"15"}]},
+    {n:2,tipo:"Strength",badge:"HOMBROS + BÍCEPS · DEFINICIÓN — 4 SERIES EN 18'",mins:18,cat:"strength",
+     exs:[
+       {nm:"DDB Arnold Press",s:4,r:"15 (tempo 2-1-2)"},
+       {nm:"Barbell Push Press",s:3,r:"12"},
+       {nm:"Elevacion lateral",s:5,r:"15 + pausa 2\" arriba"},
+       {nm:"Face Pull",s:4,r:"20"},
+       {nm:"Curl de biceps",s:4,r:"15-12-12-15"},
+       {nm:"Extension triceps",s:3,r:"15"}
+     ]},
+    {n:3,tipo:"HRX Training",badge:"SUPERSERIE PUMP FINISHER — 3R EN 12'",mins:12,cat:"hrx",
+     exs:[
+       {nm:"DDB Thruster",s:3,r:"12"},
+       {nm:"Elevacion lateral",s:3,r:"20 (liviano — fallo)"},
+       {nm:"Curl de biceps",s:3,r:"20 (liviano — fallo)"},
+       {nm:"DDB Man-Maker",s:3,r:"3"}
+     ]},
     {n:4,tipo:"Midline",badge:"40\"/20\" × 5': CORE CONTROL",mins:5,cat:"midline",
      exs:[{nm:"V-Sit Up",s:1,r:"1' max"},{nm:"Side Plank",s:1,r:"2' c/lado"},{nm:"Sit Up",s:1,r:"3' max"},{nm:"Mountain Climber",s:1,r:"4' 40\""},{nm:"Plank",s:1,r:"5' 40\""}]}
   ]},
 
-  // SÁB B — Arms & Shoulders B + HRX Finisher
+  // SÁB B — Full Upper pump (todo upper body)
   {dia:"SÁB",label:"Sábado",semana:"B",bloques:[
     {n:1,tipo:"Cardio",badge:"BICICLETA FIJA — 10 MIN WARM UP",mins:10,cat:"cardio",
      exs:[{nm:"Bicicleta fija",s:1,r:"10 min — fartlek libre"}]},
-    {n:2,tipo:"Strength",badge:"ARMS & SHOULDERS B — 5 SERIES EN 18'",mins:18,cat:"strength",
-     exs:[{nm:"DDB Arnold Press",s:5,r:"10"},{nm:"Barbell Push Press",s:4,r:"8"},{nm:"Elevacion lateral",s:4,r:"15"},{nm:"Curl de biceps",s:5,r:"12-15"},{nm:"Extension triceps",s:5,r:"12-15"}]},
-    {n:3,tipo:"HRX Training",badge:"AMRAP 12': ARMS METCON FINISHER",mins:12,cat:"hrx",
-     exs:[{nm:"DDB Thruster",s:1,r:"12"},{nm:"DDB Man-Maker",s:1,r:"3"},{nm:"DDB Devil Press",s:1,r:"5"},{nm:"Curl de biceps",s:1,r:"15 (21s: 7+7+7)"},{nm:"Extension triceps",s:1,r:"15 (liviano)"},{nm:"Burpee",s:1,r:"8"}]},
+    {n:2,tipo:"Strength",badge:"FULL UPPER PUMP — 4 SERIES EN 18'",mins:18,cat:"strength",
+     exs:[
+       {nm:"DDB Chest Press",s:4,r:"15 (liviano — máx pump)"},
+       {nm:"DDB Arnold Press",s:4,r:"15"},
+       {nm:"Barbell Bent Over Row",s:4,r:"15"},
+       {nm:"Jalon en polea",s:4,r:"15"},
+       {nm:"Elevacion lateral",s:3,r:"20"},
+       {nm:"Face Pull",s:3,r:"20"}
+     ]},
+    {n:3,tipo:"HRX Training",badge:"AMRAP 12': UPPER METCON TOTAL",mins:12,cat:"hrx",
+     exs:[
+       {nm:"DDB Man-Maker",s:1,r:"4"},
+       {nm:"DDB Dead Snatch",s:1,r:"10"},
+       {nm:"DDB Thruster",s:1,r:"12"},
+       {nm:"Curl de biceps",s:1,r:"15 (liviano)"},
+       {nm:"Extension triceps",s:1,r:"15 (liviano)"},
+       {nm:"Burpee",s:1,r:"8"}
+     ]},
     {n:4,tipo:"Midline",badge:"AMRAP 5': CIERRE SEMANA B",mins:5,cat:"midline",
      exs:[{nm:"Sit Up",s:3,r:"25"},{nm:"V-Sit Up",s:3,r:"15"},{nm:"Plank",s:3,r:"45\""},{nm:"Side Plank",s:3,r:"25\"/25\""}]}
   ]}
