@@ -335,55 +335,140 @@ function getInfo(n){
 }
 
 const PLAN=[
-  {dia:"LUN",label:"Lunes",bloques:[
-    {n:1,tipo:"Combined Strength",badge:"3 ROUNDS EN 8': PUSH PREHAB",mins:8,cat:"warmup",
+  // ── SEMANA A ──────────────────────────────────────────────────────────────
+  // LUN A — Upper Push (Pecho + Hombros + Tríceps)
+  {dia:"LUN",label:"Lunes",semana:"A",bloques:[
+    {n:1,tipo:"Combined Strength",badge:"PUSH PREHAB 3 ROUNDS EN 8'",mins:8,cat:"warmup",
      exs:[{nm:"DDB Renegade Row",s:3,r:"8"},{nm:"DDB Arnold Press",s:3,r:"10"},{nm:"Plank",s:3,r:"30\""},{nm:"Face Pull",s:3,r:"12"}]},
-    {n:2,tipo:"Strength",badge:"UPPER STRONG EN 14'",mins:14,cat:"strength",
-     exs:[{nm:"DDB Chest Press",s:4,r:"10-12"},{nm:"Barbell Bent Over Row",s:4,r:"8-10"},{nm:"DDB Push Press",s:3,r:"10"},{nm:"Jalon en polea",s:4,r:"10-12"},{nm:"Curl de biceps",s:3,r:"12-15"},{nm:"Extension triceps",s:3,r:"12-15"}]},
+    {n:2,tipo:"Strength",badge:"UPPER PUSH EN 16'",mins:16,cat:"strength",
+     exs:[{nm:"DDB Chest Press",s:5,r:"8-10"},{nm:"DDB Push Press",s:4,r:"10"},{nm:"DDB Arnold Press",s:3,r:"12"},{nm:"Extension triceps",s:4,r:"12-15"},{nm:"Elevacion lateral",s:3,r:"15"}]},
     {n:3,tipo:"HRX Training",badge:"1 ROUND EN 14': ONE WAY",mins:14,cat:"hrx",
      exs:[{nm:"DDB Chest Press",s:1,r:"50"},{nm:"DDB Thruster",s:1,r:"10"},{nm:"DDB Bent Over Row",s:1,r:"40"},{nm:"DDB Deadlift",s:1,r:"30"},{nm:"DDB Front Rack Lunges",s:1,r:"20/20"},{nm:"DDB Devil Press",s:1,r:"5"}]},
     {n:4,tipo:"Midline",badge:"AMRAP 5': CORE FINISHER",mins:5,cat:"midline",
      exs:[{nm:"Sit Up",s:3,r:"20"},{nm:"V-Sit Up",s:3,r:"15"},{nm:"Side Plank",s:3,r:"20\"/20\""},{nm:"Plank",s:3,r:"30\""}]}
   ]},
-  {dia:"MAR",label:"Martes",bloques:[
-    {n:1,tipo:"Lower Body",badge:"3 ROUNDS EN 8': GLUTE BURN",mins:8,cat:"warmup",
+  // MAR A — Lower Body (Piernas + Glúteos)
+  {dia:"MAR",label:"Martes",semana:"A",bloques:[
+    {n:1,tipo:"Lower Body",badge:"GLUTE BURN 3 ROUNDS EN 8'",mins:8,cat:"warmup",
      exs:[{nm:"Glute Bridge",s:3,r:"20"},{nm:"Lunge",s:3,r:"10/10"},{nm:"Goblet Squat",s:3,r:"10"},{nm:"Hip Hinge",s:3,r:"12"}]},
-    {n:2,tipo:"Strength",badge:"LOWER STRONG EN 14'",mins:14,cat:"strength",
+    {n:2,tipo:"Strength",badge:"LOWER STRONG EN 16'",mins:16,cat:"strength",
      exs:[{nm:"Barbell Back Squat",s:5,r:"6-8"},{nm:"DDB Front Rack Lunges",s:3,r:"10/10"},{nm:"Barbell Deadlift",s:4,r:"8"},{nm:"Goblet Squat",s:3,r:"12"},{nm:"Elevacion lateral",s:3,r:"15"}]},
     {n:3,tipo:"HRX Training",badge:"AMRAP 12': HYBRID",mins:12,cat:"hrx",
      exs:[{nm:"DDB Front Squat",s:1,r:"30"},{nm:"DDB Push Press",s:1,r:"40"},{nm:"DDB Bent Over Row",s:1,r:"20"},{nm:"DDB Dead Snatch",s:1,r:"20"},{nm:"Burpee",s:1,r:"20"}]},
     {n:4,tipo:"Midline",badge:"EVERY 60\" × 5': STABILIZERS",mins:5,cat:"midline",
      exs:[{nm:"V-Sit Up",s:5,r:"8"},{nm:"Lateral Hip Raise",s:5,r:"6/6"},{nm:"Mountain Climber",s:5,r:"30\""},{nm:"Hollow Hold",s:5,r:"20\""}]}
   ]},
-  {dia:"MIÉ",label:"Miércoles",bloques:[
-    {n:1,tipo:"HRX Training",badge:"3 ROUNDS EN 6': PULL PREHAB",mins:6,cat:"warmup",
+  // MIÉ A — Upper Pull (Espalda + Bíceps)
+  {dia:"MIÉ",label:"Miércoles",semana:"A",bloques:[
+    {n:1,tipo:"HRX Training",badge:"PULL PREHAB 3 ROUNDS EN 6'",mins:6,cat:"warmup",
      exs:[{nm:"DDB Pullover",s:3,r:"8"},{nm:"Dead Bug",s:3,r:"12"},{nm:"DDB Renegade Row",s:3,r:"10"},{nm:"Face Pull",s:3,r:"12"}]},
-    {n:2,tipo:"Full Body",badge:"PRIMARY MOVEMENTS EN 14'",mins:14,cat:"strength",
-     exs:[{nm:"DDB Push Press",s:4,r:"12-10-8-8"},{nm:"DDB Renegade Row",s:4,r:"12-10-8-8"},{nm:"DDB Arnold Press",s:4,r:"12-10-8-8"},{nm:"Barbell Bent Over Row",s:4,r:"12-10-8-8"}]},
+    {n:2,tipo:"Strength",badge:"UPPER PULL EN 16'",mins:16,cat:"strength",
+     exs:[{nm:"Barbell Bent Over Row",s:5,r:"8-10"},{nm:"Jalon en polea",s:4,r:"10-12"},{nm:"DDB Renegade Row",s:4,r:"10"},{nm:"Curl de biceps",s:4,r:"12-15"},{nm:"DDB Bent Over Row",s:3,r:"12"}]},
     {n:3,tipo:"HRX Training",badge:"HYBRID EN 14'",mins:14,cat:"hrx",
      exs:[{nm:"Barbell Deadlift",s:4,r:"8"},{nm:"Barbell Bent Over Row",s:4,r:"8"},{nm:"Barbell Front Squat",s:4,r:"8"},{nm:"Burpee",s:4,r:"6"},{nm:"DDB Man-Maker",s:4,r:"5"}]},
     {n:4,tipo:"Midline",badge:"AMRAP 5': MIDLINE ON FIRE",mins:5,cat:"midline",
      exs:[{nm:"Side Plank",s:3,r:"20\"/20\""},{nm:"Sit Up",s:3,r:"30"},{nm:"V-Sit Up",s:3,r:"8"},{nm:"Plank",s:3,r:"40\""}]}
   ]},
-  {dia:"JUE",label:"Jueves",bloques:[
-    {n:1,tipo:"Combined Strength",badge:"3 ROUNDS EN 8': HYBRID STRENGTH",mins:8,cat:"warmup",
+  // JUE A — Full Body HRX
+  {dia:"JUE",label:"Jueves",semana:"A",bloques:[
+    {n:1,tipo:"Combined Strength",badge:"HYBRID STRENGTH 3R EN 8'",mins:8,cat:"warmup",
      exs:[{nm:"DDB Bent Over Row",s:3,r:"10"},{nm:"Goblet Squat",s:3,r:"10"},{nm:"Dead Bug",s:3,r:"12"},{nm:"Hip Hinge",s:3,r:"12"}]},
-    {n:2,tipo:"HRX Training",badge:"4 ROUNDS EN 12': HYBRID",mins:12,cat:"strength",
+    {n:2,tipo:"HRX Training",badge:"4 ROUNDS EN 12': HYBRID",mins:12,cat:"hrx",
      exs:[{nm:"Barbell Deadlift",s:4,r:"8"},{nm:"DDB Bent Over Row",s:4,r:"10"},{nm:"Jalon en polea",s:4,r:"10"},{nm:"Goblet Squat",s:4,r:"10"}]},
     {n:3,tipo:"HRX Training",badge:"AMRAP 13': HYBRID",mins:13,cat:"hrx",
      exs:[{nm:"DDB Front Rack Lunges",s:1,r:"30"},{nm:"DDB Thruster",s:1,r:"5"},{nm:"DDB Devil Press",s:1,r:"5"},{nm:"DDB Dead Snatch",s:1,r:"20"},{nm:"Burpee",s:1,r:"15"}]},
     {n:4,tipo:"Midline",badge:"3 ROUNDS EN 5': FINISHER",mins:5,cat:"midline",
      exs:[{nm:"Sit Up",s:3,r:"15"},{nm:"V-Sit Up",s:3,r:"10"},{nm:"Side Plank",s:3,r:"15\"/15\""},{nm:"Mountain Climber",s:3,r:"30\""}]}
   ]},
-  {dia:"VIE",label:"Viernes",bloques:[
-    {n:1,tipo:"Full Body",badge:"AMRAP 8': TRADITIONAL DB",mins:8,cat:"warmup",
-     exs:[{nm:"DDB Bent Over Row",s:1,r:"8 c/brazo"},{nm:"DDB Push Press",s:1,r:"6"},{nm:"Hip Hinge",s:1,r:"10"},{nm:"DDB Devil Press",s:1,r:"4"}]},
-    {n:2,tipo:"Upper Body",badge:"PRIMARY MOVEMENTS EN 14'",mins:14,cat:"strength",
-     exs:[{nm:"DDB Chest Press",s:4,r:"12-10-8-8"},{nm:"DDB Renegade Row",s:4,r:"12-10-8-8"},{nm:"DDB Arnold Press",s:4,r:"12-10-8-8"},{nm:"Barbell Bent Over Row",s:4,r:"12-10-8-8"}]},
+  // VIE A — Upper Full (Push + Pull combinado)
+  {dia:"VIE",label:"Viernes",semana:"A",bloques:[
+    {n:1,tipo:"Full Body",badge:"UPPER ACTIVATION EN 8'",mins:8,cat:"warmup",
+     exs:[{nm:"DDB Bent Over Row",s:3,r:"8"},{nm:"DDB Push Press",s:3,r:"8"},{nm:"Face Pull",s:3,r:"12"},{nm:"Plank",s:3,r:"30\""}]},
+    {n:2,tipo:"Strength",badge:"UPPER FULL EN 16'",mins:16,cat:"strength",
+     exs:[{nm:"DDB Chest Press",s:4,r:"10-12"},{nm:"Barbell Bent Over Row",s:4,r:"8-10"},{nm:"DDB Arnold Press",s:3,r:"12"},{nm:"Jalon en polea",s:3,r:"12"},{nm:"Curl de biceps",s:3,r:"12"},{nm:"Extension triceps",s:3,r:"12"}]},
     {n:3,tipo:"HRX Training",badge:"HYBRID EN 12'",mins:12,cat:"hrx",
      exs:[{nm:"Burpee",s:3,r:"12-10-8"},{nm:"DDB Deadlift",s:3,r:"30-20-10"},{nm:"DDB Farmer Carry",s:3,r:"20-18-16 (20m)"},{nm:"DDB Man-Maker",s:3,r:"3-2-1"}]},
     {n:4,tipo:"Midline",badge:"40\"/20\" × 5': CORE CONTROL",mins:5,cat:"midline",
      exs:[{nm:"V-Sit Up",s:1,r:"1' max"},{nm:"Side Plank",s:1,r:"2' c/lado"},{nm:"Sit Up",s:1,r:"3' max"},{nm:"Mountain Climber",s:1,r:"4' 40\""},{nm:"Plank",s:1,r:"5' 40\""}]}
+  ]},
+  // SÁB A — Upper Shoulders + Arms (Hombros + Brazos)
+  {dia:"SÁB",label:"Sábado",semana:"A",bloques:[
+    {n:1,tipo:"Combined Strength",badge:"SHOULDER ACTIVATION EN 8'",mins:8,cat:"warmup",
+     exs:[{nm:"Elevacion lateral",s:3,r:"15"},{nm:"Face Pull",s:3,r:"15"},{nm:"DDB Arnold Press",s:3,r:"10"},{nm:"Plank",s:3,r:"30\""}]},
+    {n:2,tipo:"Strength",badge:"SHOULDERS & ARMS EN 16'",mins:16,cat:"strength",
+     exs:[{nm:"DDB Arnold Press",s:4,r:"10-12"},{nm:"Elevacion lateral",s:4,r:"15"},{nm:"Barbell Push Press",s:4,r:"8"},{nm:"Curl de biceps",s:4,r:"12-15"},{nm:"Extension triceps",s:4,r:"12-15"},{nm:"Face Pull",s:3,r:"15-20"}]},
+    {n:3,tipo:"HRX Training",badge:"AMRAP 12': CARDIO HRX",mins:12,cat:"hrx",
+     exs:[{nm:"Burpee",s:1,r:"15-12-9"},{nm:"DDB Thruster",s:1,r:"12-10-8"},{nm:"Mountain Climber",s:1,r:"30\""},{nm:"DDB Devil Press",s:1,r:"5-5-5"}]},
+    {n:4,tipo:"Midline",badge:"AMRAP 5': FINISHER SEMANAL",mins:5,cat:"midline",
+     exs:[{nm:"Sit Up",s:3,r:"20"},{nm:"V-Sit Up",s:3,r:"15"},{nm:"Plank",s:3,r:"45\""},{nm:"Side Plank",s:3,r:"20\"/20\""}]}
+  ]},
+
+  // ── SEMANA B ──────────────────────────────────────────────────────────────
+  // LUN B — Upper Push variante (Press inclinado + volumen)
+  {dia:"LUN",label:"Lunes",semana:"B",bloques:[
+    {n:1,tipo:"Combined Strength",badge:"PUSH PREHAB 3 ROUNDS EN 8'",mins:8,cat:"warmup",
+     exs:[{nm:"DDB Renegade Row",s:3,r:"10"},{nm:"DDB Arnold Press",s:3,r:"12"},{nm:"Dead Bug",s:3,r:"12"},{nm:"Face Pull",s:3,r:"15"}]},
+    {n:2,tipo:"Strength",badge:"UPPER PUSH B EN 16'",mins:16,cat:"strength",
+     exs:[{nm:"Barbell Bent Over Row",s:5,r:"8"},{nm:"DDB Chest Press",s:4,r:"12-10-8-8"},{nm:"DDB Push Press",s:4,r:"12-10-8-8"},{nm:"DDB Arnold Press",s:4,r:"12-10-8-8"},{nm:"Extension triceps",s:3,r:"15"}]},
+    {n:3,tipo:"HRX Training",badge:"COMPLETE 4 ROUNDS EN 13': HYBRID",mins:13,cat:"hrx",
+     exs:[{nm:"DDB Thruster",s:4,r:"12"},{nm:"DDB Renegade Row",s:4,r:"10"},{nm:"Burpee",s:4,r:"8"},{nm:"DDB Dead Snatch",s:4,r:"10"},{nm:"Mountain Climber",s:4,r:"30\""}]},
+    {n:4,tipo:"Midline",badge:"AMRAP 5': CORE FINISHER",mins:5,cat:"midline",
+     exs:[{nm:"Sit Up",s:3,r:"20"},{nm:"V-Sit Up",s:3,r:"15"},{nm:"Side Plank",s:3,r:"20\"/20\""},{nm:"Hollow Hold",s:3,r:"30\""}]}
+  ]},
+  // MAR B — Lower Body variante (Peso muerto + sentadilla frontal)
+  {dia:"MAR",label:"Martes",semana:"B",bloques:[
+    {n:1,tipo:"Lower Body",badge:"LOWER ACTIVATION 3R EN 8'",mins:8,cat:"warmup",
+     exs:[{nm:"Hip Hinge",s:3,r:"12"},{nm:"Goblet Squat",s:3,r:"10"},{nm:"Glute Bridge",s:3,r:"20"},{nm:"Lunge",s:3,r:"8/8"}]},
+    {n:2,tipo:"Strength",badge:"LOWER B EN 16': DEADLIFT FOCUS",mins:16,cat:"strength",
+     exs:[{nm:"Barbell Deadlift",s:5,r:"5"},{nm:"Barbell Front Squat",s:4,r:"8"},{nm:"DDB Front Rack Lunges",s:3,r:"12/12"},{nm:"Goblet Squat",s:3,r:"15 (pausa 3\""},{nm:"Glute Bridge",s:3,r:"20"}]},
+    {n:3,tipo:"HRX Training",badge:"AMRAP 12': LOWER HRX",mins:12,cat:"hrx",
+     exs:[{nm:"Barbell Back Squat",s:1,r:"20"},{nm:"DDB Front Rack Lunges",s:1,r:"30"},{nm:"DDB Deadlift",s:1,r:"25"},{nm:"Burpee",s:1,r:"15"},{nm:"Goblet Squat",s:1,r:"20"}]},
+    {n:4,tipo:"Midline",badge:"EVERY 60\" × 5': STABILIZERS",mins:5,cat:"midline",
+     exs:[{nm:"V-Sit Up",s:5,r:"10"},{nm:"Lateral Hip Raise",s:5,r:"8/8"},{nm:"Plank",s:5,r:"30\""},{nm:"Mountain Climber",s:5,r:"20\""}]}
+  ]},
+  // MIÉ B — Upper Pull variante (Remo + Face Pull + bíceps)
+  {dia:"MIÉ",label:"Miércoles",semana:"B",bloques:[
+    {n:1,tipo:"HRX Training",badge:"PULL PREHAB 3R EN 6'",mins:6,cat:"warmup",
+     exs:[{nm:"DDB Pullover",s:3,r:"10"},{nm:"Dead Bug",s:3,r:"12"},{nm:"Face Pull",s:3,r:"15"},{nm:"DDB Renegade Row",s:3,r:"8"}]},
+    {n:2,tipo:"Strength",badge:"UPPER PULL B EN 16'",mins:16,cat:"strength",
+     exs:[{nm:"DDB Renegade Row",s:5,r:"10"},{nm:"Barbell Bent Over Row",s:4,r:"10"},{nm:"Jalon en polea",s:4,r:"12"},{nm:"DDB Bent Over Row",s:4,r:"12"},{nm:"Curl de biceps",s:4,r:"15"},{nm:"Face Pull",s:3,r:"20"}]},
+    {n:3,tipo:"HRX Training",badge:"EVERY 90\" EN 14': HYBRID",mins:14,cat:"hrx",
+     exs:[{nm:"Barbell Deadlift",s:1,r:"every 90\" — 8 reps"},{nm:"Barbell Bent Over Row",s:1,r:"8 reps"},{nm:"Barbell Front Squat",s:1,r:"8 reps"},{nm:"Burpee",s:1,r:"6 reps"},{nm:"DDB Man-Maker",s:1,r:"3 reps"}]},
+    {n:4,tipo:"Midline",badge:"AMRAP 5': MIDLINE ON FIRE",mins:5,cat:"midline",
+     exs:[{nm:"Side Plank",s:3,r:"25\"/25\""},{nm:"Sit Up",s:3,r:"25"},{nm:"V-Sit Up",s:3,r:"10"},{nm:"Hollow Hold",s:3,r:"30\""}]}
+  ]},
+  // JUE B — Full Body HRX variante
+  {dia:"JUE",label:"Jueves",semana:"B",bloques:[
+    {n:1,tipo:"Combined Strength",badge:"FULL BODY ACTIVATION EN 8'",mins:8,cat:"warmup",
+     exs:[{nm:"DDB Arnold Press",s:3,r:"10"},{nm:"Goblet Squat",s:3,r:"10"},{nm:"DDB Renegade Row",s:3,r:"8"},{nm:"Hip Hinge",s:3,r:"12"}]},
+    {n:2,tipo:"HRX Training",badge:"AMRAP 12': PUSH-PULL HRX",mins:12,cat:"hrx",
+     exs:[{nm:"DDB Chest Press",s:1,r:"max"},{nm:"DDB Bent Over Row",s:1,r:"max"},{nm:"DDB Push Press",s:1,r:"12"},{nm:"Jalon en polea",s:1,r:"12"},{nm:"Burpee",s:1,r:"10"}]},
+    {n:3,tipo:"HRX Training",badge:"LADDER AMRAP 14'",mins:14,cat:"hrx",
+     exs:[{nm:"DDB Man-Maker",s:1,r:"1-2-3-4-5"},{nm:"Burpee",s:1,r:"2-4-6-8-10"},{nm:"DDB Thruster",s:1,r:"3-6-9-12-15"},{nm:"DDB Dead Snatch",s:1,r:"5-5-5-5-5"}]},
+    {n:4,tipo:"Midline",badge:"3 ROUNDS EN 5': FINISHER",mins:5,cat:"midline",
+     exs:[{nm:"Sit Up",s:3,r:"20"},{nm:"V-Sit Up",s:3,r:"12"},{nm:"Side Plank",s:3,r:"20\"/20\""},{nm:"Plank",s:3,r:"40\""}]}
+  ]},
+  // VIE B — Upper Full variante (volumen moderado)
+  {dia:"VIE",label:"Viernes",semana:"B",bloques:[
+    {n:1,tipo:"Full Body",badge:"UPPER FULL ACTIVATION EN 8'",mins:8,cat:"warmup",
+     exs:[{nm:"Face Pull",s:3,r:"15"},{nm:"DDB Chest Press",s:3,r:"10"},{nm:"DDB Renegade Row",s:3,r:"8"},{nm:"Plank",s:3,r:"30\""}]},
+    {n:2,tipo:"Strength",badge:"UPPER FULL B EN 16'",mins:16,cat:"strength",
+     exs:[{nm:"DDB Chest Press",s:4,r:"12-10-8-8"},{nm:"DDB Renegade Row",s:4,r:"12-10-8-8"},{nm:"DDB Arnold Press",s:4,r:"12-10-8-8"},{nm:"Barbell Bent Over Row",s:4,r:"12-10-8-8"},{nm:"Curl de biceps",s:3,r:"15"},{nm:"Extension triceps",s:3,r:"15"}]},
+    {n:3,tipo:"HRX Training",badge:"ONE WAY EN 14'",mins:14,cat:"hrx",
+     exs:[{nm:"DDB Chest Press",s:1,r:"40"},{nm:"DDB Thruster",s:1,r:"10"},{nm:"DDB Bent Over Row",s:1,r:"30"},{nm:"DDB Thruster",s:1,r:"10"},{nm:"DDB Deadlift",s:1,r:"25"},{nm:"DDB Devil Press",s:1,r:"5"}]},
+    {n:4,tipo:"Midline",badge:"40\"/20\" × 5': CORE CONTROL",mins:5,cat:"midline",
+     exs:[{nm:"V-Sit Up",s:1,r:"1' max"},{nm:"Side Plank",s:1,r:"2' c/lado"},{nm:"Sit Up",s:1,r:"3' max"},{nm:"Mountain Climber",s:1,r:"4' 40\""},{nm:"Plank",s:1,r:"5' 40\""}]}
+  ]},
+  // SÁB B — Shoulders & Arms variante (superseries)
+  {dia:"SÁB",label:"Sábado",semana:"B",bloques:[
+    {n:1,tipo:"Combined Strength",badge:"ARMS ACTIVATION EN 8'",mins:8,cat:"warmup",
+     exs:[{nm:"Curl de biceps",s:3,r:"15"},{nm:"Extension triceps",s:3,r:"15"},{nm:"Elevacion lateral",s:3,r:"15"},{nm:"Face Pull",s:3,r:"15"}]},
+    {n:2,tipo:"Strength",badge:"ARMS & SHOULDERS B EN 16'",mins:16,cat:"strength",
+     exs:[{nm:"DDB Arnold Press",s:5,r:"10"},{nm:"Barbell Push Press",s:4,r:"8"},{nm:"Elevacion lateral",s:4,r:"15"},{nm:"Curl de biceps",s:4,r:"15"},{nm:"Extension triceps",s:4,r:"15"},{nm:"Face Pull",s:3,r:"20"}]},
+    {n:3,tipo:"HRX Training",badge:"AMRAP 12': METCON",mins:12,cat:"hrx",
+     exs:[{nm:"DDB Thruster",s:1,r:"15"},{nm:"DDB Renegade Row",s:1,r:"10"},{nm:"Burpee",s:1,r:"10"},{nm:"DDB Man-Maker",s:1,r:"5"},{nm:"Mountain Climber",s:1,r:"30\""}]},
+    {n:4,tipo:"Midline",badge:"AMRAP 5': CIERRE SEMANAL",mins:5,cat:"midline",
+     exs:[{nm:"Sit Up",s:3,r:"25"},{nm:"V-Sit Up",s:3,r:"15"},{nm:"Plank",s:3,r:"45\""},{nm:"Side Plank",s:3,r:"25\"/25\""}]}
   ]}
 ];
 
@@ -426,7 +511,7 @@ const PROGRAM_4W=[
 
 // ── STATE ────────────────────────────────────────────────────
 const S={
-  panel:'hoy', day:0,
+  panel:'hoy', day:0, semana:'A',
   completed:{}, logs:{}, allLogs:[],
   medidas:[], libreWO:[], chat:[],
   sheetsUrl:'',
@@ -567,10 +652,20 @@ function drawHoy(){
   const done=day.bloques.filter(b=>!!S.completed[di+'-'+b.n]).length;
   const pct=Math.round(done/day.bloques.length*100);
 
-  let html='<div class="day-pills">';
-  PLAN.forEach((d,i)=>{
-    const dd=d.bloques.filter(b=>!!S.completed[i+'-'+b.n]).length;
-    html+=`<button class="day-pill${i===di?' on':''}" onclick="selDay(${i})">${dd===4?'<span class="dot"></span>':''}${d.dia}</button>`;
+  // Semana A/B selector
+  let html=`<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+    <span style="font-size:12px;font-weight:700;color:#aaa;letter-spacing:.06em">SEMANA</span>
+    <button onclick="setSemana('A')" style="padding:5px 16px;border-radius:20px;border:1.5px solid ${S.semana==='A'?'#0369a1':'#ddd'};background:${S.semana==='A'?'#0369a1':'#fff'};color:${S.semana==='A'?'#fff':'#aaa'};font-weight:800;font-size:13px;cursor:pointer">A</button>
+    <button onclick="setSemana('B')" style="padding:5px 16px;border-radius:20px;border:1.5px solid ${S.semana==='B'?'#0369a1':'#ddd'};background:${S.semana==='B'?'#0369a1':'#fff'};color:${S.semana==='B'?'#fff':'#aaa'};font-weight:800;font-size:13px;cursor:pointer">B</button>
+    <span style="font-size:11px;color:#aaa;margin-left:4px">${S.semana==='A'?'Push/Pull/Legs':'Variantes + Volumen'}</span>
+  </div>`;
+  // Filter plan by current semana
+  const semPlan = PLAN.filter(d=>d.semana===S.semana);
+  html+='<div class="day-pills">';
+  semPlan.forEach((d,i)=>{
+    const globalIdx = PLAN.indexOf(d);
+    const dd=d.bloques.filter(b=>!!S.completed[globalIdx+'-'+b.n]).length;
+    html+=`<button class="day-pill${globalIdx===di?' on':''}" onclick="selDay(${globalIdx})">${dd===4?'<span class="dot"></span>':''}${d.dia}</button>`;
   });
   html+='</div>';
 
@@ -650,6 +745,13 @@ function drawHoy(){
 }
 
 function selDay(i){S.day=i;drawHoy();}
+function setSemana(s){
+  S.semana=s;
+  // Auto-select first day of new semana
+  const first=PLAN.findIndex(d=>d.semana===s);
+  if(first>=0) S.day=first;
+  drawHoy();
+}
 
 function logKg(lk,val,di,bn,ei,si,ns){
   S.logs[lk]={kg:val}; 
