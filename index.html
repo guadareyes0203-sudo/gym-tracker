@@ -826,64 +826,46 @@ function finSave(btn,ok){
 // ── PLAN ─────────────────────────────────────────────────────
 function drawPlan(){
   let html='<div style="margin-top:4px">';
-  PLAN.forEach((d,di)=>{
-    html+=`<div style="margin-bottom:16px">
-      <div style="background:var(--lime);border-radius:12px;padding:10px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--dark)">${d.label.toUpperCase()}</span>
-        <span style="font-size:11px;font-weight:700;color:#0369a1">~60' · 4 bloques</span>
-      </div>`;
-    d.bloques.forEach(b=>{
-      html+=`<div style="background:linear-gradient(145deg,#777,#555);border-radius:14px;padding:12px 13px;margin-bottom:8px;position:relative">
-        <div style="position:absolute;top:-9px;left:10px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:10px;font-weight:800">BLOQUE ${b.n}</div>
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:4px">
-          <div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#fff">${b.tipo}</div>
-            <div style="display:inline-block;background:var(--lime);border-radius:5px;padding:2px 8px;margin:4px 0 8px">
-              <span style="font-size:10px;font-weight:800;color:var(--dark)">${b.badge}</span>
+  ['A','B'].forEach(sem=>{
+    const semDays=PLAN.filter(d=>d.semana===sem);
+    html+=`<div style="background:#e0f2fe;border:1.5px solid #38bdf877;border-radius:14px;padding:10px 14px;margin:0 0 12px">
+      <div style="font-size:13px;font-weight:800;color:#0369a1;letter-spacing:.06em">SEMANA ${sem}</div>
+      <div style="font-size:12px;color:#555;margin-top:1px">${sem==='A'?'Push / Pull / Piernas + HRX · 6 días':'Variantes + Volumen Upper Body · 6 días'}</div>
+    </div>`;
+    semDays.forEach((d)=>{
+      const di=PLAN.indexOf(d);
+      html+=`<div style="margin-bottom:14px">
+        <div style="background:var(--lime);border-radius:12px;padding:10px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--dark)">${d.label.toUpperCase()}</span>
+          <span style="font-size:11px;font-weight:700;color:#0369a1">Sem ${sem} · ~62'</span>
+        </div>`;
+      d.bloques.forEach(b=>{
+        html+=`<div style="background:linear-gradient(145deg,#777,#555);border-radius:14px;padding:12px 13px;margin-bottom:8px;position:relative">
+          <div style="position:absolute;top:-9px;left:10px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:10px;font-weight:800">BLOQUE ${b.n}</div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:4px">
+            <div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#fff">${b.tipo}</div>
+              <div style="display:inline-block;background:var(--lime);border-radius:5px;padding:2px 8px;margin:4px 0 8px">
+                <span style="font-size:10px;font-weight:800;color:var(--dark)">${b.badge}</span>
+              </div>
+              ${b.exs.map(ex=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+                <span style="font-size:14px;color:#fff;flex:1">${ex.s>1?ex.s+'×'+ex.r:ex.r} ${ex.nm}</span>
+                <a href="${getInfo(ex.nm).vid}" target="_blank" style="font-size:10px;color:var(--lime);text-decoration:none">▶</a>
+              </div>`).join('')}
             </div>
-            ${b.exs.map(ex=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
-              <span style="font-size:14px;color:#fff;flex:1">${ex.s>1?ex.s+'×'+ex.r:ex.r} ${ex.nm}</span>
-              <a href="${getInfo(ex.nm).vid}" target="_blank" style="font-size:10px;color:var(--lime);text-decoration:none">▶</a>
-            </div>`).join('')}
+            <div style="background:#fff;border-radius:8px;padding:5px 8px;text-align:center;flex-shrink:0;margin-left:8px">
+              <div style="font-size:14px">⏱</div><div style="font-size:13px;font-weight:800;color:var(--dark)">${b.mins}'</div>
+            </div>
           </div>
-          <div style="background:#fff;border-radius:8px;padding:5px 8px;text-align:center;flex-shrink:0;margin-left:8px">
-            <div style="font-size:14px">⏱</div><div style="font-size:13px;font-weight:800;color:var(--dark)">${b.mins}'</div>
-          </div>
-        </div>
-      </div>`;
+        </div>`;
+      });
+      html+='</div>';
     });
-    html+='</div>';
   });
   html+='</div>';
   document.getElementById('p-plan').innerHTML=html;
 }
 
-// ── PROGRESO ─────────────────────────────────────────────────
-function filtLogs(f){
-  const now=new Date(), logs=S.allLogs;
-  if(f==='inicio'||!logs.length) return logs;
-  const cut=new Date();
-  if(f==='semana') cut.setDate(now.getDate()-7);
-  else if(f==='mes') cut.setMonth(now.getMonth()-1);
-  else if(f==='6m') cut.setMonth(now.getMonth()-6);
-  else cut.setFullYear(now.getFullYear()-1);
-  return logs.filter(r=>{
-    if(!r.fecha) return true;
-    const p=r.fecha.split('/'); if(p.length<3) return true;
-    return new Date(+p[2],+p[1]-1,+p[0])>=cut;
-  });
-}
-function pillarScores(logs){
-  const ps={hombros:0,pecho:0,espalda:0,brazo:0,pierna:0,core:0,cardio:0};
-  logs.forEach(r=>{const info=getInfo(r.ejercicio||'');const p=info.p||'core';const v=(parseFloat(r.series)||1)*(parseFloat(r.reps)||10);if(ps[p]!==undefined)ps[p]+=v;});
-  const mx=Math.max(...Object.values(ps),1);
-  const out={};Object.entries(ps).forEach(([k,v])=>{out[k]=Math.round(v/mx*100);});
-  return out;
-}
-function heatC(v){if(!v)return'#2a2a2a';if(v<25)return'#1e3a5f';if(v<50)return'#1e5a8f';if(v<75)return'#38bdf8';return'#7dd3fc';}
-function heatS(v){if(!v)return'#3a3a3a';if(v<25)return'#1e5a8f88';if(v<50)return'#38bdf888';return'#38bdf8';}
-
-let charts={};
 function drawProg(){
   const f=S.progFilter, fl=filtLogs(f);
   const sc=pillarScores(fl);
