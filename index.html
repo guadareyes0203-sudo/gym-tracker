@@ -1018,30 +1018,170 @@ function drawMed(){
   });
   form+=`</div><button class="msavebtn" onclick="saveMed()">💾 Guardar medidas</button></div>`;
 
-  let pesoChart='';
-  if(S.medidas.length>1) pesoChart=`<div class="stitle">PESO CORPORAL</div><div class="card"><canvas id="pesoC" height="120"></canvas></div>`;
+  // Build chart sections only if data exists
+  const hasData = S.medidas.length > 1;
+  const labels  = S.medidas.map(m=>m.fecha);
+
+  // Helper: extract numeric series from medidas
+  function mSeries(key){ return S.medidas.map(m=>parseFloat(m[key])||null); }
+
+  const hasPeso    = hasData && S.medidas.some(m=>m.peso);
+  const hasComp    = hasData && S.medidas.some(m=>m.musculo||m.grasa||m.proteina);
+  const hasMedidas = hasData && S.medidas.some(m=>m.cintura||m.cadera||m.pecho||m.brazo_d||m.brazo_i||m.muslo_d||m.muslo_i);
+
+  let charts_html = '';
+
+  if(hasPeso)
+    charts_html += `<div class="stitle">⚖️ PESO CORPORAL</div>
+      <div class="card"><canvas id="cPeso" height="130"></canvas></div>`;
+
+  if(hasComp)
+    charts_html += `<div class="stitle">📊 COMPOSICIÓN CORPORAL</div>
+      <div class="card">
+        <div style="display:flex;gap:12px;justify-content:center;margin-bottom:8px;flex-wrap:wrap">
+          <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:#555"><span style="width:12px;height:3px;background:#ef4444;display:inline-block;border-radius:2px"></span>% Grasa</span>
+          <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:#555"><span style="width:12px;height:3px;background:#38bdf8;display:inline-block;border-radius:2px"></span>% Músculo</span>
+          <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:#555"><span style="width:12px;height:3px;background:#f59e0b;display:inline-block;border-radius:2px"></span>% Proteína</span>
+        </div>
+        <canvas id="cComp" height="140"></canvas>
+      </div>`;
+
+  if(hasMedidas){
+    // Selector for which measurement to show
+    charts_html += `<div class="stitle">📏 MEDIDAS CORPORALES</div>
+      <div class="card">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+          ${[
+            {k:'cintura',l:'Cintura'},
+            {k:'cadera',l:'Cadera'},
+            {k:'pecho',l:'Pecho'},
+            {k:'brazo_d',l:'Brazo D'},
+            {k:'brazo_i',l:'Brazo I'},
+            {k:'muslo_d',l:'Muslo D'},
+            {k:'muslo_i',l:'Muslo I'},
+            {k:'pantorr_d',l:'Pant. D'},
+            {k:'pantorr_i',l:'Pant. I'},
+          ].map(m=>`<button onclick="switchMedChart('${m.k}')" id="mb-${m.k}"
+            style="padding:4px 10px;border-radius:16px;border:1.5px solid #ddd;background:#fff;font-size:11px;font-weight:700;color:#aaa;cursor:pointer"
+            class="mb-btn">${m.l}</button>`).join('')}
+        </div>
+        <canvas id="cMed" height="130"></canvas>
+      </div>`;
+  }
 
   let hist=`<div class="stitle">HISTORIAL DE MEDIDAS</div>`;
   if(!S.medidas.length){
     hist+='<div style="text-align:center;padding:2rem;color:#aaa;font-size:14px"><div style="font-size:36px;margin-bottom:8px">⚖️</div>Sin medidas aún</div>';
   } else {
     [...S.medidas].reverse().slice(0,20).forEach(m=>{
+      const vals=Object.entries(m).filter(([k])=>k!=='fecha');
       hist+=`<div class="lentry">
         <div style="font-size:12px;font-weight:600;color:#aaa;margin-bottom:6px">${m.fecha}</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px">
-          ${Object.entries(m).filter(([k])=>k!=='fecha').map(([k,v])=>`<div style="background:#f4f4f2;border-radius:8px;padding:4px 10px;font-size:12px"><span style="color:#aaa;font-size:10px">${k.toUpperCase()}</span><br><strong>${v}</strong></div>`).join('')}
+          ${vals.map(([k,v])=>`<div style="background:#f4f4f2;border-radius:8px;padding:4px 10px;font-size:12px"><span style="color:#aaa;font-size:10px">${k.toUpperCase()}</span><br><strong>${v}</strong></div>`).join('')}
         </div>
       </div>`;
     });
   }
 
-  document.getElementById('p-med').innerHTML=form+pesoChart+hist;
-  if(S.medidas.length>1){
-    setTimeout(()=>{
-      const ctx=document.getElementById('pesoC');
-      if(ctx) new Chart(ctx,{type:'line',data:{labels:S.medidas.map(m=>m.fecha),datasets:[{label:'Peso',data:S.medidas.map(m=>parseFloat(m.peso)||0),borderColor:'#111',backgroundColor:'rgba(0,0,0,.05)',fill:true,tension:.4,pointRadius:3}]},options:{plugins:{legend:{display:false}},scales:{x:{ticks:{maxRotation:45,font:{size:9}}},y:{ticks:{font:{size:10}}}}}});
-    },80);
-  }
+  document.getElementById('p-med').innerHTML=form+charts_html+hist;
+
+  // ── Render charts ──────────────────────────────────────────
+  setTimeout(()=>{
+    // 1. Peso corporal
+    if(hasPeso){
+      const ctx=document.getElementById('cPeso');
+      if(ctx) new Chart(ctx,{
+        type:'line',
+        data:{labels,datasets:[{
+          label:'Peso (kg)',data:mSeries('peso'),
+          borderColor:'#111',backgroundColor:'rgba(0,0,0,.06)',
+          fill:true,tension:.35,pointRadius:4,pointBackgroundColor:'#111',
+          spanGaps:true
+        }]},
+        options:{plugins:{legend:{display:false}},scales:{
+          x:{ticks:{maxRotation:45,font:{size:9}}},
+          y:{ticks:{font:{size:10}},beginAtZero:false}
+        }}
+      });
+    }
+
+    // 2. Composición corporal (multi-line)
+    if(hasComp){
+      const ctx=document.getElementById('cComp');
+      if(ctx) new Chart(ctx,{
+        type:'line',
+        data:{labels,datasets:[
+          {label:'% Grasa',   data:mSeries('grasa'),   borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.08)',  fill:false,tension:.35,pointRadius:3,spanGaps:true},
+          {label:'% Músculo', data:mSeries('musculo'), borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,.08)', fill:false,tension:.35,pointRadius:3,spanGaps:true},
+          {label:'% Proteína',data:mSeries('proteina'),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.08)', fill:false,tension:.35,pointRadius:3,spanGaps:true},
+        ]},
+        options:{
+          plugins:{legend:{display:false}},
+          scales:{
+            x:{ticks:{maxRotation:45,font:{size:9}}},
+            y:{ticks:{font:{size:10}},beginAtZero:false,suggestedMax:60}
+          }
+        }
+      });
+    }
+
+    // 3. Medidas corporales — default: cintura
+    window._medChartInst = null;
+    window._medChartLabels = labels;
+    window._medChartData = {
+      cintura:  mSeries('cintura'),  cadera:   mSeries('cadera'),
+      pecho:    mSeries('pecho'),    brazo_d:  mSeries('brazo_d'),
+      brazo_i:  mSeries('brazo_i'), muslo_d:  mSeries('muslo_d'),
+      muslo_i:  mSeries('muslo_i'), pantorr_d:mSeries('pantorr_d'),
+      pantorr_i:mSeries('pantorr_i'),
+    };
+    if(hasMedidas){
+      // Activate first available measure
+      const first=['cintura','cadera','pecho','brazo_d','brazo_i','muslo_d','muslo_i']
+        .find(k=>S.medidas.some(m=>m[k]));
+      if(first) switchMedChart(first);
+    }
+  },80);
+}
+
+function switchMedChart(key){
+  // Update button styles
+  document.querySelectorAll('.mb-btn').forEach(b=>{
+    b.style.background='#fff';b.style.color='#aaa';b.style.borderColor='#ddd';
+  });
+  const active=document.getElementById('mb-'+key);
+  if(active){active.style.background='#0369a1';active.style.color='#fff';active.style.borderColor='#0369a1';}
+
+  const ctx=document.getElementById('cMed');
+  if(!ctx||!window._medChartData) return;
+  const lbl_map={
+    cintura:'Cintura',cadera:'Cadera',pecho:'Pecho',
+    brazo_d:'Brazo D',brazo_i:'Brazo I',
+    muslo_d:'Muslo D',muslo_i:'Muslo I',
+    pantorr_d:'Pant. D',pantorr_i:'Pant. I',
+  };
+  if(window._medChartInst) window._medChartInst.destroy();
+  window._medChartInst = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:window._medChartLabels,
+      datasets:[{
+        label:lbl_map[key]||key,
+        data:window._medChartData[key],
+        borderColor:'#0369a1',backgroundColor:'rgba(3,105,161,.1)',
+        fill:true,tension:.35,pointRadius:4,pointBackgroundColor:'#0369a1',
+        spanGaps:true
+      }]
+    },
+    options:{
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y} cm`}}},
+      scales:{
+        x:{ticks:{maxRotation:45,font:{size:9}}},
+        y:{ticks:{font:{size:10},callback:v=>v+' cm'},beginAtZero:false}
+      }
+    }
+  });
 }
 function saveMed(){
   const fechaInput=document.getElementById('mf-fecha');
