@@ -649,6 +649,7 @@ const PROGRAM_4W=[
 // kg input is now free-form number input
 
 // ── STATE ────────────────────────────────────────────────────
+const charts={};
 const S={
   panel:'hoy', day:0, semana:'A',
   completed:{}, logs:{}, allLogs:[],
@@ -1123,6 +1124,38 @@ function buildBodyMap(sc){
     +'<div><div class="bmlabel">FRONTAL</div>'+svgFront()+'</div>'
     +'<div><div class="bmlabel">POSTERIOR</div>'+svgBack()+'</div>'
     +'</div>'+legend;
+}
+
+
+// ── PROGRESO HELPERS ──────────────────────────────────────────
+function filtLogs(f){
+  const now=new Date(), logs=S.allLogs;
+  if(f==='inicio'||!logs.length) return logs;
+  const cut=new Date();
+  if(f==='semana') cut.setDate(now.getDate()-7);
+  else if(f==='mes') cut.setMonth(now.getMonth()-1);
+  else if(f==='6m') cut.setMonth(now.getMonth()-6);
+  else cut.setFullYear(now.getFullYear()-1);
+  return logs.filter(r=>{
+    if(!r.fecha) return true;
+    const p=r.fecha.split('/');
+    if(p.length<3) return true;
+    return new Date(+p[2],+p[1]-1,+p[0])>=cut;
+  });
+}
+
+function pillarScores(logs){
+  const ps={hombros:0,pecho:0,espalda:0,brazo:0,pierna:0,core:0,cardio:0};
+  logs.forEach(r=>{
+    const info=getInfo(r.ejercicio||'');
+    const p=info.p||'core';
+    const v=(parseFloat(r.series)||1)*(parseFloat(r.reps)||10);
+    if(ps[p]!==undefined) ps[p]+=v;
+  });
+  const mx=Math.max(...Object.values(ps),1);
+  const out={};
+  Object.entries(ps).forEach(([k,v])=>{ out[k]=Math.round(v/mx*100); });
+  return out;
 }
 
 function drawProg(){
