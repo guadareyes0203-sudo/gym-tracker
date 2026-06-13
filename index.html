@@ -1811,14 +1811,6 @@ function sendChat(){
   }
 }
 
-// ── CONFIG ───────────────────────────────────────────────────
-function toggleCfg(){
-  S.cfgOpen=!S.cfgOpen;
-  document.getElementById('cfgpanel').className=S.cfgOpen?'cfgpanel on':'cfgpanel';
-  document.getElementById('gearbtn').className=S.cfgOpen?'gearbtn on':'gearbtn';
-  if(S.cfgOpen) document.getElementById('sheetsInput').value=S.sheetsUrl;
-}
-function saveCfg(){S.sheetsUrl=document.getElementById('sheetsInput').value.trim();saveCfgStore();toast('Config guardada ✓');toggleCfg();}
 
 // ── INIT ─────────────────────────────────────────────────────
 drawHoy();
