@@ -84,7 +84,7 @@ button,select,input,textarea{font-family:'Barlow',sans-serif;-webkit-appearance:
 .setcol{display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff1;border:1px solid #fff2;border-radius:10px;padding:7px 7px 5px;min-width:58px}
 .setcol.done{background:#38bdf822;border-color:#38bdf855}
 .setlbl{font-size:11px;font-weight:700;color:#ccc;letter-spacing:.04em}
-.setsel{background:#1a1a1a;border:1px solid #fff3;border-radius:7px;padding:6px 6px;color:#fff;font-size:15px;font-weight:700;text-align:center;width:100%;outline:none} .setsel:focus{border-color:#38bdf8}
+.setsel{background:#1a1a1a;border:1px solid #fff3;border-radius:7px;padding:6px 6px;color:#fff;font-size:15px;font-weight:700;text-align:center;width:100%;outline:none;-webkit-appearance:none;appearance:none} .setsel:focus{border-color:#38bdf8}
 .setsel:focus{border-color:var(--lime);outline:none}
 .setdot{width:6px;height:6px;border-radius:50%;background:#fff2}
 .setdot.on{background:var(--lime)}
@@ -837,11 +837,12 @@ function drawHoy(){
         const ld=S.logs[lk]||{}, f=!!ld.kg;
         setHTML+=`<div class="setcol${f?' done':''}" id="sc${lk}">
           <div class="setlbl">S${si+1}</div>
-          <input type="number" class="setsel" inputmode="decimal" placeholder="kg"
+          <input type="text" inputmode="decimal" class="setsel" placeholder="kg"
             value="${ld.kg||''}"
-            onchange="logKg('${lk}',this.value,${di},${b.n},${ei},${si},${ns})"
+            onchange="logKg('${lk}',this.value.replace(',','.'),${di},${b.n},${ei},${si},${ns})"
+            oninput="this.value=this.value.replace(',','.')"
             onfocus="if(!this.value&&${si}>0){const prev=S.logs['${di}-${b.n}-${ei}-0'];if(prev&&prev.kg)this.value=prev.kg;}"
-            style="appearance:none;-webkit-appearance:none;-moz-appearance:textfield">
+            pattern="[0-9]*[.,]?[0-9]*">
           <div class="setdot${f?' on':''}" id="sd${lk}"></div>
         </div>`;
       }
@@ -894,6 +895,7 @@ function setSemana(s){
 }
 
 function logKg(lk,val,di,bn,ei,si,ns){
+  val = String(val).replace(',','.');  // normalize decimal separator
   S.logs[lk]={kg:val}; 
   // Auto-fill empty sets of same exercise with same weight
   if(si===0 && val && ns>1){
@@ -1382,7 +1384,7 @@ function drawMed(){
     <div style="font-size:15px;font-weight:700;color:var(--dark);margin-bottom:10px">Registrar medidas</div>
     <div class="mfield" style="margin-bottom:12px">
       <label>📅 Fecha del registro</label>
-      <input type="date" id="mf-fecha" value="${new Date().toISOString().slice(0,10)}">
+      <input type="date" id="mf-fecha" value="${new Date().toISOString().slice(0,10)}" oninput="this.value=this.value.replace(',','.')">
     </div>`;
   let lastSec='';
   MED_FIELDS.forEach(f=>{
@@ -1392,7 +1394,7 @@ function drawMed(){
       lastSec=f.sec;
     }
     form+=`<div class="mfield"><label>${f.l} <span style="font-size:11px;color:#aaa">${f.u}</span></label>
-      <input type="number" id="mf-${f.k}" placeholder="0" step="0.1"></div>`;
+      <input type="text" inputmode="decimal" id="mf-${f.k}" placeholder="0" pattern="[0-9]*[.,]?[0-9]*" oninput="this.value=this.value.replace(',','.')"></div>`;
   });
   form+=`</div><button class="msavebtn" onclick="saveMed()">💾 Guardar medidas</button></div>`;
 
@@ -1570,7 +1572,7 @@ function saveMed(){
     fecha=`${d}/${m}/${y}`;
   }
   const entry={fecha};
-  MED_FIELDS.forEach(f=>{const v=document.getElementById('mf-'+f.k)?.value;if(v) entry[f.k]=parseFloat(v);});
+  MED_FIELDS.forEach(f=>{const raw=document.getElementById('mf-'+f.k)?.value;const v=raw?raw.replace(',','.'):null;if(v&&!isNaN(parseFloat(v))) entry[f.k]=parseFloat(v);});
   if(Object.keys(entry).length<2){toast('Completá al menos un campo');return;}
   // Sort by date when inserting
   S.medidas.push(entry);
