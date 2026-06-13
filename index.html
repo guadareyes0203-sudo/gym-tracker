@@ -1005,146 +1005,268 @@ function drawPlan(){
   document.getElementById('p-plan').innerHTML=html;
 }
 
+
+function heatC(v){if(!v)return'#2a2a2a';if(v<25)return'#1e3a5f';if(v<50)return'#1e5a8f';if(v<75)return'#38bdf8';return'#7dd3fc';}
+function heatS(v){if(!v)return'#3a3a3a';if(v<25)return'#1e5a8f';if(v<50)return'#38bdf888';return'#38bdf8';}
+
+function buildBodyMap(sc){
+  const m={
+    pecho:sc.pecho||0, deltant:Math.round((sc.hombros||0)*.9),
+    deltpost:Math.round((sc.hombros||0)*.7), trap:Math.round((sc.espalda||0)*.8),
+    dorsal:Math.round((sc.espalda||0)*.95), rhomb:Math.round((sc.espalda||0)*.75),
+    biceps:Math.round((sc.brazo||0)*.95), triceps:Math.round((sc.brazo||0)*.9),
+    antebrazo:Math.round((sc.brazo||0)*.6), abdomen:sc.core||0,
+    oblicuos:Math.round((sc.core||0)*.8), lumbar:Math.round((sc.espalda||0)*.7),
+    gluteo:Math.round((sc.pierna||0)*.85), quad:Math.round((sc.pierna||0)*.95),
+    isquio:Math.round((sc.pierna||0)*.85), gemelo:Math.round((sc.pierna||0)*.7),
+  };
+
+  // Build SVG strings without template literals to avoid nesting issues
+  function svgFront(){
+    return '<svg viewBox="0 0 130 320" style="width:130px;height:320px">'
+      +'<rect width="130" height="320" fill="#111" rx="10"/>'
+      +'<ellipse cx="65" cy="20" rx="15" ry="18" fill="#333" stroke="#444" stroke-width="1"/>'
+      +'<rect x="58" y="36" width="14" height="11" rx="3" fill="#2e2e2e"/>'
+      // Chest
+      +'<path d="M42,50 Q42,65 52,71 Q59,73 64,71 L64,50 Q55,48 42,50Z" fill="'+heatC(m.pecho)+'" stroke="'+heatS(m.pecho)+'" stroke-width=".8"/>'
+      +'<path d="M88,50 Q88,65 78,71 Q71,73 66,71 L66,50 Q75,48 88,50Z" fill="'+heatC(m.pecho)+'" stroke="'+heatS(m.pecho)+'" stroke-width=".8"/>'
+      // Shoulders
+      +'<path d="M36,50 Q28,52 27,61 Q26,69 30,73 Q36,69 42,65 L42,50Z" fill="'+heatC(m.deltant)+'" stroke="'+heatS(m.deltant)+'" stroke-width=".8"/>'
+      +'<path d="M94,50 Q102,52 103,61 Q104,69 100,73 Q94,69 88,65 L88,50Z" fill="'+heatC(m.deltant)+'" stroke="'+heatS(m.deltant)+'" stroke-width=".8"/>'
+      // Biceps
+      +'<path d="M26,73 Q21,79 21,92 Q21,103 26,108 Q32,103 34,92 Q36,79 30,73Z" fill="'+heatC(m.biceps)+'" stroke="'+heatS(m.biceps)+'" stroke-width=".8"/>'
+      +'<path d="M104,73 Q109,79 109,92 Q109,103 104,108 Q98,103 96,92 Q94,79 100,73Z" fill="'+heatC(m.biceps)+'" stroke="'+heatS(m.biceps)+'" stroke-width=".8"/>'
+      // Forearms
+      +'<path d="M22,110 Q19,120 20,131 Q21,139 24,142 Q28,138 30,127 Q32,116 26,110Z" fill="'+heatC(m.antebrazo)+'" stroke="'+heatS(m.antebrazo)+'" stroke-width=".7"/>'
+      +'<path d="M108,110 Q111,120 110,131 Q109,139 106,142 Q102,138 100,127 Q98,116 104,110Z" fill="'+heatC(m.antebrazo)+'" stroke="'+heatS(m.antebrazo)+'" stroke-width=".7"/>'
+      // Abs 6-pack
+      +'<rect x="57" y="73" width="7" height="9" rx="2.5" fill="'+heatC(m.abdomen)+'" stroke="'+heatS(m.abdomen)+'" stroke-width=".7"/>'
+      +'<rect x="66" y="73" width="7" height="9" rx="2.5" fill="'+heatC(m.abdomen)+'" stroke="'+heatS(m.abdomen)+'" stroke-width=".7"/>'
+      +'<rect x="57" y="84" width="7" height="9" rx="2.5" fill="'+heatC(m.abdomen)+'" stroke="'+heatS(m.abdomen)+'" stroke-width=".7"/>'
+      +'<rect x="66" y="84" width="7" height="9" rx="2.5" fill="'+heatC(m.abdomen)+'" stroke="'+heatS(m.abdomen)+'" stroke-width=".7"/>'
+      +'<rect x="58" y="95" width="6" height="8" rx="2.5" fill="'+heatC(m.abdomen)+'" stroke="'+heatS(m.abdomen)+'" stroke-width=".7"/>'
+      +'<rect x="66" y="95" width="6" height="8" rx="2.5" fill="'+heatC(m.abdomen)+'" stroke="'+heatS(m.abdomen)+'" stroke-width=".7"/>'
+      +'<line x1="65" y1="73" x2="65" y2="104" stroke="#1a1a1a" stroke-width="1"/>'
+      // Obliques
+      +'<path d="M42,67 Q48,81 53,96 Q49,103 44,107 Q38,96 36,77Z" fill="'+heatC(m.oblicuos)+'" stroke="'+heatS(m.oblicuos)+'" stroke-width=".7"/>'
+      +'<path d="M88,67 Q82,81 77,96 Q81,103 86,107 Q92,96 94,77Z" fill="'+heatC(m.oblicuos)+'" stroke="'+heatS(m.oblicuos)+'" stroke-width=".7"/>'
+      // Hip
+      +'<path d="M42,107 Q42,118 53,124 Q59,126 65,126 Q71,126 77,124 Q88,118 88,107 L80,105 Q73,109 65,109 Q57,109 50,105Z" fill="#2a2a2a" stroke="#333" stroke-width=".7"/>'
+      // Quads
+      +'<path d="M53,126 Q48,141 48,162 Q48,176 53,183 Q59,183 62,176 Q65,162 63,143 Q62,130 59,126Z" fill="'+heatC(m.quad)+'" stroke="'+heatS(m.quad)+'" stroke-width=".8"/>'
+      +'<path d="M77,126 Q82,141 82,162 Q82,176 77,183 Q71,183 68,176 Q65,162 67,143 Q68,130 71,126Z" fill="'+heatC(m.quad)+'" stroke="'+heatS(m.quad)+'" stroke-width=".8"/>'
+      // Knees
+      +'<ellipse cx="54" cy="187" rx="8" ry="6" fill="#222" stroke="#333" stroke-width=".7"/>'
+      +'<ellipse cx="76" cy="187" rx="8" ry="6" fill="#222" stroke="#333" stroke-width=".7"/>'
+      // Calves front
+      +'<path d="M48,193 Q46,212 48,234 Q50,243 55,245 Q61,243 61,230 Q61,212 59,193Z" fill="'+heatC(m.gemelo)+'" stroke="'+heatS(m.gemelo)+'" stroke-width=".7" opacity=".8"/>'
+      +'<path d="M82,193 Q84,212 82,234 Q80,243 75,245 Q69,243 69,230 Q69,212 71,193Z" fill="'+heatC(m.gemelo)+'" stroke="'+heatS(m.gemelo)+'" stroke-width=".7" opacity=".8"/>'
+      // Feet
+      +'<ellipse cx="53" cy="249" rx="9" ry="4" fill="#222" stroke="#333" stroke-width=".7"/>'
+      +'<ellipse cx="77" cy="249" rx="9" ry="4" fill="#222" stroke="#333" stroke-width=".7"/>'
+      // Trap
+      +'<path d="M52,46 Q59,43 65,43 Q71,43 78,46 Q73,50 65,50 Q57,50 52,46Z" fill="'+heatC(m.trap)+'" stroke="'+heatS(m.trap)+'" stroke-width=".7"/>'
+      +'</svg>';
+  }
+
+  function svgBack(){
+    return '<svg viewBox="0 0 130 320" style="width:130px;height:320px">'
+      +'<rect width="130" height="320" fill="#111" rx="10"/>'
+      +'<ellipse cx="65" cy="20" rx="15" ry="18" fill="#333" stroke="#444" stroke-width="1"/>'
+      +'<rect x="58" y="36" width="14" height="11" rx="3" fill="#2e2e2e"/>'
+      // Trap
+      +'<path d="M52,46 Q59,42 65,41 Q71,42 78,46 Q84,53 80,63 Q73,57 65,57 Q57,57 50,63 Q46,53 52,46Z" fill="'+heatC(m.trap)+'" stroke="'+heatS(m.trap)+'" stroke-width=".8"/>'
+      +'<path d="M36,50 Q46,56 50,63 Q57,57 65,57 Q73,57 80,63 Q84,56 94,50 Q88,65 80,71 Q73,67 65,67 Q57,67 50,71 Q42,65 36,50Z" fill="'+heatC(m.trap)+'" stroke="'+heatS(m.trap)+'" stroke-width=".7"/>'
+      // Rear delt
+      +'<path d="M36,50 Q28,52 26,62 Q25,70 29,73 Q35,70 41,65 Q41,58 36,50Z" fill="'+heatC(m.deltpost)+'" stroke="'+heatS(m.deltpost)+'" stroke-width=".8"/>'
+      +'<path d="M94,50 Q102,52 104,62 Q105,70 101,73 Q95,70 89,65 Q89,58 94,50Z" fill="'+heatC(m.deltpost)+'" stroke="'+heatS(m.deltpost)+'" stroke-width=".8"/>'
+      // Lats
+      +'<path d="M41,65 Q34,76 34,95 Q34,108 41,114 Q47,108 50,96 Q52,79 48,67Z" fill="'+heatC(m.dorsal)+'" stroke="'+heatS(m.dorsal)+'" stroke-width=".8"/>'
+      +'<path d="M89,65 Q96,76 96,95 Q96,108 89,114 Q83,108 80,96 Q78,79 82,67Z" fill="'+heatC(m.dorsal)+'" stroke="'+heatS(m.dorsal)+'" stroke-width=".8"/>'
+      // Rhomboids
+      +'<path d="M50,67 Q58,65 65,65 Q72,65 80,67 Q78,82 75,88 Q70,90 65,90 Q60,90 55,88 Q52,82 50,67Z" fill="'+heatC(m.rhomb)+'" stroke="'+heatS(m.rhomb)+'" stroke-width=".7"/>'
+      +'<line x1="65" y1="65" x2="65" y2="122" stroke="#1a1a1a" stroke-width="1.2"/>'
+      // Triceps
+      +'<path d="M26,73 Q21,80 21,95 Q21,106 26,110 Q32,104 33,92 Q35,79 29,73Z" fill="'+heatC(m.triceps)+'" stroke="'+heatS(m.triceps)+'" stroke-width=".8"/>'
+      +'<path d="M104,73 Q109,80 109,95 Q109,106 104,110 Q98,104 97,92 Q95,79 101,73Z" fill="'+heatC(m.triceps)+'" stroke="'+heatS(m.triceps)+'" stroke-width=".8"/>'
+      // Forearms back
+      +'<path d="M22,112 Q19,122 20,133 Q21,141 24,143 Q28,139 29,128 Q31,117 26,112Z" fill="'+heatC(m.antebrazo)+'" stroke="'+heatS(m.antebrazo)+'" stroke-width=".7"/>'
+      +'<path d="M108,112 Q111,122 110,133 Q109,141 106,143 Q102,139 101,128 Q99,117 104,112Z" fill="'+heatC(m.antebrazo)+'" stroke="'+heatS(m.antebrazo)+'" stroke-width=".7"/>'
+      // Lumbar/erectors
+      +'<path d="M53,90 Q55,105 55,121 Q61,123 65,123 Q69,123 75,121 Q75,105 77,90 Q72,92 65,92 Q58,92 53,90Z" fill="'+heatC(m.lumbar)+'" stroke="'+heatS(m.lumbar)+'" stroke-width=".7"/>'
+      // Glutes
+      +'<path d="M41,114 Q41,130 52,139 Q58,143 65,143 Q72,143 78,139 Q89,130 89,114 Q81,122 65,122 Q49,122 41,114Z" fill="'+heatC(m.gluteo)+'" stroke="'+heatS(m.gluteo)+'" stroke-width=".8"/>'
+      // Hamstrings
+      +'<path d="M53,143 Q48,160 48,178 Q48,191 53,197 Q59,195 61,182 Q63,163 62,145Z" fill="'+heatC(m.isquio)+'" stroke="'+heatS(m.isquio)+'" stroke-width=".8"/>'
+      +'<path d="M77,143 Q82,160 82,178 Q82,191 77,197 Q71,195 69,182 Q67,163 68,145Z" fill="'+heatC(m.isquio)+'" stroke="'+heatS(m.isquio)+'" stroke-width=".8"/>'
+      // Knees back
+      +'<ellipse cx="54" cy="201" rx="8" ry="6" fill="#222" stroke="#333" stroke-width=".7"/>'
+      +'<ellipse cx="76" cy="201" rx="8" ry="6" fill="#222" stroke="#333" stroke-width=".7"/>'
+      // Calves
+      +'<path d="M47,207 Q44,223 46,242 Q48,251 53,253 Q59,251 60,238 Q60,221 57,207Z" fill="'+heatC(m.gemelo)+'" stroke="'+heatS(m.gemelo)+'" stroke-width=".8"/>'
+      +'<path d="M83,207 Q86,223 84,242 Q82,251 77,253 Q71,251 70,238 Q70,221 73,207Z" fill="'+heatC(m.gemelo)+'" stroke="'+heatS(m.gemelo)+'" stroke-width=".8"/>'
+      // Feet
+      +'<ellipse cx="53" cy="257" rx="9" ry="4" fill="#222" stroke="#333" stroke-width=".7"/>'
+      +'<ellipse cx="77" cy="257" rx="9" ry="4" fill="#222" stroke="#333" stroke-width=".7"/>'
+      +'</svg>';
+  }
+
+  const legend='<div class="bmlegend">'
+    +'<div class="bmleg-item"><div class="bmleg-dot" style="background:#2a2a2a;border:1px solid #3a3a3a"></div>Sin datos</div>'
+    +'<div class="bmleg-item"><div class="bmleg-dot" style="background:#1e3a5f"></div>Bajo</div>'
+    +'<div class="bmleg-item"><div class="bmleg-dot" style="background:#1e5a8f"></div>Medio</div>'
+    +'<div class="bmleg-item"><div class="bmleg-dot" style="background:#38bdf8"></div>Alto</div>'
+    +'<div class="bmleg-item"><div class="bmleg-dot" style="background:#7dd3fc"></div>Máximo</div>'
+    +'</div>';
+
+  return '<div class="bodymap-wrap">'
+    +'<div><div class="bmlabel">FRONTAL</div>'+svgFront()+'</div>'
+    +'<div><div class="bmlabel">POSTERIOR</div>'+svgBack()+'</div>'
+    +'</div>'+legend;
+}
+
 function drawProg(){
-  const f=S.progFilter, fl=filtLogs(f);
+  const f=S.progFilter;
+  const fl=filtLogs(f);
   const sc=pillarScores(fl);
+
   const filters=['semana','mes','6m','año','inicio'];
   const flabels={'semana':'Semana','mes':'Mes','6m':'6 Meses','año':'1 Año','inicio':'Todo'};
-  const totalVol=fl.reduce((a,r)=>{const p=(r.pesos||'').split('/').map(x=>parseFloat(x)||0);const avg=p.length?p.reduce((a,b)=>a+b,0)/p.length:0;return a+avg*(parseFloat(r.series)||1)*(parseFloat(r.reps)||10);},0);
+
+  const totalVol=fl.reduce((a,r)=>{
+    const p=(r.pesos||'').split('/').map(x=>parseFloat(x)||0);
+    const avg=p.length?p.reduce((a,b)=>a+b,0)/p.length:0;
+    return a+avg*(parseFloat(r.series)||1)*(parseFloat(r.reps)||10);
+  },0);
   const dias=new Set(fl.map(r=>r.fecha)).size;
   const muscs=new Set(fl.flatMap(r=>getInfo(r.ejercicio||'').msc)).size;
 
+  // Filter pills
   let fps='<div class="fpills">';
-  filters.forEach(fi=>fps+=`<button class="fpill${f===fi?' on':''}" onclick="setProgF('${fi}')">${flabels[fi]}</button>`);
+  filters.forEach(fi=>{
+    fps+='<button class="fpill'+(f===fi?' on':'')+'" onclick="setProgF(\''+fi+'\')">'+flabels[fi]+'</button>';
+  });
   fps+='</div>';
 
-  const stats=`<div class="sgrid">
-    <div class="scard"><div class="sicon">⚖️</div><div class="sval">${Math.round(totalVol).toLocaleString()}</div><div class="slbl">VOLUMEN (kg)</div></div>
-    <div class="scard"><div class="sicon">📆</div><div class="sval">${dias}</div><div class="slbl">DÍAS</div></div>
-    <div class="scard"><div class="sicon">🏋️</div><div class="sval">${fl.length}</div><div class="slbl">EJERCICIOS</div></div>
-    <div class="scard"><div class="sicon">💪</div><div class="sval">${muscs}</div><div class="slbl">MÚSCULOS</div></div>
-  </div>`;
+  // Stats
+  const stats='<div class="sgrid">'
+    +'<div class="scard"><div class="sicon">⚖️</div><div class="sval">'+Math.round(totalVol).toLocaleString()+'</div><div class="slbl">VOLUMEN (kg)</div></div>'
+    +'<div class="scard"><div class="sicon">📆</div><div class="sval">'+dias+'</div><div class="slbl">DÍAS</div></div>'
+    +'<div class="scard"><div class="sicon">🏋️</div><div class="sval">'+fl.length+'</div><div class="slbl">EJERCICIOS</div></div>'
+    +'<div class="scard"><div class="sicon">💪</div><div class="sval">'+muscs+'</div><div class="slbl">MÚSCULOS</div></div>'
+    +'</div>';
 
-  // Body map SVG
-  const m={
-    pecho_m:sc.pecho, deltant:Math.round(sc.hombros*.9), deltlat:Math.round(sc.hombros*.8), deltpost:Math.round(sc.hombros*.7),
-    trap:Math.round(sc.espalda*.8), trapinf:Math.round(sc.espalda*.7), dorsal:Math.round(sc.espalda*.95),
-    rhomb:Math.round(sc.espalda*.75), biceps:Math.round(sc.brazo*.95), triceps:Math.round(sc.brazo*.9),
-    antebrazo:Math.round(sc.brazo*.6), abdomen:sc.core, oblicuos:Math.round(sc.core*.8),
-    lumbar:Math.round(sc.espalda*.7), gluteo:Math.round(sc.pierna*.85),
-    quad:Math.round(sc.pierna*.95), isquio:Math.round(sc.pierna*.85),
-    gemelo:Math.round(sc.pierna*.7), soleo:Math.round(sc.pierna*.6),
-  };
-
-  const bodymap=`<div class="bodymap-wrap">
-    <div>
-      <div class="bmlabel">FRONTAL</div>
-      <svg viewBox="0 0 130 320" style="width:130px;height:320px">
-        <rect width="130" height="320" fill="#111" rx="10"/>
-        <ellipse cx="65" cy="20" rx="15" ry="18" fill="#333" stroke="#444" stroke-width="1"/>
-        <rect x="58" y="36" width="14" height="11" rx="3" fill="#2e2e2e"/>
-        <path d="M42,50 Q42,65 52,71 Q59,73 64,71 L64,50 Q55,48 42,50Z" fill="${heatC(m.pecho_m)}" stroke="${heatS(m.pecho_m)}" stroke-width=".8"/>
-        <path d="M88,50 Q88,65 78,71 Q71,73 66,71 L66,50 Q75,48 88,50Z" fill="${heatC(m.pecho_m)}" stroke="${heatS(m.pecho_m)}" stroke-width=".8"/>
-        <path d="M36,50 Q28,52 27,61 Q26,69 30,73 Q36,69 42,65 L42,50Z" fill="${heatC(m.deltant)}" stroke="${heatS(m.deltant)}" stroke-width=".8"/>
-        <path d="M94,50 Q102,52 103,61 Q104,69 100,73 Q94,69 88,65 L88,50Z" fill="${heatC(m.deltant)}" stroke="${heatS(m.deltant)}" stroke-width=".8"/>
-        <path d="M26,73 Q21,79 21,92 Q21,103 26,108 Q32,103 34,92 Q36,79 30,73Z" fill="${heatC(m.biceps)}" stroke="${heatS(m.biceps)}" stroke-width=".8"/>
-        <path d="M104,73 Q109,79 109,92 Q109,103 104,108 Q98,103 96,92 Q94,79 100,73Z" fill="${heatC(m.biceps)}" stroke="${heatS(m.biceps)}" stroke-width=".8"/>
-        <path d="M22,110 Q19,120 20,131 Q21,139 24,142 Q28,138 30,127 Q32,116 26,110Z" fill="${heatC(m.antebrazo)}" stroke="${heatS(m.antebrazo)}" stroke-width=".7"/>
-        <path d="M108,110 Q111,120 110,131 Q109,139 106,142 Q102,138 100,127 Q98,116 104,110Z" fill="${heatC(m.antebrazo)}" stroke="${heatS(m.antebrazo)}" stroke-width=".7"/>
-        <rect x="57" y="73" width="7" height="9" rx="2.5" fill="${heatC(m.abdomen)}" stroke="${heatS(m.abdomen)}" stroke-width=".7"/>
-        <rect x="66" y="73" width="7" height="9" rx="2.5" fill="${heatC(m.abdomen)}" stroke="${heatS(m.abdomen)}" stroke-width=".7"/>
-        <rect x="57" y="84" width="7" height="9" rx="2.5" fill="${heatC(m.abdomen)}" stroke="${heatS(m.abdomen)}" stroke-width=".7"/>
-        <rect x="66" y="84" width="7" height="9" rx="2.5" fill="${heatC(m.abdomen)}" stroke="${heatS(m.abdomen)}" stroke-width=".7"/>
-        <rect x="58" y="95" width="6" height="8" rx="2.5" fill="${heatC(m.abdomen)}" stroke="${heatS(m.abdomen)}" stroke-width=".7"/>
-        <rect x="66" y="95" width="6" height="8" rx="2.5" fill="${heatC(m.abdomen)}" stroke="${heatS(m.abdomen)}" stroke-width=".7"/>
-        <line x1="65" y1="73" x2="65" y2="104" stroke="#1a1a1a" stroke-width="1"/>
-        <path d="M42,67 Q48,81 53,96 Q49,103 44,107 Q38,96 36,77Z" fill="${heatC(m.oblicuos)}" stroke="${heatS(m.oblicuos)}" stroke-width=".7"/>
-        <path d="M88,67 Q82,81 77,96 Q81,103 86,107 Q92,96 94,77Z" fill="${heatC(m.oblicuos)}" stroke="${heatS(m.oblicuos)}" stroke-width=".7"/>
-        <path d="M42,107 Q42,118 53,124 Q59,126 65,126 Q71,126 77,124 Q88,118 88,107 L80,105 Q73,109 65,109 Q57,109 50,105Z" fill="#2a2a2a" stroke="#333" stroke-width=".7"/>
-        <path d="M53,126 Q48,141 48,162 Q48,176 53,183 Q59,183 62,176 Q65,162 63,143 Q62,130 59,126Z" fill="${heatC(m.quad)}" stroke="${heatS(m.quad)}" stroke-width=".8"/>
-        <path d="M77,126 Q82,141 82,162 Q82,176 77,183 Q71,183 68,176 Q65,162 67,143 Q68,130 71,126Z" fill="${heatC(m.quad)}" stroke="${heatS(m.quad)}" stroke-width=".8"/>
-        <ellipse cx="54" cy="187" rx="8" ry="6" fill="#222" stroke="#333" stroke-width=".7"/>
-        <ellipse cx="76" cy="187" rx="8" ry="6" fill="#222" stroke="#333" stroke-width=".7"/>
-        <path d="M48,193 Q46,212 48,234 Q50,243 55,245 Q61,243 61,230 Q61,212 59,193Z" fill="${heatC(m.gemelo)}" stroke="${heatS(m.gemelo)}" stroke-width=".7" opacity=".8"/>
-        <path d="M82,193 Q84,212 82,234 Q80,243 75,245 Q69,243 69,230 Q69,212 71,193Z" fill="${heatC(m.gemelo)}" stroke="${heatS(m.gemelo)}" stroke-width=".7" opacity=".8"/>
-        <ellipse cx="53" cy="249" rx="9" ry="4" fill="#222" stroke="#333" stroke-width=".7"/>
-        <ellipse cx="77" cy="249" rx="9" ry="4" fill="#222" stroke="#333" stroke-width=".7"/>
-        <path d="M52,46 Q59,43 65,43 Q71,43 78,46 Q73,50 65,50 Q57,50 52,46Z" fill="${heatC(m.trap)}" stroke="${heatS(m.trap)}" stroke-width=".7"/>
-      </svg>
-    </div>
-    <div>
-      <div class="bmlabel">POSTERIOR</div>
-      <svg viewBox="0 0 130 320" style="width:130px;height:320px">
-        <rect width="130" height="320" fill="#111" rx="10"/>
-        <ellipse cx="65" cy="20" rx="15" ry="18" fill="#333" stroke="#444" stroke-width="1"/>
-        <rect x="58" y="36" width="14" height="11" rx="3" fill="#2e2e2e"/>
-        <path d="M52,46 Q59,42 65,41 Q71,42 78,46 Q84,53 80,63 Q73,57 65,57 Q57,57 50,63 Q46,53 52,46Z" fill="${heatC(m.trap)}" stroke="${heatS(m.trap)}" stroke-width=".8"/>
-        <path d="M36,50 Q46,56 50,63 Q57,57 65,57 Q73,57 80,63 Q84,56 94,50 Q88,65 80,71 Q73,67 65,67 Q57,67 50,71 Q42,65 36,50Z" fill="${heatC(m.trapinf)}" stroke="${heatS(m.trapinf)}" stroke-width=".7"/>
-        <path d="M36,50 Q28,52 26,62 Q25,70 29,73 Q35,70 41,65 Q41,58 36,50Z" fill="${heatC(m.deltpost)}" stroke="${heatS(m.deltpost)}" stroke-width=".8"/>
-        <path d="M94,50 Q102,52 104,62 Q105,70 101,73 Q95,70 89,65 Q89,58 94,50Z" fill="${heatC(m.deltpost)}" stroke="${heatS(m.deltpost)}" stroke-width=".8"/>
-        <path d="M41,65 Q34,76 34,95 Q34,108 41,114 Q47,108 50,96 Q52,79 48,67Z" fill="${heatC(m.dorsal)}" stroke="${heatS(m.dorsal)}" stroke-width=".8"/>
-        <path d="M89,65 Q96,76 96,95 Q96,108 89,114 Q83,108 80,96 Q78,79 82,67Z" fill="${heatC(m.dorsal)}" stroke="${heatS(m.dorsal)}" stroke-width=".8"/>
-        <path d="M50,67 Q58,65 65,65 Q72,65 80,67 Q78,82 75,88 Q70,90 65,90 Q60,90 55,88 Q52,82 50,67Z" fill="${heatC(m.rhomb)}" stroke="${heatS(m.rhomb)}" stroke-width=".7"/>
-        <line x1="65" y1="65" x2="65" y2="122" stroke="#1a1a1a" stroke-width="1.2"/>
-        <path d="M26,73 Q21,80 21,95 Q21,106 26,110 Q32,104 33,92 Q35,79 29,73Z" fill="${heatC(m.triceps)}" stroke="${heatS(m.triceps)}" stroke-width=".8"/>
-        <path d="M104,73 Q109,80 109,95 Q109,106 104,110 Q98,104 97,92 Q95,79 101,73Z" fill="${heatC(m.triceps)}" stroke="${heatS(m.triceps)}" stroke-width=".8"/>
-        <path d="M22,112 Q19,122 20,133 Q21,141 24,143 Q28,139 29,128 Q31,117 26,112Z" fill="${heatC(m.antebrazo)}" stroke="${heatS(m.antebrazo)}" stroke-width=".7"/>
-        <path d="M108,112 Q111,122 110,133 Q109,141 106,143 Q102,139 101,128 Q99,117 104,112Z" fill="${heatC(m.antebrazo)}" stroke="${heatS(m.antebrazo)}" stroke-width=".7"/>
-        <path d="M53,90 Q55,105 55,121 Q61,123 65,123 Q69,123 75,121 Q75,105 77,90 Q72,92 65,92 Q58,92 53,90Z" fill="${heatC(m.lumbar)}" stroke="${heatS(m.lumbar)}" stroke-width=".7"/>
-        <path d="M41,114 Q41,130 52,139 Q58,143 65,143 Q72,143 78,139 Q89,130 89,114 Q81,122 65,122 Q49,122 41,114Z" fill="${heatC(m.gluteo)}" stroke="${heatS(m.gluteo)}" stroke-width=".8"/>
-        <path d="M53,143 Q48,160 48,178 Q48,191 53,197 Q59,195 61,182 Q63,163 62,145Z" fill="${heatC(m.isquio)}" stroke="${heatS(m.isquio)}" stroke-width=".8"/>
-        <path d="M77,143 Q82,160 82,178 Q82,191 77,197 Q71,195 69,182 Q67,163 68,145Z" fill="${heatC(m.isquio)}" stroke="${heatS(m.isquio)}" stroke-width=".8"/>
-        <ellipse cx="54" cy="201" rx="8" ry="6" fill="#222" stroke="#333" stroke-width=".7"/>
-        <ellipse cx="76" cy="201" rx="8" ry="6" fill="#222" stroke="#333" stroke-width=".7"/>
-        <path d="M47,207 Q44,223 46,242 Q48,251 53,253 Q59,251 60,238 Q60,221 57,207Z" fill="${heatC(m.gemelo)}" stroke="${heatS(m.gemelo)}" stroke-width=".8"/>
-        <path d="M83,207 Q86,223 84,242 Q82,251 77,253 Q71,251 70,238 Q70,221 73,207Z" fill="${heatC(m.gemelo)}" stroke="${heatS(m.gemelo)}" stroke-width=".8"/>
-        <ellipse cx="53" cy="257" rx="9" ry="4" fill="#222" stroke="#333" stroke-width=".7"/>
-        <ellipse cx="77" cy="257" rx="9" ry="4" fill="#222" stroke="#333" stroke-width=".7"/>
-      </svg>
-    </div>
-  </div>
-  <div class="bmlegend">
-    <div class="bmleg-item"><div class="bmleg-dot" style="background:#2a2a2a;border:1px solid #3a3a3a"></div>Sin datos</div>
-    <div class="bmleg-item"><div class="bmleg-dot" style="background:#1e3a5f"></div>Bajo</div>
-    <div class="bmleg-item"><div class="bmleg-dot" style="background:#1e5a8f"></div>Medio</div>
-    <div class="bmleg-item"><div class="bmleg-dot" style="background:#38bdf8"></div>Alto</div>
-    <div class="bmleg-item"><div class="bmleg-dot" style="background:#7dd3fc"></div>Máximo</div>
-  </div>`;
-
-  // Vol by day data
+  // Vol by day
   const volMap={};
-  fl.forEach(r=>{if(!r.fecha)return;const p=(r.pesos||'').split('/').map(x=>parseFloat(x)||0);const avg=p.length?p.reduce((a,b)=>a+b,0)/p.length:0;volMap[r.fecha]=(volMap[r.fecha]||0)+avg*(parseFloat(r.series)||1)*(parseFloat(r.reps)||10);});
+  fl.forEach(r=>{
+    if(!r.fecha) return;
+    const p=(r.pesos||'').split('/').map(x=>parseFloat(x)||0);
+    const avg=p.length?p.reduce((a,b)=>a+b,0)/p.length:0;
+    volMap[r.fecha]=(volMap[r.fecha]||0)+avg*(parseFloat(r.series)||1)*(parseFloat(r.reps)||10);
+  });
   const volEntries=Object.entries(volMap).sort((a,b)=>a[0].localeCompare(b[0])).slice(-14);
-  const muscMap={};fl.forEach(r=>{getInfo(r.ejercicio||'').msc.forEach(m=>{muscMap[m]=(muscMap[m]||0)+1;});});
+
+  // Muscle freq
+  const muscMap={};
+  fl.forEach(r=>{ getInfo(r.ejercicio||'').msc.forEach(m=>{ muscMap[m]=(muscMap[m]||0)+1; }); });
   const muscTop=Object.entries(muscMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
 
-  document.getElementById('p-prog').innerHTML=`${fps}${stats}
-    <div class="stitle">RADAR DE PILARES</div>
-    <div class="card"><canvas id="radarC" height="200"></canvas></div>
-    <div class="stitle">MAPA MUSCULAR</div>
-    <div class="card">${bodymap}</div>
-    <div class="stitle">VOLUMEN POR DÍA</div>
-    <div class="card"><canvas id="volC" height="120"></canvas></div>
-    <div class="stitle">MÚSCULOS MÁS TRABAJADOS</div>
-    <div class="card"><canvas id="muscC" height="160"></canvas></div>`;
+  // Body map HTML (built as string, not template literal to avoid nesting issues)
+  const bm=buildBodyMap(sc);
+
+  const html=fps+stats
+    +'<div class="stitle">RADAR DE PILARES</div>'
+    +'<div class="card"><canvas id="radarC" height="200"></canvas></div>'
+    +'<div class="stitle">MAPA MUSCULAR</div>'
+    +'<div class="card">'+bm+'</div>'
+    +'<div class="stitle">VOLUMEN POR DÍA</div>'
+    +'<div class="card"><canvas id="volC" height="120"></canvas></div>'
+    +'<div class="stitle">MÚSCULOS MÁS TRABAJADOS</div>'
+    +'<div class="card"><canvas id="muscC" height="160"></canvas></div>';
+
+  document.getElementById('p-prog').innerHTML=html;
+
+  // Destroy old charts
+  if(charts.radar){ charts.radar.destroy(); charts.radar=null; }
+  if(charts.vol){   charts.vol.destroy();   charts.vol=null; }
+  if(charts.musc){  charts.musc.destroy();  charts.musc=null; }
 
   setTimeout(()=>{
-    if(charts.radar) charts.radar.destroy();
+    // Radar
     const rc=document.getElementById('radarC');
-    if(rc) charts.radar=new Chart(rc,{type:'radar',data:{labels:['Hombros','Pecho','Espalda','Brazo','Pierna','Core','Cardio'],datasets:[{label:'%',data:[sc.hombros,sc.pecho,sc.espalda,sc.brazo,sc.pierna,sc.core,sc.cardio],backgroundColor:'rgba(56,189,248,.2)',borderColor:'#38bdf8',pointBackgroundColor:'#38bdf8',borderWidth:2,pointRadius:4}]},options:{scales:{r:{beginAtZero:true,max:100,ticks:{display:false},grid:{color:'#ddd5'},pointLabels:{font:{size:12,weight:'bold'},color:'#444'}}},plugins:{legend:{display:false}}}});
-
-    if(charts.vol) charts.vol.destroy();
-    const vc=document.getElementById('volC');
-    if(vc){
-      if(volEntries.length) charts.vol=new Chart(vc,{type:'line',data:{labels:volEntries.map(e=>e[0]),datasets:[{label:'Vol',data:volEntries.map(e=>Math.round(e[1])),fill:true,backgroundColor:'rgba(56,189,248,.15)',borderColor:'#38bdf8',tension:.4,pointRadius:3,pointBackgroundColor:'#38bdf8'}]},options:{plugins:{legend:{display:false}},scales:{x:{ticks:{maxRotation:45,font:{size:9}}},y:{beginAtZero:true,ticks:{font:{size:10}}}}}});
-      else vc.parentElement.innerHTML='<div style="text-align:center;color:#aaa;padding:20px;font-size:13px">Sin datos — guardá entrenamientos primero</div>';
+    if(rc){
+      charts.radar=new Chart(rc,{
+        type:'radar',
+        data:{
+          labels:['Hombros','Pecho','Espalda','Brazo','Pierna','Core','Cardio'],
+          datasets:[{
+            label:'%',
+            data:[sc.hombros,sc.pecho,sc.espalda,sc.brazo,sc.pierna,sc.core,sc.cardio],
+            backgroundColor:'rgba(56,189,248,.2)',
+            borderColor:'#38bdf8',
+            pointBackgroundColor:'#38bdf8',
+            borderWidth:2, pointRadius:4
+          }]
+        },
+        options:{
+          scales:{r:{beginAtZero:true,max:100,ticks:{display:false},grid:{color:'#ddd5'},pointLabels:{font:{size:12,weight:'bold'},color:'#444'}}},
+          plugins:{legend:{display:false}}
+        }
+      });
     }
 
-    if(charts.musc) charts.musc.destroy();
+    // Vol line
+    const vc=document.getElementById('volC');
+    if(vc){
+      if(volEntries.length){
+        charts.vol=new Chart(vc,{
+          type:'line',
+          data:{
+            labels:volEntries.map(e=>e[0]),
+            datasets:[{
+              label:'Vol',
+              data:volEntries.map(e=>Math.round(e[1])),
+              fill:true,
+              backgroundColor:'rgba(56,189,248,.15)',
+              borderColor:'#38bdf8',
+              tension:.4, pointRadius:3, pointBackgroundColor:'#38bdf8'
+            }]
+          },
+          options:{
+            plugins:{legend:{display:false}},
+            scales:{
+              x:{ticks:{maxRotation:45,font:{size:9}}},
+              y:{beginAtZero:true,ticks:{font:{size:10}}}
+            }
+          }
+        });
+      } else {
+        vc.parentElement.innerHTML='<div style="text-align:center;color:#aaa;padding:20px;font-size:13px">Sin datos — guardá entrenamientos primero</div>';
+      }
+    }
+
+    // Muscle bar
     const mc=document.getElementById('muscC');
     if(mc){
-      if(muscTop.length) charts.musc=new Chart(mc,{type:'bar',data:{labels:muscTop.map(e=>e[0]),datasets:[{data:muscTop.map(e=>e[1]),backgroundColor:'#38bdf8',borderRadius:5}]},options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{font:{size:10}}},y:{ticks:{font:{size:11}}}}}});
-      else mc.parentElement.innerHTML='<div style="text-align:center;color:#aaa;padding:20px;font-size:13px">Sin datos aún</div>';
+      if(muscTop.length){
+        charts.musc=new Chart(mc,{
+          type:'bar',
+          data:{
+            labels:muscTop.map(e=>e[0]),
+            datasets:[{data:muscTop.map(e=>e[1]),backgroundColor:'#38bdf8',borderRadius:5}]
+          },
+          options:{
+            indexAxis:'y',
+            plugins:{legend:{display:false}},
+            scales:{
+              x:{beginAtZero:true,ticks:{font:{size:10}}},
+              y:{ticks:{font:{size:11}}}
+            }
+          }
+        });
+      } else {
+        mc.parentElement.innerHTML='<div style="text-align:center;color:#aaa;padding:20px;font-size:13px">Sin datos aún</div>';
+      }
     }
   },80);
 }
