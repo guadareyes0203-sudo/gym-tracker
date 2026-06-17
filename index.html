@@ -889,68 +889,138 @@ function drawHoy(){
 }
 
 // Ejercicios de relleno por músculo (con equipo disponible)
-const GAP_EX = {
-  pecho:    [{nm:'DDB Chest Press',    r:'3x15'}, {nm:'DDB Pullover',          r:'3x15'}],
-  hombros:  [{nm:'Elevacion lateral',  r:'4x15'}, {nm:'DDB Arnold Press',      r:'3x12'},{nm:'Face Pull',r:'3x20'}],
-  espalda:  [{nm:'DDB Renegade Row',   r:'3x12'}, {nm:'Barbell Bent Over Row', r:'3x12'},{nm:'Jalon en polea',r:'3x15'}],
-  brazo:    [{nm:'Curl de biceps',     r:'3x15'}, {nm:'Extension triceps',     r:'3x15'}],
-  pierna:   [{nm:'Goblet Squat',       r:'3x15'}, {nm:'Hip Hinge',             r:'3x15'},{nm:'Lunge',r:'3x10/10'}],
-  core:     [{nm:'Plank',              r:'3x45 seg'},{nm:'V-Sit Up',           r:'3x15'},{nm:'Side Plank',r:'3x20 seg c/lado'}],
-  cardio:   [{nm:'Bicicleta fija',     r:'5 min sprint'}],
+
+// ── GAP BLOCK ────────────────────────────────────────────────
+var GAP_EX = {
+  pecho:   [{nm:'DDB Chest Press',   r:'3x15'}, {nm:'DDB Pullover',         r:'3x15'}],
+  hombros: [{nm:'Elevacion lateral', r:'4x15'}, {nm:'DDB Arnold Press',     r:'3x12'}, {nm:'Face Pull',r:'3x20'}],
+  espalda: [{nm:'DDB Renegade Row',  r:'3x12'}, {nm:'Barbell Bent Over Row',r:'3x12'}, {nm:'Jalon en polea',r:'3x15'}],
+  brazo:   [{nm:'Curl de biceps',    r:'3x15'}, {nm:'Extension triceps',    r:'3x15'}],
+  pierna:  [{nm:'Goblet Squat',      r:'3x15'}, {nm:'Hip Hinge',            r:'3x15'}, {nm:'Lunge',r:'3x10/10'}],
+  core:    [{nm:'Plank',             r:'3x45seg'},{nm:'V-Sit Up',           r:'3x15'}, {nm:'Side Plank',r:'3x20seg c/lado'}],
+  cardio:  [{nm:'Bicicleta fija',    r:'5min sprint'}],
 };
 
-const PILLAR_LABEL = {
-  pecho:"Pecho", hombros:"Hombros", espalda:"Espalda",
-  brazo:"Bíceps/Tríceps", pierna:"Piernas", core:"Core", cardio:"Cardio"
+var PILLAR_LABEL = {
+  pecho:'Pecho', hombros:'Hombros', espalda:'Espalda',
+  brazo:'Biceps/Triceps', pierna:'Piernas', core:'Core', cardio:'Cardio'
 };
 
-function buildGapBlock(di, day){
-  const trained = new Set();
-  day.bloques.forEach(function(b){
-    b.exs.forEach(function(ex){
-      var info = getInfo(ex.nm);
-      if(info.p) trained.add(info.p);
+function gapKg(inp) {
+  var lk = inp.dataset.lk;
+  var di = parseInt(inp.dataset.di);
+  var bn = parseInt(inp.dataset.bn);
+  var ei = parseInt(inp.dataset.ei);
+  var si = parseInt(inp.dataset.si);
+  var ns = parseInt(inp.dataset.ns);
+  var val = inp.value.replace(',', '.');
+  logKg(lk, val, di, bn, ei, si, ns);
+}
+
+function gapFocus(inp) {
+  if (!inp.value && parseInt(inp.dataset.si) > 0) {
+    var prev = S.logs[inp.dataset.plk];
+    if (prev && prev.kg) inp.value = prev.kg;
+  }
+}
+
+function buildGapBlock(di, day) {
+  var trained = new Set();
+  day.bloques.forEach(function(b) {
+    b.exs.forEach(function(ex) {
+      var i = getInfo(ex.nm);
+      if (i.p) trained.add(i.p);
     });
   });
 
   var allPillars = ['pecho','hombros','espalda','brazo','pierna','core'];
-  var missing = allPillars.filter(function(p){ return !trained.has(p); });
-  if(!missing.length) return '';
+  var missing = allPillars.filter(function(p) { return !trained.has(p); });
+  if (!missing.length) return '';
 
-  var toFix = missing.slice(0,2);
+  var exsToAdd = [];
+  missing.slice(0, 2).forEach(function(p) {
+    (GAP_EX[p] || []).forEach(function(ex) { exsToAdd.push(ex); });
+  });
+  if (!exsToAdd.length) return '';
+
+  var bn = 5;
+  var k  = di + '-' + bn;
+  var isComp = !!S.completed[k];
+  var ns = 3;
+  var pillarNames = missing.slice(0, 2).map(function(p) { return PILLAR_LABEL[p]; }).join(' + ');
 
   var exRows = '';
-  toFix.forEach(function(p){
-    var exs = GAP_EX[p] || [];
-    exRows += '<div style="margin-bottom:10px">';
-    exRows += '<div style="font-size:11px;font-weight:800;color:#38bdf8;letter-spacing:.08em;margin-bottom:6px">💪 ' + PILLAR_LABEL[p].toUpperCase() + '</div>';
-    exs.forEach(function(ex){
-      var info = getInfo(ex.nm);
-      exRows += '<div class="exrow" style="border-bottom:1px solid #fff2;padding-bottom:8px;margin-bottom:8px">';
-      exRows += '<div class="extop">';
-      exRows += '<span class="exname">' + ex.r + ' <strong>' + ex.nm + '</strong></span>';
-      exRows += '<a class="vbtn" href="' + info.vid + '" target="_blank">&#9654; Ver</a>';
-      exRows += '</div></div>';
-    });
+  exsToAdd.forEach(function(ex, ei) {
+    var info  = getInfo(ex.nm);
+    var mk    = di + '-' + bn + '-' + ei;
+    var mOpen = !!S.muscOpen[mk];
+
+    var muscHTML = info.msc.map(function(m) {
+      return '<span class="mchip">' + m + '</span>';
+    }).join('');
+
+    var setHTML = '<div class="setrow">';
+    for (var si = 0; si < ns; si++) {
+      var lk   = di + '-' + bn + '-' + ei + '-' + si;
+      var ld   = S.logs[lk] || {};
+      var done = !!ld.kg;
+      var plk  = di + '-' + bn + '-' + ei + '-0';
+
+      setHTML += '<div class="setcol' + (done ? ' done' : '') + '" id="sc' + lk + '">';
+      setHTML += '<div class="setlbl">S' + (si + 1) + '</div>';
+      setHTML += '<input type="text" inputmode="decimal" class="setsel" placeholder="kg"';
+      setHTML += ' value="' + (ld.kg || '') + '"';
+      setHTML += ' data-lk="'  + lk  + '"';
+      setHTML += ' data-di="'  + di  + '"';
+      setHTML += ' data-bn="'  + bn  + '"';
+      setHTML += ' data-ei="'  + ei  + '"';
+      setHTML += ' data-si="'  + si  + '"';
+      setHTML += ' data-ns="'  + ns  + '"';
+      setHTML += ' data-plk="' + plk + '"';
+      setHTML += ' onchange="gapKg(this)"';
+      setHTML += ' oninput="this.value=this.value.replace(/,/g,\'.\');"';
+      setHTML += ' onfocus="gapFocus(this)">';
+      setHTML += '<div class="setdot' + (done ? ' on' : '') + '" id="sd' + lk + '"></div>';
+      setHTML += '</div>';
+    }
+    setHTML += '</div>';
+
+    exRows += '<div class="exrow">';
+    exRows += '<div class="extop">';
+    exRows += '<span class="exname">' + ex.r + ' <strong>' + ex.nm + '</strong></span>';
+    exRows += '<a class="vbtn" href="' + info.vid + '" target="_blank">&#9654; Ver</a>';
+    exRows += '<button class="mbtn" onclick="toggleMusc(\'' + mk + '\')">&#128170;</button>';
+    exRows += '</div>';
+    exRows += '<div class="mchips" id="mc' + mk + '" style="display:' + (mOpen ? 'flex' : 'none') + '">' + muscHTML + '</div>';
+    exRows += setHTML;
     exRows += '</div>';
   });
 
   var html = '<div class="bwrap">';
-  html += '<div class="blabel" style="background:#0369a1;color:#fff;border-color:#0369a1">BONUS</div>';
+  html += '<div class="blabel" style="background:#0369a1;color:#fff;border-color:#0369a1">BLOQUE 5</div>';
   html += '<div class="bcard" style="background:linear-gradient(145deg,#0c4a6e,#0369a1)">';
-  html += '<div class="bnum" style="opacity:.3;color:#bae6fd">+</div>';
+  html += '<div class="bnum' + (isComp ? ' done' : '') + '" id="bn' + k + '" style="color:#bae6fd">5</div>';
   html += '<div class="brow">';
-  html += '<div class="btipo" style="font-size:22px">Sin trabajar hoy</div>';
-  html += '<div class="bclock"><div style="font-size:14px">&#9889;</div>';
+  html += '<div class="btipo">' + pillarNames + '</div>';
+  html += '<div class="bclock">';
+  html += '<div style="font-size:14px">&#9889;</div>';
   html += '<div style="width:80%;height:1px;background:#ddd;margin:2px auto"></div>';
-  html += '<div class="bclock-min">~10min</div></div>';
-  html += '</div>';
-  html += '<div class="bbadge" style="background:#bae6fd"><span style="color:#0c4a6e">OPCIONAL · COMPLETA EL TRABAJO MUSCULAR</span></div>';
+  html += '<div class="bclock-min">~10min</div>';
+  html += '</div></div>';
+  html += '<div class="bbadge" style="background:#bae6fd"><span style="color:#0c4a6e">MUSCULOS SIN TRABAJAR HOY</span></div>';
   html += exRows;
-  html += '<div style="font-size:12px;color:#bae6fd;margin-top:8px">Ejercicios para complementar lo que no se trabajo hoy. Opcionales.</div>';
+  html += '<div class="bfoot">';
+  html += '<div style="display:flex;gap:7px">';
+  html += '<div class="icocircle" style="background:#0369a1">&#128170;</div>';
+  html += '</div>';
+  html += '<div style="display:flex;gap:7px;align-items:center">';
+  html += '<button class="savebtn" id="sb' + di + '-' + bn + '" onclick="saveBloque(' + di + ',' + bn + ')">&#128190; Guardar</button>';
+  html += '<div class="checkbtn' + (isComp ? ' done' : '') + '" id="cb' + k + '" onclick="toggleDone(' + di + ',' + bn + ')">' + (isComp ? '&#10003;&#10003;' : '&#9675;') + '</div>';
+  html += '</div></div>';
   html += '</div></div>';
   return html;
 }
+
 
 function selDay(i){S.day=i;drawHoy();}
 function setSemana(s){
@@ -1006,7 +1076,17 @@ function toggleDone(di,bn){
 }
 
 function saveBloque(di,bn){
-  const day=PLAN[di], bloque=day.bloques.find(b=>b.n===bn);
+  const day=PLAN[di];
+  let bloque=day.bloques.find(b=>b.n===bn);
+  if(!bloque && bn===5){
+    const trained=new Set();
+    day.bloques.forEach(b=>b.exs.forEach(ex=>{const i=getInfo(ex.nm);if(i.p)trained.add(i.p);}));
+    const missing=['pecho','hombros','espalda','brazo','pierna','core'].filter(p=>!trained.has(p)).slice(0,2);
+    const exs=[];
+    missing.forEach(p=>(GAP_EX[p]||[]).forEach(ex=>exs.push({nm:ex.nm,s:3,r:ex.r})));
+    bloque={n:5,tipo:missing.map(p=>PILLAR_LABEL[p]).join(' + '),exs};
+  }
+  if(!bloque) return;
   const today=new Date().toLocaleDateString('es-AR');
   const btn=document.getElementById('sb'+di+'-'+bn);
   if(btn){btn.disabled=true;btn.textContent='...';}
