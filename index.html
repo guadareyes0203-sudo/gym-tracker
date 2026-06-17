@@ -905,54 +905,51 @@ const PILLAR_LABEL = {
 };
 
 function buildGapBlock(di, day){
-  // Collect all pillars already trained today
   const trained = new Set();
-  day.bloques.forEach(b=>{
-    b.exs.forEach(ex=>{
-      const info = getInfo(ex.nm);
+  day.bloques.forEach(function(b){
+    b.exs.forEach(function(ex){
+      var info = getInfo(ex.nm);
       if(info.p) trained.add(info.p);
     });
   });
 
-  // Pillars NOT trained today (excluding cardio — always in B1)
-  const allPillars = ['pecho','hombros','espalda','brazo','pierna','core'];
-  const missing = allPillars.filter(p => !trained.has(p));
-
+  var allPillars = ['pecho','hombros','espalda','brazo','pierna','core'];
+  var missing = allPillars.filter(function(p){ return !trained.has(p); });
   if(!missing.length) return '';
 
-  // Pick top 2 missing pillars
-  const toFix = missing.slice(0,2);
+  var toFix = missing.slice(0,2);
 
-  let exRows = '';
-  toFix.forEach(p=>{
-    const exs = GAP_EX[p] || [];
-    exRows += '<div style="margin-bottom:10px">'
-      + '<div style="font-size:11px;font-weight:800;color:#38bdf8;letter-spacing:.08em;margin-bottom:6px">'
-      + '💪 ' + PILLAR_LABEL[p].toUpperCase() + '</div>';
-    exs.forEach(ex=>{
-      const info = getInfo(ex.nm);
-      exRows += '<div class="exrow" style="border-bottom:1px solid #fff2;padding-bottom:8px;margin-bottom:8px">'
-        + '<div class="extop">'
-        + '<span class="exname">' + ex.r + ' <strong>' + ex.nm + '</strong></span>'
-        + '<a class="vbtn" href="' + info.vid + '" target="_blank">▶ Ver</a>'
-        + '</div></div>';
+  var exRows = '';
+  toFix.forEach(function(p){
+    var exs = GAP_EX[p] || [];
+    exRows += '<div style="margin-bottom:10px">';
+    exRows += '<div style="font-size:11px;font-weight:800;color:#38bdf8;letter-spacing:.08em;margin-bottom:6px">💪 ' + PILLAR_LABEL[p].toUpperCase() + '</div>';
+    exs.forEach(function(ex){
+      var info = getInfo(ex.nm);
+      exRows += '<div class="exrow" style="border-bottom:1px solid #fff2;padding-bottom:8px;margin-bottom:8px">';
+      exRows += '<div class="extop">';
+      exRows += '<span class="exname">' + ex.r + ' <strong>' + ex.nm + '</strong></span>';
+      exRows += '<a class="vbtn" href="' + info.vid + '" target="_blank">&#9654; Ver</a>';
+      exRows += '</div></div>';
     });
     exRows += '</div>';
   });
 
-  return '<div class="bwrap">'
-    + '<div class="blabel" style="background:#0369a1;color:#fff;border-color:#0369a1">BONUS</div>'
-    + '<div class="bcard" style="background:linear-gradient(145deg,#0c4a6e,#0369a1)">'
-    + '<div class="bnum" style="opacity:.3;color:#bae6fd">+</div>'
-    + '<div class="brow">'
-    + '<div class="btipo" style="font-size:22px">Músculos sin trabajar hoy</div>'
-    + '<div class="bclock"><div style="font-size:14px">⚡</div><div style="width:80%;height:1px;background:#ddd;margin:2px auto"></div><div class="bclock-min">~10'</div></div>'
-    + '</div>'
-    + '<div class="bbadge" style="background:#bae6fd"><span style="color:#0c4a6e">OPCIONAL · COMPLETA EL TRABAJO MUSCULAR</span></div>'
-    + exRows
-    + '<div style="font-size:12px;color:#bae6fd;margin-top:8px">Estos ejercicios complementan lo que no se trabajó hoy. Son opcionales — hacelos si te queda tiempo y energía.</div>'
-    + '</div>'
-    + '</div>';
+  var html = '<div class="bwrap">';
+  html += '<div class="blabel" style="background:#0369a1;color:#fff;border-color:#0369a1">BONUS</div>';
+  html += '<div class="bcard" style="background:linear-gradient(145deg,#0c4a6e,#0369a1)">';
+  html += '<div class="bnum" style="opacity:.3;color:#bae6fd">+</div>';
+  html += '<div class="brow">';
+  html += '<div class="btipo" style="font-size:22px">Sin trabajar hoy</div>';
+  html += '<div class="bclock"><div style="font-size:14px">&#9889;</div>';
+  html += '<div style="width:80%;height:1px;background:#ddd;margin:2px auto"></div>';
+  html += '<div class="bclock-min">~10min</div></div>';
+  html += '</div>';
+  html += '<div class="bbadge" style="background:#bae6fd"><span style="color:#0c4a6e">OPCIONAL · COMPLETA EL TRABAJO MUSCULAR</span></div>';
+  html += exRows;
+  html += '<div style="font-size:12px;color:#bae6fd;margin-top:8px">Ejercicios para complementar lo que no se trabajo hoy. Opcionales.</div>';
+  html += '</div></div>';
+  return html;
 }
 
 function selDay(i){S.day=i;drawHoy();}
