@@ -787,6 +787,154 @@ function go(p){
 }
 
 // ── HOY ──────────────────────────────────────────────────────
+// ── TABATA TIMER ─────────────────────────────────────────────
+var TAB = {
+  active: false,
+  work: 40,
+  rest: 20,
+  rounds: 8,
+  currentRound: 0,
+  phase: 'work', // 'work' | 'rest' | 'idle'
+  remaining: 0,
+  interval: null,
+  blockKey: null,
+};
+
+function tabBeep(freq, dur, vol) {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = freq || 880;
+    osc.type = 'square';
+    gain.gain.setValueAtTime(vol || 0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (dur || 0.15));
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + (dur || 0.15));
+  } catch(e) {}
+}
+
+function tabBeepStart()  { tabBeep(880, 0.12, 0.4); }
+function tabBeepRest()   { tabBeep(440, 0.25, 0.4); }
+function tabBeepFinish() {
+  tabBeep(660, 0.1, 0.4);
+  setTimeout(function(){ tabBeep(880, 0.1, 0.4); }, 150);
+  setTimeout(function(){ tabBeep(1100, 0.3, 0.4); }, 300);
+}
+function tabBeepCountdown() { tabBeep(1200, 0.08, 0.25); }
+
+function tabStart(key, workSecs, restSecs, rounds) {
+  if (TAB.active) { tabStop(); return; }
+  TAB.active      = true;
+  TAB.blockKey    = key;
+  TAB.work        = workSecs  || 40;
+  TAB.rest        = restSecs  || 20;
+  TAB.rounds      = rounds    || 8;
+  TAB.currentRound = 1;
+  TAB.phase       = 'work';
+  TAB.remaining   = TAB.work;
+  tabBeepStart();
+  tabRender();
+  TAB.interval = setInterval(tabTick, 1000);
+}
+
+function tabStop() {
+  clearInterval(TAB.interval);
+  TAB.active = false;
+  TAB.phase  = 'idle';
+  tabRender();
+}
+
+function tabTick() {
+  TAB.remaining--;
+
+  // Countdown beeps at 3-2-1
+  if (TAB.remaining <= 3 && TAB.remaining > 0) tabBeepCountdown();
+
+  if (TAB.remaining <= 0) {
+    if (TAB.phase === 'work') {
+      TAB.phase     = 'rest';
+      TAB.remaining = TAB.rest;
+      tabBeepRest();
+    } else {
+      // End of rest = end of round
+      TAB.currentRound++;
+      if (TAB.currentRound > TAB.rounds) {
+        tabBeepFinish();
+        tabStop();
+        return;
+      }
+      TAB.phase     = 'work';
+      TAB.remaining = TAB.work;
+      tabBeepStart();
+    }
+  }
+  tabRender();
+}
+
+function tabRender() {
+  var el = document.getElementById('tab-' + TAB.blockKey);
+  if (!el) return;
+
+  if (!TAB.active && TAB.phase === 'idle') {
+    el.innerHTML = tabIdleHTML(TAB.blockKey);
+    return;
+  }
+
+  var isWork     = TAB.phase === 'work';
+  var pct        = Math.round((TAB.remaining / (isWork ? TAB.work : TAB.rest)) * 100);
+  var color      = isWork ? '#38bdf8' : '#f59e0b';
+  var phaseLabel = isWork ? 'TRABAJO' : 'DESCANSO';
+  var mins       = Math.floor(TAB.remaining / 60);
+  var secs       = String(TAB.remaining % 60).padStart(2, '0');
+
+  // Circumference of circle r=36: 2*PI*36 = 226.2
+  var circ   = 226;
+  var offset = circ - (pct / 100 * circ);
+
+  el.innerHTML = ''
+    + '<div style="text-align:center;padding:10px 0">'
+    + '<div style="font-size:10px;font-weight:800;color:' + color + ';letter-spacing:.12em;margin-bottom:6px">'
+    + phaseLabel + ' · R' + TAB.currentRound + '/' + TAB.rounds
+    + '</div>'
+    + '<div style="position:relative;display:inline-block;width:90px;height:90px">'
+    + '<svg width="90" height="90" viewBox="0 0 90 90">'
+    + '<circle cx="45" cy="45" r="36" fill="none" stroke="#fff2" stroke-width="6"/>'
+    + '<circle cx="45" cy="45" r="36" fill="none" stroke="' + color + '" stroke-width="6"'
+    + ' stroke-dasharray="' + circ + '" stroke-dashoffset="' + offset + '"'
+    + ' stroke-linecap="round" transform="rotate(-90 45 45)"/>'
+    + '</svg>'
+    + '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">'
+    + '<div style="font-size:22px;font-weight:800;color:#fff;font-family:monospace;line-height:1">'
+    + (mins > 0 ? mins + ':' + secs : TAB.remaining)
+    + '</div>'
+    + '</div></div>'
+    + '<div style="display:flex;gap:8px;justify-content:center;margin-top:10px">'
+    + '<button onclick="tabStop()" style="background:#ef4444;border:none;border-radius:8px;padding:7px 16px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">&#9632; Stop</button>'
+    + '</div>'
+    + '<div style="font-size:10px;color:#aaa;margin-top:6px">'
+    + TAB.work + 'seg trabajo / ' + TAB.rest + 'seg descanso'
+    + '</div>'
+    + '</div>';
+}
+
+function tabIdleHTML(key) {
+  return '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:6px 0">'
+    + '<button onclick="tabStart(\'' + key + '\',40,20,8)" '
+    + 'style="background:#38bdf8;border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:#0c4a6e;cursor:pointer">'
+    + '&#9654; 40/20 x8</button>'
+    + '<button onclick="tabStart(\'' + key + '\',30,10,8)" '
+    + 'style="background:#fff2;border:1px solid #fff3;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer">'
+    + '30/10 x8</button>'
+    + '<button onclick="tabStart(\'' + key + '\',20,10,10)" '
+    + 'style="background:#fff2;border:1px solid #fff3;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer">'
+    + '20/10 x10</button>'
+    + '</div>';
+}
+
+
 function drawHoy(){
   const di=S.day, day=PLAN[di];
   const done=day.bloques.filter(b=>!!S.completed[di+'-'+b.n]).length;
@@ -868,6 +1016,7 @@ function drawHoy(){
         </div>
         <div class="bbadge"><span>${b.badge}</span></div>
         ${exHTML}
+        ${b.cat==='midline'?`<div id="tab-${k}" style="margin:8px 0">${tabIdleHTML(k)}</div>`:''}
         <div class="bfoot">
           <div style="display:flex;gap:7px">
             <div class="icocircle" style="background:${{warmup:'#f97316',strength:'#ef4444',hrx:'#ef4444',midline:'#eab308'}[b.cat]}">💪</div>
