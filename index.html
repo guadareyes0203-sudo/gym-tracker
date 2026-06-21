@@ -275,6 +275,8 @@ select.fsel{border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;
 <div id="p-lib"   class="panel"></div>
 <div id="p-4w"    class="panel"></div>
 <div id="p-coach" class="panel"></div>
+<div id="p-misrutinas" class="panel"></div>
+<div id="p-coachIA"    class="panel"></div>
 
 <!-- BOTTOM NAV -->
 <div class="bnav">
@@ -285,7 +287,9 @@ select.fsel{border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;
   <button class="bnav-item"   id="bn-med"   onclick="go('med')">  <span class="bnav-icon">⚖️</span><span class="bnav-lbl">MEDIDAS</span></button>
   <button class="bnav-item"   id="bn-lib"   onclick="go('lib')">  <span class="bnav-icon">✏️</span><span class="bnav-lbl">LIBRE</span></button>
   <button class="bnav-item"   id="bn-4w"    onclick="go('4w')">   <span class="bnav-icon">📆</span><span class="bnav-lbl">4 SEM</span></button>
-  <button class="bnav-item"   id="bn-coach" onclick="go('coach')"><span class="bnav-icon">🤖</span><span class="bnav-lbl">COACH</span></button>
+  <button class="bnav-item"   id="bn-coach"      onclick="go('coach')">     <span class="bnav-icon">🤖</span><span class="bnav-lbl">COACH</span></button>
+  <button class="bnav-item"   id="bn-misrutinas" onclick="go('misrutinas')"><span class="bnav-icon">📝</span><span class="bnav-lbl">MIS RUT.</span></button>
+  <button class="bnav-item"   id="bn-coachIA"    onclick="go('coachIA')">  <span class="bnav-icon">✨</span><span class="bnav-lbl">IA</span></button>
 </div>
 
 <script>
@@ -651,7 +655,7 @@ const PROGRAM_4W=[
 // ── STATE ────────────────────────────────────────────────────
 const charts={};
 const S={
-  panel:'hoy', day:0, semana:'A',
+  panel:'hoy', day:0, semana:'A', misRutinas:[], coachIAChat:[],
   completed:{}, logs:{}, allLogs:[],
   medidas:[], libreWO:[], chat:[],
   sheetsUrl:'',
@@ -676,6 +680,8 @@ const S={
     const md=localStorage.getItem('gbm'); if(md) S.medidas=JSON.parse(md);
     const lw=localStorage.getItem('gblw'); if(lw) S.libreWO=JSON.parse(lw);
     const ct=localStorage.getItem('gbct'); if(ct) S.chat=JSON.parse(ct);
+    const mr=localStorage.getItem('gbmr'); if(mr) S.misRutinas=JSON.parse(mr);
+    const ci=localStorage.getItem('gbci'); if(ci) S.coachIAChat=JSON.parse(ci);
 
     // ── Migration: recover data from older key names ──
     const OLD_KEYS = {
@@ -725,6 +731,8 @@ function save(){
     localStorage.setItem('gym_medidas', JSON.stringify(med));
     localStorage.setItem('gym_libre',   JSON.stringify(lib));
     localStorage.setItem('gym_chat',    JSON.stringify(chat));
+    localStorage.setItem('gbmr', JSON.stringify(S.misRutinas.slice(-50)));
+    localStorage.setItem('gbci', JSON.stringify(S.coachIAChat.slice(-100)));
   }catch(e){}
 }
 function saveCfgStore(){try{localStorage.setItem('gbc',JSON.stringify({url:S.sheetsUrl}));}catch(e){}}
@@ -782,7 +790,7 @@ function go(p){
   document.getElementById('p-'+p).className='panel on';
   document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('on'));
   document.getElementById('bn-'+p).classList.add('on');
-  const renders={hoy:drawHoy,plan:drawPlan,prog:drawProg,hist:drawHist,med:drawMed,lib:drawLib,'4w':draw4W,coach:drawCoach};
+  const renders={hoy:drawHoy,plan:drawPlan,prog:drawProg,hist:drawHist,med:drawMed,lib:drawLib,'4w':draw4W,coach:drawCoach,misrutinas:drawMisRutinas,coachIA:drawCoachIA};
   if(renders[p]) renders[p]();
 }
 
@@ -935,13 +943,375 @@ function tabIdleHTML(key) {
 }
 
 
+// ── MODE SELECTOR (shared) ─────────────────────────────────────
+function buildModeSelector2(active){
+  var btns=[
+    {id:'hoy',        icon:'📋',label:'Plan'},
+    {id:'misrutinas', icon:'📝',label:'Mis Rutinas'},
+    {id:'lib',        icon:'✏️', label:'Libre'},
+    {id:'coachIA',    icon:'✨',label:'IA Coach'},
+  ];
+  var h='<div style="display:flex;gap:6px;margin-bottom:14px">';
+  btns.forEach(function(b){
+    var on=b.id===active;
+    h+='<button data-goto="'+b.id+'" onclick="go(this.dataset.goto)"'
+      +' style="flex:1;padding:9px 4px;border-radius:12px;'
+      +(on?'border:2px solid #38bdf8;background:#38bdf8;color:#0c4a6e;'
+          :'border:1.5px solid #ddd;background:#fff;color:#888;')
+      +'font-size:11px;font-weight:800;cursor:pointer;line-height:1.3">'
+      +b.icon+'<br>'+b.label+'</button>';
+  });
+  return h+'</div>';
+}
+
+// ── MIS RUTINAS ───────────────────────────────────────────────
+function drawMisRutinas(){
+  var rutinas=S.misRutinas||[];
+  var h='<div style="margin-top:4px">'+buildModeSelector2('misrutinas');
+  h+='<button onclick="showCrearRutina()" style="width:100%;padding:14px;background:#0369a1;color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:14px">+ Crear nueva rutina</button>';
+  if(!rutinas.length){
+    h+='<div style="text-align:center;padding:3rem 1rem;color:#aaa">'
+      +'<div style="font-size:48px;margin-bottom:10px">📝</div>'
+      +'<div style="font-size:16px;font-weight:700;color:#555;margin-bottom:6px">Aún no tenés rutinas propias</div>'
+      +'<div style="font-size:13px">Creá tu primera rutina o pedile una al Coach IA ✨</div>'
+      +'</div>';
+  } else {
+    rutinas.forEach(function(r,i){
+      h+='<div class="card" style="margin-bottom:10px">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+        +'<div>'
+        +'<div style="font-size:16px;font-weight:800;color:#111">'+r.nombre+'</div>'
+        +'<div style="font-size:12px;color:#aaa;margin-top:2px">'+(r.tipo||'')+' · '+(r.ejercicios||[]).length+' ejercicios · '+(r.duracion||'45')+' min</div>'
+        +'</div>'
+        +'<div style="display:flex;gap:6px">'
+        +'<button data-ri="'+i+'" onclick="usarRutina(+this.dataset.ri)" style="background:#38bdf8;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:#0c4a6e;cursor:pointer">▶ Hacer</button>'
+        +'<button data-ri="'+i+'" onclick="borrarRutina(+this.dataset.ri)" style="background:#fee2e2;border:none;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;color:#ef4444">🗑</button>'
+        +'</div></div>';
+      if(r.ejercicios&&r.ejercicios.length){
+        h+='<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px">';
+        r.ejercicios.slice(0,6).forEach(function(ex){
+          h+='<span style="background:#f0f9ff;color:#0369a1;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px">'+ex.nombre+'</span>';
+        });
+        if(r.ejercicios.length>6) h+='<span style="font-size:11px;color:#aaa">+'+(r.ejercicios.length-6)+' más</span>';
+        h+='</div>';
+      }
+      h+='</div>';
+    });
+  }
+  h+='</div>';
+  document.getElementById('p-misrutinas').innerHTML=h;
+}
+
+function showCrearRutina(){
+  var allEx=Object.keys(EX_INFO);
+  var dl='<datalist id="mr-exlist">'+allEx.map(function(e){return '<option value="'+e+'">';}).join('')+'</datalist>';
+  var h='<div style="margin-top:4px">'
+    +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
+    +'<button onclick="drawMisRutinas()" style="background:#f4f4f2;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:14px">← Volver</button>'
+    +'<div style="font-size:17px;font-weight:800">Nueva rutina</div>'
+    +'</div>'
+    +'<div class="libform">'
+    +dl
+    +'<div class="lfield"><label>Nombre de la rutina</label>'
+    +'<input type="text" id="mr-nom" placeholder="Ej: Upper push miércoles" style="width:100%;border:1.5px solid #ddd;border-radius:8px;padding:8px 10px;font-size:15px;margin-top:4px"></div>'
+    +'<div class="lgrid2">'
+    +'<div class="lfield"><label>Tipo</label>'
+    +'<select id="mr-tipo" style="width:100%;border:1.5px solid #ddd;border-radius:8px;padding:8px 10px;font-size:14px;margin-top:4px">'
+    +'<option>Fuerza</option><option>HRX</option><option>Full Body</option><option>Upper Body</option><option>Lower Body</option><option>Cardio</option><option>Otro</option>'
+    +'</select></div>'
+    +'<div class="lfield"><label>Duración (min)</label>'
+    +'<input type="number" id="mr-dur" placeholder="45" style="width:100%;border:1.5px solid #ddd;border-radius:8px;padding:8px 10px;font-size:14px;margin-top:4px"></div>'
+    +'</div>'
+    +'<div style="font-size:12px;font-weight:700;color:#0369a1;letter-spacing:.06em;margin:12px 0 8px">EJERCICIOS</div>'
+    +'<div id="mr-exs"></div>'
+    +'<button onclick="addMrEx()" class="addbtn">+ Agregar ejercicio</button>'
+    +'<button onclick="guardarMiRutina()" class="libsavebtn" style="background:#0369a1">💾 Guardar rutina</button>'
+    +'</div></div>';
+  document.getElementById('p-misrutinas').innerHTML=h;
+  window._mrExCount=0;
+  addMrEx(); addMrEx();
+}
+
+function addMrEx(){
+  var cont=document.getElementById('mr-exs'); if(!cont) return;
+  var i=window._mrExCount++;
+  var div=document.createElement('div');
+  div.className='exblock'; div.id='mrex-'+i;
+  var rmBtn='<button data-target="mrex-'+i+'" onclick="document.getElementById(this.dataset.target).remove()" class="rmex">✕</button>';
+  div.innerHTML='<div class="exblock-num">EJERCICIO '+(i+1)+'</div>'
+    +rmBtn
+    +'<input type="text" id="mr-nm-'+i+'" placeholder="Nombre del ejercicio" list="mr-exlist" style="margin-bottom:6px;width:100%;border:1.5px solid #ddd;border-radius:8px;padding:8px 10px;font-size:14px">'
+    +'<div class="exblock-grid">'
+    +'<input type="number" id="mr-s-'+i+'" placeholder="Series">'
+    +'<input type="text"   id="mr-r-'+i+'" placeholder="Reps">'
+    +'<input type="text"   id="mr-p-'+i+'" placeholder="Peso">'
+    +'</div>';
+  cont.appendChild(div);
+}
+
+function guardarMiRutina(){
+  var nomEl=document.getElementById('mr-nom');
+  var nombre=nomEl&&nomEl.value.trim();
+  if(!nombre){toast('Poné un nombre a la rutina');return;}
+  var tipoEl=document.getElementById('mr-tipo');
+  var tipo=tipoEl?tipoEl.value:'Fuerza';
+  var durEl=document.getElementById('mr-dur');
+  var dur=durEl?durEl.value:'45';
+  var ejercicios=[];
+  for(var i=0;i<(window._mrExCount||0);i++){
+    var nmEl=document.getElementById('mr-nm-'+i);
+    if(!nmEl) continue;
+    var nm=nmEl.value.trim(); if(!nm) continue;
+    var sEl=document.getElementById('mr-s-'+i);
+    var rEl=document.getElementById('mr-r-'+i);
+    var pEl=document.getElementById('mr-p-'+i);
+    ejercicios.push({nombre:nm,series:sEl?sEl.value:'3',reps:rEl?rEl.value:'12',peso:pEl?pEl.value:''});
+  }
+  if(!ejercicios.length){toast('Agregá al menos un ejercicio');return;}
+  S.misRutinas.push({nombre:nombre,tipo:tipo,duracion:dur,ejercicios:ejercicios,creadaEn:new Date().toISOString()});
+  save(); toast('✓ Rutina guardada'); drawMisRutinas();
+}
+
+function borrarRutina(i){
+  if(!confirm('¿Eliminar esta rutina?')) return;
+  S.misRutinas.splice(i,1); save(); drawMisRutinas();
+}
+
+function usarRutina(i){
+  var r=S.misRutinas[i]; if(!r) return;
+  go('lib');
+  setTimeout(function(){
+    var nom=document.getElementById('li-nom'); if(nom) nom.value=r.nombre;
+    var dur=document.getElementById('li-dur'); if(dur) dur.value=r.duracion||'45';
+    var cont=document.getElementById('li-exs');
+    if(cont){
+      cont.innerHTML=''; S.libExCount=0;
+      r.ejercicios.forEach(function(ex,idx){
+        addLibEx();
+        setTimeout(function(){
+          var n=document.getElementById('le-nm-'+idx); if(n) n.value=ex.nombre;
+          var s=document.getElementById('le-s-'+idx);  if(s) s.value=ex.series;
+          var rr=document.getElementById('le-r-'+idx); if(rr) rr.value=ex.reps;
+          var p=document.getElementById('le-p-'+idx);  if(p) p.value=ex.peso||'';
+        },60);
+      });
+    }
+  },120);
+}
+
+// ── COACH IA ──────────────────────────────────────────────────
+function drawCoachIA(){
+  var h='<div style="margin-top:4px">'+buildModeSelector2('coachIA');
+  h+='<div class="coachbox" style="margin-bottom:12px">'
+    +'<div style="font-size:28px;margin-bottom:6px">✨</div>'
+    +'<div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:4px">Coach IA</div>'
+    +'<div class="coachmsg">Pedime que arme una rutina, que recomiende ejercicios o que analice tu progreso. Lo que armemos queda guardado en <strong>Mis Rutinas</strong>.</div>'
+    +'</div>';
+
+  var quickActions=[
+    {label:'💪 Rutina upper body definición',msg:'Armame una rutina de upper body para definición'},
+    {label:'🔥 Rutina HRX 20 minutos',       msg:'Armame una rutina HRX de 20 minutos'},
+    {label:'🏠 Rutina sin equipamiento',      msg:'Armame una rutina sin equipamiento'},
+    {label:'📊 Qué me recomendás esta semana',msg:'Según mis datos qué entrenamiento me recomendas esta semana'},
+  ];
+  h+='<div style="font-size:11px;font-weight:700;color:#aaa;letter-spacing:.08em;margin-bottom:8px">ACCIONES RÁPIDAS</div>';
+  h+='<div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">';
+  quickActions.forEach(function(a){
+    h+='<button data-msg="'+a.msg.replace(/"/g,'&quot;')+'" onclick="sendCoachIA(this.dataset.msg)"'
+      +' style="width:100%;text-align:left;padding:11px 14px;border:1.5px solid #e0f2fe;background:#f0f9ff;border-radius:12px;font-size:13px;font-weight:600;color:#0369a1;cursor:pointer">'
+      +a.label+'</button>';
+  });
+  h+='</div>';
+
+  h+='<div style="font-size:11px;font-weight:700;color:#aaa;letter-spacing:.08em;margin-bottom:8px">CHAT</div>';
+  h+='<div class="coachbox" style="padding:12px">'
+    +'<div class="cchat" id="coachIA-chat">';
+  var msgs=S.coachIAChat||[];
+  if(!msgs.length) h+='<div class="cmsg bot">Hola! Puedo armarte rutinas personalizadas, recomendarte ejercicios o analizar tu progreso. ¿Qué necesitás?</div>';
+  else msgs.forEach(function(m){ h+='<div class="cmsg '+m.r+'">'+m.t+'</div>'; });
+  h+='</div>'
+    +'<div class="cinput-row">'
+    +'<input type="text" class="cinput" id="coachIA-input" placeholder="Ej: armame una rutina de hombros..." onkeydown="if(event.key===\'Enter\')sendCoachIA()">'
+    +'<button class="csendbtn" onclick="sendCoachIA()">Enviar</button>'
+    +'</div></div>';
+  h+='</div>';
+  document.getElementById('p-coachIA').innerHTML=h;
+  var chat=document.getElementById('coachIA-chat');
+  if(chat) chat.scrollTop=chat.scrollHeight;
+}
+
+function sendCoachIA(presetMsg){
+  var inp=document.getElementById('coachIA-input');
+  var msg=presetMsg||(inp&&inp.value.trim());
+  if(!msg) return;
+  if(inp) inp.value='';
+  S.coachIAChat=S.coachIAChat||[];
+  S.coachIAChat.push({r:'usr',t:msg});
+  var chat=document.getElementById('coachIA-chat');
+  if(chat){var ud=document.createElement('div');ud.className='cmsg usr';ud.textContent=msg;chat.appendChild(ud);chat.scrollTop=chat.scrollHeight;}
+  var resp=coachIARespond(msg);
+  S.coachIAChat.push({r:'bot',t:resp.text});
+  save();
+  if(chat){var bd=document.createElement('div');bd.className='cmsg bot';bd.innerHTML=resp.text;chat.appendChild(bd);chat.scrollTop=chat.scrollHeight;}
+  if(resp.rutina){
+    S.misRutinas.push(resp.rutina); save();
+    if(chat){
+      var sv=document.createElement('div');
+      sv.style.cssText='background:#e0f2fe;border-radius:10px;padding:8px 12px;margin-top:4px;font-size:12px;color:#0369a1;font-weight:700';
+      sv.innerHTML='✓ Rutina guardada en Mis Rutinas · <button onclick="go(\'misrutinas\')" style="background:none;border:none;color:#0369a1;font-weight:800;cursor:pointer;text-decoration:underline">Ver →</button>';
+      chat.appendChild(sv); chat.scrollTop=chat.scrollHeight;
+    }
+  }
+}
+
+function coachIARespond(msg){
+  var m=msg.toLowerCase();
+  var a=analyzeData();
+  var wantsRutina=m.includes('rut')||m.includes('arm')||m.includes('ejerc')||m.includes('entren')||m.includes('plan');
+
+  if(wantsRutina){
+    if(m.includes('upper')||m.includes('pecho')||m.includes('espalda')||m.includes('hombro')||m.includes('brazo')){
+      return {text:'Armé una rutina de <strong>Upper Body para definición</strong> (~45 min):<br><br>'
+        +'• 4×12-15 DDB Chest Press<br>• 4×12 DDB Renegade Row<br>• 3×12 DDB Arnold Press<br>'
+        +'• 3×12 Jalón en polea<br>• 3×15 Elevación lateral<br>• 3×15 Curl bíceps<br>'
+        +'• 3×15 Extensión tríceps<br>• 3×20 Face Pull<br><br>'
+        +'Descansá 45-60" entre series.',
+        rutina:{nombre:'Upper Body IA · '+new Date().toLocaleDateString('es-AR'),tipo:'Upper Body',duracion:'45',creadaEn:new Date().toISOString(),
+          ejercicios:[{nombre:'DDB Chest Press',series:'4',reps:'12-15',peso:''},{nombre:'DDB Renegade Row',series:'4',reps:'12',peso:''},
+            {nombre:'DDB Arnold Press',series:'3',reps:'12',peso:''},{nombre:'Jalon en polea',series:'3',reps:'12',peso:''},
+            {nombre:'Elevacion lateral',series:'3',reps:'15',peso:''},{nombre:'Curl de biceps',series:'3',reps:'15',peso:''},
+            {nombre:'Extension triceps',series:'3',reps:'15',peso:''},{nombre:'Face Pull',series:'3',reps:'20',peso:''}]}};
+    }
+    if(m.includes('hrx')||m.includes('funcional')||m.includes('20 min')){
+      return {text:'Rutina <strong>HRX AMRAP 20 minutos</strong>:<br><br>'
+        +'• 5 DDB Man-Maker<br>• 10 DDB Thruster<br>• 10 DDB Dead Snatch<br>• 5 DDB Devil Press<br>• 10 Burpees<br><br>'
+        +'Hacé la mayor cantidad de rondas en 20 min.',
+        rutina:{nombre:'HRX IA · '+new Date().toLocaleDateString('es-AR'),tipo:'HRX',duracion:'20',creadaEn:new Date().toISOString(),
+          ejercicios:[{nombre:'DDB Man-Maker',series:'1',reps:'5',peso:''},{nombre:'DDB Thruster',series:'1',reps:'10',peso:''},
+            {nombre:'DDB Dead Snatch',series:'1',reps:'10',peso:''},{nombre:'DDB Devil Press',series:'1',reps:'5',peso:''},
+            {nombre:'Burpee',series:'1',reps:'10',peso:''}]}};
+    }
+    if(m.includes('sin equip')||m.includes('casa')||m.includes('home')){
+      return {text:'Rutina <strong>sin equipamiento · 30 min</strong>:<br><br>'
+        +'• 4×12 Burpees<br>• 4×30seg Mountain Climbers<br>• 4×45seg Plank<br>• 4×15 V-Sit Ups<br>• 4×20 Sit Ups<br>• 4×30seg Side Plank c/lado',
+        rutina:{nombre:'Sin equipo IA · '+new Date().toLocaleDateString('es-AR'),tipo:'Full Body',duracion:'30',creadaEn:new Date().toISOString(),
+          ejercicios:[{nombre:'Burpee',series:'4',reps:'12',peso:''},{nombre:'Mountain Climber',series:'4',reps:'30 seg',peso:''},
+            {nombre:'Plank',series:'4',reps:'45 seg',peso:''},{nombre:'V-Sit Up',series:'4',reps:'15',peso:''},
+            {nombre:'Sit Up',series:'4',reps:'20',peso:''},{nombre:'Side Plank',series:'4',reps:'30 seg c/lado',peso:''}]}};
+    }
+    // Generic based on data
+    var sc=a.sc||{};
+    var weak=Object.entries(sc).sort(function(x,y){return x[1]-y[1];}).slice(0,2).map(function(e){return e[0];});
+    var exMap={hombros:['DDB Arnold Press','Elevacion lateral','Face Pull'],pecho:['DDB Chest Press','DDB Pullover'],
+      espalda:['Barbell Bent Over Row','DDB Renegade Row','Jalon en polea'],brazo:['Curl de biceps','Extension triceps'],
+      pierna:['Goblet Squat','Hip Hinge'],core:['Plank','V-Sit Up'],cardio:['Bicicleta fija']};
+    var exs=[];
+    weak.forEach(function(p){(exMap[p]||[]).forEach(function(nm){exs.push({nombre:nm,series:'3',reps:'15',peso:''}); });});
+    if(!exs.length) exs=[{nombre:'DDB Chest Press',series:'4',reps:'12',peso:''},{nombre:'DDB Renegade Row',series:'4',reps:'12',peso:''}];
+    return {text:'Basado en tus datos, te armé una rutina para los músculos menos trabajados: <strong>'+(weak.join(' + ')||'upper body')+'</strong>.<br><br>'
+      +exs.map(function(e){return '• '+e.series+'×'+e.reps+' '+e.nombre;}).join('<br>'),
+      rutina:{nombre:'Rutina IA · '+new Date().toLocaleDateString('es-AR'),tipo:'Full Body',duracion:'40',creadaEn:new Date().toISOString(),ejercicios:exs}};
+  }
+
+  if(m.includes('progress')||m.includes('como voy')||m.includes('semana')||m.includes('anali')){
+    return {text:'Esta semana: <strong>'+a.logs7+' ejercicios</strong>, <strong>'+a.dias7+' días</strong>.'
+      +(a.vol7>0?' Volumen: <strong>'+Math.round(a.vol7).toLocaleString()+' kg</strong>.':'')
+      +(a.warns&&a.warns.length?'<br><br>⚠️ '+a.warns.join('<br>⚠️ '):''),rutina:null};
+  }
+
+  return {text:'Puedo ayudarte a:<br>• <strong>Armar rutinas</strong> personalizadas<br>• <strong>Analizar tu progreso</strong><br>• <strong>Recomendar ejercicios</strong> según tus datos<br><br>Usá los botones rápidos de arriba o escribime.',rutina:null};
+}
+
+// ── IMPORT CSV ALL FIT ─────────────────────────────────────────
+function importarCSVBalanza(input){
+  var file=input.files[0]; if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var lines=e.target.result.split('\n').filter(function(l){return l.trim();});
+    if(lines.length<2){toast('CSV vacío o inválido');return;}
+    var headers=lines[0].split(',').map(function(h){return h.trim().toLowerCase().replace(/"/g,'');});
+    var imported=0;
+    lines.slice(1).forEach(function(line){
+      var vals=line.split(',').map(function(v){return v.trim().replace(/"/g,'');});
+      var obj={};
+      headers.forEach(function(h,i){obj[h]=vals[i]||'';});
+      var entry={
+        fecha:obj['date']||obj['fecha']||obj['time']||new Date().toLocaleDateString('es-AR'),
+        peso:    parseFloat(obj['weight']||obj['peso']||0)||'',
+        grasa:   parseFloat(obj['body fat']||obj['fat']||obj['grasa']||0)||'',
+        musculo: parseFloat(obj['muscle']||obj['musculo']||obj['skeletal muscle']||0)||'',
+        proteina:parseFloat(obj['protein']||obj['proteina']||0)||'',
+        sueno:   parseFloat(obj['sleep']||obj['sueno']||0)||'',
+      };
+      if(entry.fecha&&entry.fecha.includes('-')){var p=entry.fecha.split(' ')[0].split('-');if(p.length===3)entry.fecha=p[2]+'/'+p[1]+'/'+p[0];}
+      if(entry.peso){S.medidas.push(entry);imported++;}
+    });
+    S.medidas.sort(function(a,b){var pa=a.fecha.split('/'),pb=b.fecha.split('/');if(pa.length<3||pb.length<3)return 0;return new Date(+pa[2],+pa[1]-1,+pa[0])-new Date(+pb[2],+pb[1]-1,+pb[0]);});
+    save(); toast('✓ Importadas '+imported+' medidas de All Fit'); drawMed();
+  };
+  reader.readAsText(file);
+}
+
+// ── EXPORT APPLE HEALTH ────────────────────────────────────────
+function exportarSalud(){
+  var rows=[['startDate','endDate','type','value','unit','sourceName','sourceVersion']];
+  S.allLogs.forEach(function(r){
+    if(!r.fecha||!r.ejercicio) return;
+    var p=r.fecha.split('/'); if(p.length<3) return;
+    var d=new Date(+p[2],+p[1]-1,+p[0]);
+    var ds=d.toISOString();
+    var mins=(parseFloat(r.series)||1)*3;
+    rows.push([ds,ds,'HKQuantityTypeIdentifierAppleExerciseTime',mins,'min','GymTracker','1.0']);
+    var pesos=(r.pesos||'').split('/').map(function(v){return parseFloat(v)||0;}).filter(Boolean);
+    if(pesos.length) rows.push([ds,ds,'HKQuantityTypeIdentifierNikeFuel',Math.max.apply(null,pesos),'kg','GymTracker','1.0']);
+  });
+  S.medidas.forEach(function(m){
+    if(!m.fecha) return;
+    var p=m.fecha.split('/'); if(p.length<3) return;
+    var ds=new Date(+p[2],+p[1]-1,+p[0]).toISOString();
+    if(m.peso)    rows.push([ds,ds,'HKQuantityTypeIdentifierBodyMass',m.peso,'kg','GymTracker','1.0']);
+    if(m.grasa)   rows.push([ds,ds,'HKQuantityTypeIdentifierBodyFatPercentage',m.grasa/100,'%','GymTracker','1.0']);
+    if(m.musculo) rows.push([ds,ds,'HKQuantityTypeIdentifierLeanBodyMass',m.musculo,'%','GymTracker','1.0']);
+  });
+  var csv=rows.map(function(r){return r.map(function(v){return '"'+v+'"';}).join(',');}).join('\n');
+  var blob=new Blob([csv],{type:'text/csv'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url; a.download='gymtracker_salud_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(url);
+  toast('✓ Exportado — abrí el archivo desde Archivos para importar a Salud');
+}
+
+
+function buildModeSelector(){
+  var btns=[
+    {id:'hoy',      icon:'📋',label:'Plan'},
+    {id:'misrutinas',icon:'📝',label:'Mis Rutinas'},
+    {id:'lib',      icon:'✏️', label:'Libre'},
+    {id:'coachIA',  icon:'✨', label:'IA Coach'},
+  ];
+  var h='<div style="display:flex;gap:6px;margin-bottom:14px;margin-top:4px">';
+  btns.forEach(function(b){
+    var active=b.id==='hoy';
+    h+='<button onclick="go(\''+b.id+'\')" style="flex:1;padding:9px 4px;border-radius:12px;';
+    h+=active?'border:2px solid #38bdf8;background:#38bdf8;color:#0c4a6e;':
+              'border:1.5px solid #ddd;background:#fff;color:#888;';
+    h+='font-size:11px;font-weight:800;cursor:pointer;line-height:1.3">';
+    h+=b.icon+'<br>'+b.label+'</button>';
+  });
+  h+='</div>';
+  return h;
+}
+
 function drawHoy(){
   const di=S.day, day=PLAN[di];
   const done=day.bloques.filter(b=>!!S.completed[di+'-'+b.n]).length;
   const pct=Math.round(done/day.bloques.length*100);
 
+  // Mode selector
+  let html=buildModeSelector();
   // Semana A/B selector
-  let html=`<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+  html+=`<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
     <span style="font-size:12px;font-weight:700;color:#aaa;letter-spacing:.06em">SEMANA</span>
     <button onclick="setSemana('A')" style="padding:5px 16px;border-radius:20px;border:1.5px solid ${S.semana==='A'?'#0369a1':'#ddd'};background:${S.semana==='A'?'#0369a1':'#fff'};color:${S.semana==='A'?'#fff':'#aaa'};font-weight:800;font-size:13px;cursor:pointer">A</button>
     <button onclick="setSemana('B')" style="padding:5px 16px;border-radius:20px;border:1.5px solid ${S.semana==='B'?'#0369a1':'#ddd'};background:${S.semana==='B'?'#0369a1':'#fff'};color:${S.semana==='B'?'#fff':'#aaa'};font-weight:800;font-size:13px;cursor:pointer">B</button>
@@ -1656,6 +2026,7 @@ function setHistDay(v){S.histDayFilter=v;drawHist();}
 const MED_FIELDS=[
   // Peso corporal
   {k:'peso',     l:'⚖️ Peso corporal',       u:'kg',  sec:'peso'},
+  {k:'sueno',    l:'😴 Sueño noche anterior', u:'hs',  sec:'peso'},
   {k:'grasa',    l:'🔶 % Grasa corporal',     u:'%',   sec:'comp'},
   {k:'musculo',  l:'💪 % Músculo',            u:'%',   sec:'comp'},
   {k:'proteina', l:'🥩 % Proteína',           u:'%',   sec:'comp'},
@@ -1692,7 +2063,15 @@ function drawMed(){
     form+=`<div class="mfield"><label>${f.l} <span style="font-size:11px;color:#aaa">${f.u}</span></label>
       <input type="text" inputmode="decimal" id="mf-${f.k}" placeholder="0" pattern="[0-9]*[.,]?[0-9]*" oninput="this.value=this.value.replace(',','.')"></div>`;
   });
-  form+=`</div><button class="msavebtn" onclick="saveMed()">💾 Guardar medidas</button></div>`;
+  form+=`</div><button class="msavebtn" onclick="saveMed()">💾 Guardar medidas</button>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <label style="flex:1;padding:10px;background:#f0f9ff;border:1.5px solid #38bdf8;border-radius:10px;font-size:12px;font-weight:700;color:#0369a1;cursor:pointer;text-align:center">
+        📲 Importar CSV All Fit<input type="file" accept=".csv" style="display:none" onchange="importarCSVBalanza(this)">
+      </label>
+      <button onclick="exportarSalud()" style="flex:1;padding:10px;background:#f0f9ff;border:1.5px solid #38bdf8;border-radius:10px;font-size:12px;font-weight:700;color:#0369a1;cursor:pointer">
+        🍎 Exportar a Salud
+      </button>
+    </div></div>`;
 
   // Build chart sections only if data exists
   const hasData = S.medidas.length > 1;
