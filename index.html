@@ -1222,32 +1222,108 @@ function coachIARespond(msg){
   return {text:'Puedo ayudarte a:<br>• <strong>Armar rutinas</strong> personalizadas<br>• <strong>Analizar tu progreso</strong><br>• <strong>Recomendar ejercicios</strong> según tus datos<br><br>Usá los botones rápidos de arriba o escribime.',rutina:null};
 }
 
-// ── IMPORT CSV ALL FIT ─────────────────────────────────────────
+// ── IMPORT ALL FIT (CSV o XLSX exportado como CSV) ────────────
+// Columnas All Fit: ID,Fecha,Peso,IMC,Tasa de grasa corporal,
+//   Músculo,Humedad,Masa ósea,BMR,Tasa de proteína,Edad del cuerpo,
+//   Grasa visceral,Grasa subcutánea
+function limpiarNum(v){
+  // Elimina unidades: "53.2kg" → 53.2, "27.8%" → 27.8
+  if(!v && v!==0) return '';
+  var n=parseFloat(String(v).replace(/[^0-9.,\-]/g,'').replace(',','.'));
+  return isNaN(n)?'':n;
+}
+
+function parsearFechaAllFit(f){
+  // "2019-12-25 21:19:36" → "25/12/2019"
+  if(!f) return new Date().toLocaleDateString('es-AR');
+  var parte=String(f).split(' ')[0]; // solo la fecha
+  if(parte.includes('-')){
+    var p=parte.split('-');
+    if(p.length===3) return p[2]+'/'+p[1]+'/'+p[0];
+  }
+  return parte;
+}
+
 function importarCSVBalanza(input){
   var file=input.files[0]; if(!file) return;
   var reader=new FileReader();
   reader.onload=function(e){
-    var lines=e.target.result.split('\n').filter(function(l){return l.trim();});
-    if(lines.length<2){toast('CSV vacío o inválido');return;}
-    var headers=lines[0].split(',').map(function(h){return h.trim().toLowerCase().replace(/"/g,'');});
+    var text=e.target.result;
+    var lines=text.split('\n').filter(function(l){return l.trim();});
+    if(lines.length<2){toast('Archivo vacío o inválido');return;}
+
+    // Parse header
+    var sep=lines[0].includes('\t')?'\t':',';
+    var headers=lines[0].split(sep).map(function(h){
+      return h.trim().replace(/"/g,'').toLowerCase();
+    });
+
+    // Column index map — All Fit column names (lowercase)
+    var COL={
+      fecha:     ['fecha','date','time'],
+      peso:      ['peso','weight'],
+      imc:       ['imc','bmi'],
+      grasa:     ['tasa de grasa corporal','body fat','grasa','fat'],
+      musculo:   ['músculo','musculo','muscle','skeletal muscle'],
+      humedad:   ['humedad','water','body water'],
+      hueso:     ['masa ósea','masa osea','bone','bone mass'],
+      bmr:       ['bmr','metabolismo basal'],
+      proteina:  ['tasa de proteína','tasa de proteina','protein','proteina'],
+      edadCuerpo:['edad del cuerpo','body age'],
+      grasaVisc: ['grasa visceral','visceral fat'],
+      grasaSubc: ['grasa subcutánea','grasa subcutanea','subcutaneous fat'],
+    };
+
+    function findCol(names){
+      for(var i=0;i<names.length;i++){
+        var idx=headers.indexOf(names[i]);
+        if(idx>=0) return idx;
+      }
+      return -1;
+    }
+
+    var idxMap={};
+    Object.keys(COL).forEach(function(k){ idxMap[k]=findCol(COL[k]); });
+    console.log('Column map:', JSON.stringify(idxMap));
+
     var imported=0;
     lines.slice(1).forEach(function(line){
-      var vals=line.split(',').map(function(v){return v.trim().replace(/"/g,'');});
-      var obj={};
-      headers.forEach(function(h,i){obj[h]=vals[i]||'';});
+      if(!line.trim()) return;
+      var vals=line.split(sep).map(function(v){return v.trim().replace(/"/g,'');});
+
+      function get(k){ var i=idxMap[k]; return i>=0?vals[i]||'':''; }
+
       var entry={
-        fecha:obj['date']||obj['fecha']||obj['time']||new Date().toLocaleDateString('es-AR'),
-        peso:    parseFloat(obj['weight']||obj['peso']||0)||'',
-        grasa:   parseFloat(obj['body fat']||obj['fat']||obj['grasa']||0)||'',
-        musculo: parseFloat(obj['muscle']||obj['musculo']||obj['skeletal muscle']||0)||'',
-        proteina:parseFloat(obj['protein']||obj['proteina']||0)||'',
-        sueno:   parseFloat(obj['sleep']||obj['sueno']||0)||'',
+        fecha:      parsearFechaAllFit(get('fecha')),
+        peso:       limpiarNum(get('peso')),
+        imc:        limpiarNum(get('imc')),
+        grasa:      limpiarNum(get('grasa')),
+        musculo:    limpiarNum(get('musculo')),
+        humedad:    limpiarNum(get('humedad')),
+        hueso:      limpiarNum(get('hueso')),
+        bmr:        limpiarNum(get('bmr')),
+        proteina:   limpiarNum(get('proteina')),
+        edadCuerpo: limpiarNum(get('edadCuerpo')),
+        grasaVisc:  limpiarNum(get('grasaVisc')),
+        grasaSubc:  limpiarNum(get('grasaSubc')),
       };
-      if(entry.fecha&&entry.fecha.includes('-')){var p=entry.fecha.split(' ')[0].split('-');if(p.length===3)entry.fecha=p[2]+'/'+p[1]+'/'+p[0];}
-      if(entry.peso){S.medidas.push(entry);imported++;}
+
+      if(entry.peso){
+        S.medidas.push(entry);
+        imported++;
+      }
     });
-    S.medidas.sort(function(a,b){var pa=a.fecha.split('/'),pb=b.fecha.split('/');if(pa.length<3||pb.length<3)return 0;return new Date(+pa[2],+pa[1]-1,+pa[0])-new Date(+pb[2],+pb[1]-1,+pb[0]);});
-    save(); toast('✓ Importadas '+imported+' medidas de All Fit'); drawMed();
+
+    // Sort by date
+    S.medidas.sort(function(a,b){
+      var pa=a.fecha.split('/'),pb=b.fecha.split('/');
+      if(pa.length<3||pb.length<3) return 0;
+      return new Date(+pa[2],+pa[1]-1,+pa[0])-new Date(+pb[2],+pb[1]-1,+pb[0]);
+    });
+
+    save();
+    toast('✓ Importadas '+imported+' medidas de All Fit');
+    drawMed();
   };
   reader.readAsText(file);
 }
@@ -2040,6 +2116,14 @@ const MED_FIELDS=[
   {k:'muslo_i',  l:'🦵 Muslo izquierdo',      u:'cm',  sec:'medidas'},
   {k:'pantorr_d',l:'🦵 Pantorrilla dcha',     u:'cm',  sec:'medidas'},
   {k:'pantorr_i',l:'🦵 Pantorrilla izq',      u:'cm',  sec:'medidas'},
+  // All Fit extra
+  {k:'imc',       l:'📐 IMC',                  u:'',    sec:'extra'},
+  {k:'humedad',   l:'💧 Humedad corporal',      u:'%',   sec:'extra'},
+  {k:'hueso',     l:'🦴 Masa ósea',             u:'kg',  sec:'extra'},
+  {k:'bmr',       l:'⚡ BMR (metabolismo)',      u:'kcal',sec:'extra'},
+  {k:'edadCuerpo',l:'🎂 Edad del cuerpo',       u:'años',sec:'extra'},
+  {k:'grasaVisc', l:'🔴 Grasa visceral',        u:'',    sec:'extra'},
+  {k:'grasaSubc', l:'🟡 Grasa subcutánea',      u:'%',   sec:'extra'},
 ];
 function drawMed(){
   const secs={
