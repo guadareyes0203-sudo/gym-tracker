@@ -1102,6 +1102,23 @@ function drawMisRutinas(){
   var rutinas=S.misRutinas||[];
   var h='<div style="margin-top:4px">'+buildModeSelector2('misrutinas');
   h+='<button onclick="showCrearRutina()" style="width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:14px">+ Crear nueva rutina</button>';
+
+  // ── Pinned AZ2 favorites ──────────────────────────────────
+  var az2favs=S.favoritos.filter(function(r){return r.fav;});
+  if(az2favs.length){
+    h+='<div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.1em;margin-bottom:8px">⭐ FAVORITAS</div>';
+    h+='<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:14px">';
+    az2favs.forEach(function(r){
+      var ri=S.favoritos.indexOf(r);
+      h+='<div style="flex:0 0 auto;background:var(--card);border:1px solid var(--accent);border-radius:14px;padding:12px;min-width:160px;max-width:190px">';
+      h+='<div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:2px">'+r.nombre+'</div>';
+      h+='<div style="font-size:11px;color:var(--text2);margin-bottom:10px">'+(r.ejercicios||[]).length+' ej · '+(r.duracion||'45')+'min</div>';
+      h+='<button data-ri="'+ri+'" onclick="usarRutinaFav(+this.dataset.ri)" style="width:100%;background:var(--accent);border:none;border-radius:8px;padding:8px 0;font-size:12px;font-weight:800;color:#fff;cursor:pointer">▶ Hacer ahora</button>';
+      h+='</div>';
+    });
+    h+='</div>';
+    h+='<div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.1em;margin-bottom:8px">MIS RUTINAS</div>';
+  }
   if(!rutinas.length){
     h+='<div style="text-align:center;padding:3rem 1rem;color:var(--text2)">'
       +'<div style="font-size:48px;margin-bottom:10px">📝</div>'
