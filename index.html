@@ -673,7 +673,7 @@ const PROGRAM_4W=[
 // ── STATE ────────────────────────────────────────────────────
 const charts={};
 const S={
-  panel:'hoy', day:0, semana:'A', misRutinas:[], coachIAChat:[], favoritos:[],
+  panel:'hoy', day:0, semana:'A', misRutinas:[], coachIAChat:[], favoritos:[], calYear:null, calMonth:null,
   completed:{}, logs:{}, allLogs:[],
   medidas:[], libreWO:[], chat:[],
   sheetsUrl:'',
@@ -1379,6 +1379,14 @@ function exportarSalud(){
 }
 
 
+function logCardio(inp){
+  var ck=inp.dataset.ck, campo=inp.dataset.campo;
+  var val=inp.value.replace(',','.');
+  if(!S.logs[ck]) S.logs[ck]={};
+  S.logs[ck][campo]=val;
+  save();
+}
+
 function buildModeSelector(){
   var btns=[
     {id:'hoy',      icon:'📋',label:'Plan'},
@@ -1444,6 +1452,46 @@ function drawHoy(){
     b.exs.forEach((ex,ei)=>{
       const info=getInfo(ex.nm);
       const mk=di+'-'+b.n+'-'+ei, mOpen=!!S.muscOpen[mk];
+
+      // CARDIO BLOCK — special inputs
+      if(b.cat==='cardio'){
+        const ck=di+'-'+b.n+'-'+ei+'-cardio';
+        const cd=S.logs[ck]||{};
+        exHTML+=`<div class="exrow">
+          <div class="extop">
+            <span class="exname"><strong>${ex.nm}</strong></span>
+            <a class="vbtn" href="${info.vid}" target="_blank">&#9654; Ver</a>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px">
+            <div>
+              <div class="setlbl" style="margin-bottom:4px">⏱ TIEMPO</div>
+              <input type="text" inputmode="decimal" class="setsel" placeholder="min"
+                value="${cd.tiempo||''}"
+                data-ck="${ck}" data-campo="tiempo"
+                onchange="logCardio(this)"
+                oninput="this.value=this.value.replace(',','.')">
+            </div>
+            <div>
+              <div class="setlbl" style="margin-bottom:4px">📏 KM</div>
+              <input type="text" inputmode="decimal" class="setsel" placeholder="km"
+                value="${cd.km||''}"
+                data-ck="${ck}" data-campo="km"
+                onchange="logCardio(this)"
+                oninput="this.value=this.value.replace(',','.')">
+            </div>
+            <div>
+              <div class="setlbl" style="margin-bottom:4px">⚡ RESIST.</div>
+              <input type="text" inputmode="decimal" class="setsel" placeholder="niv."
+                value="${cd.resist||''}"
+                data-ck="${ck}" data-campo="resist"
+                onchange="logCardio(this)"
+                oninput="this.value=this.value.replace(',','.')">
+            </div>
+          </div>
+        </div>`;
+        return;
+      }
+
       let setHTML='<div class="setrow">';
       const ns=Math.min(ex.s,5);
       for(let si=0;si<ns;si++){
@@ -1707,6 +1755,13 @@ function saveBloque(di,bn){
   if(btn){btn.disabled=true;btn.textContent='...';}
 
   const rows=bloque.exs.map((ex,ei)=>{
+    // Cardio: save time/km/resistance instead of sets
+    if(bloque.cat==='cardio' || ex.nm==='Bicicleta fija' || ex.nm==='Caminadora'){
+      const ck=di+'-'+bn+'-'+ei+'-cardio';
+      const cd=S.logs[ck]||{};
+      const pesos=[cd.tiempo?cd.tiempo+'min':'',cd.km?cd.km+'km':'',cd.resist?'R'+cd.resist:''].filter(Boolean).join(' / ')||'—';
+      return{fecha:today,dia:day.label,ejercicio:ex.nm,series:1,reps:cd.tiempo?cd.tiempo+'min':'—',pesos,muscs:'Cardio'};
+    }
     const kgs=[];
     for(let si=0;si<ex.s;si++){const d=S.logs[di+'-'+bn+'-'+ei+'-'+si]||{};kgs.push(d.kg?d.kg+' kg':'—');}
     return{fecha:today,dia:day.label,ejercicio:ex.nm,series:ex.s,reps:ex.r,pesos:kgs.join(' / '),muscs:getInfo(ex.nm).msc.join(', ')};
@@ -2074,13 +2129,55 @@ function drawHist(){
   const allEx=[...new Set(S.allLogs.map(r=>r.ejercicio).filter(Boolean))].sort();
   const allDays=[...new Set(S.allLogs.map(r=>r.dia).filter(Boolean))];
   const fex=S.histExFilter||'todos', fday=S.histDayFilter||'todos';
-  let filtered=S.allLogs.filter(r=>{
-    if(fex!=='todos'&&r.ejercicio!==fex) return false;
-    if(fday!=='todos'&&r.dia!==fday) return false;
-    return true;
+
+  const now=new Date();
+  if(!S.calYear){ S.calYear=now.getFullYear(); S.calMonth=now.getMonth(); }
+  const calYear=S.calYear, calMonth=S.calMonth;
+
+  const trainedDays=new Set();
+  S.allLogs.forEach(function(r){
+    if(!r.fecha) return;
+    const p=r.fecha.split('/'); if(p.length<3) return;
+    const d=new Date(+p[2],+p[1]-1,+p[0]);
+    if(d.getFullYear()===calYear&&d.getMonth()===calMonth) trainedDays.add(d.getDate());
   });
 
-  let html=`<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;margin-top:4px">
+  const mNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const startOffset=firstDay===0?6:firstDay-1;
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+
+  let cal='<div class="card" style="margin-bottom:14px">';
+  cal+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">';
+  cal+='<button onclick="prevMonth()" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--text);font-size:16px">‹</button>';
+  cal+='<div style="font-weight:800;font-size:15px;color:var(--text)">'+mNames[calMonth]+' '+calYear+'</div>';
+  cal+='<button onclick="nextMonth()" style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--text);font-size:16px">›</button>';
+  cal+='</div>';
+  cal+='<div style="font-size:12px;font-weight:700;color:var(--text2);text-align:right;margin-bottom:10px">'+trainedDays.size+' entrenamientos</div>';
+
+  const dayLabels=['L','M','X','J','V','S','D'];
+  cal+='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px">';
+  dayLabels.forEach(function(d){cal+='<div style="text-align:center;font-size:11px;font-weight:700;color:var(--text2);padding:4px 0">'+d+'</div>';});
+  cal+='</div>';
+
+  cal+='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px">';
+  for(var i=0;i<startOffset;i++) cal+='<div></div>';
+  for(var d=1;d<=daysInMonth;d++){
+    const isToday=d===now.getDate()&&calMonth===now.getMonth()&&calYear===now.getFullYear();
+    const hasTrain=trainedDays.has(d);
+    cal+='<div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:13px;font-weight:'+(hasTrain||isToday?'800':'400')+';'
+      +(isToday?'border:2px solid var(--accent);color:var(--accent);'
+        :hasTrain?'background:var(--accentbg);color:var(--blue);'
+          :'color:var(--text2);')+'">'+d+'</div>';
+  }
+  cal+='</div></div>';
+
+  let html='<div style="margin-top:4px">';
+  html+='<div style="font-size:10px;font-weight:700;color:var(--blue);letter-spacing:.12em;margin-bottom:2px">HISTORIAL</div>';
+  html+='<div style="font-size:28px;font-weight:900;color:var(--text);margin-bottom:14px">Entrenamientos</div>';
+  html+=cal;
+
+  html+=`<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
     <select class="fsel" onchange="setHistEx(this.value)">
       <option value="todos">Todos los ejercicios</option>
       ${allEx.map(e=>`<option value="${e}"${fex===e?' selected':''}>${e}</option>`).join('')}
@@ -2091,12 +2188,18 @@ function drawHist(){
     </select>
   </div>`;
 
+  let filtered=S.allLogs.filter(r=>{
+    if(fex!=='todos'&&r.ejercicio!==fex) return false;
+    if(fday!=='todos'&&r.dia!==fday) return false;
+    return true;
+  });
+
   if(fex!=='todos'&&filtered.length){
     const pData=filtered.map(r=>{const ps=(r.pesos||'').split('/').map(x=>parseFloat(x)||0).filter(Boolean);return{f:r.fecha,max:ps.length?Math.max(...ps):0};});
-    html+=`<div class="card"><div style="font-size:14px;font-weight:700;margin-bottom:8px">${fex} — Evolución peso</div><canvas id="exChart" height="120"></canvas></div>`;
+    html+=`<div class="card"><div style="font-size:14px;font-weight:700;margin-bottom:8px;color:var(--text)">${fex} — Evolución peso</div><canvas id="exChart" height="120"></canvas></div>`;
     setTimeout(()=>{
       const ctx=document.getElementById('exChart');
-      if(ctx&&pData.length) new Chart(ctx,{type:'line',data:{labels:pData.map(d=>d.f),datasets:[{label:'Kg máx',data:pData.map(d=>d.max),borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,.1)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#38bdf8'}]},options:{plugins:{legend:{display:false}},scales:{x:{ticks:{maxRotation:45,font:{size:9}}},y:{beginAtZero:false,ticks:{font:{size:10}}}}}});
+      if(ctx&&pData.length) new Chart(ctx,{type:'line',data:{labels:pData.map(d=>d.f),datasets:[{label:'Kg',data:pData.map(d=>d.max),borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,.1)',fill:true,tension:.4,pointRadius:3}]},options:{plugins:{legend:{display:false}},scales:{x:{ticks:{maxRotation:45,font:{size:9},color:'#9090b0'}},y:{ticks:{font:{size:10},color:'#9090b0'}}}}});
     },80);
   }
 
@@ -2105,16 +2208,15 @@ function drawHist(){
     html+='<div style="text-align:center;padding:2rem;color:var(--text2);font-size:14px"><div style="font-size:36px;margin-bottom:8px">📋</div>Sin registros — guardá bloques para verlos acá</div>';
   } else {
     [...filtered].reverse().slice(0,80).forEach(r=>{
-      html+=`<div class="lentry">
-        <div class="lname">${r.ejercicio||'—'}</div>
-        <div class="lmeta">${r.dia||''} · ${r.fecha||''} · ${r.series} series × ${r.reps} reps</div>
-        <div class="lpesos">${r.pesos||'—'}</div>
-        ${r.muscs?`<div class="lmuscs">${r.muscs}</div>`:''}
-      </div>`;
+      html+=`<div class="lentry"><div class="lname">${r.ejercicio||'—'}</div><div class="lmeta">${r.dia||''} · ${r.fecha||''} · ${r.series} series × ${r.reps}</div><div class="lpesos">${r.pesos||'—'}</div>${r.muscs?`<div class="lmuscs">${r.muscs}</div>`:''}</div>`;
     });
   }
+  html+='</div>';
   document.getElementById('p-hist').innerHTML=html;
 }
+function prevMonth(){S.calMonth--;if(S.calMonth<0){S.calMonth=11;S.calYear--;}drawHist();}
+function nextMonth(){S.calMonth++;if(S.calMonth>11){S.calMonth=0;S.calYear++;}drawHist();}
+
 function setHistEx(v){S.histExFilter=v;drawHist();}
 function setHistDay(v){S.histDayFilter=v;drawHist();}
 
@@ -2648,38 +2750,107 @@ function genResp(msg,a){
 
 function drawCoach(){
   const a=analyzeData();
-  let main='';
-  if(a.logs7===0) main='Sin datos esta semana. <strong>Registrá tu primer entrenamiento</strong> y volvé acá para ver análisis.';
-  else main=`Esta semana entrenaste <strong>${a.dias7} día/s</strong> con un volumen de <strong>${Math.round(a.vol7).toLocaleString()} kg</strong>. ${a.warns.length?`Tengo <strong>${a.warns.length} sugerencia/s</strong> para mejorar.`:'¡Todo en orden!'}`;
+  const now=new Date();
+  const readiness=Math.min(100,Math.round(70+(a.dias7>=4?15:a.dias7*4)-(a.warns?a.warns.length*8:0)));
+  const readLabel=readiness>=80?'Excelente':readiness>=60?'Bueno':readiness>=40?'Regular':'Bajo';
+  const readColor=readiness>=80?'var(--green)':readiness>=60?'var(--blue)':readiness>=40?'var(--yellow)':'var(--red)';
+  const circ=201, offset=circ-(readiness/100*circ);
 
-  const tags=[...a.warns.map(w=>`<span class="ctag warn">⚠️ ${w}</span>`),...a.oks.map(o=>`<span class="ctag ok">✓ ${o}</span>`),...a.tips.map(t=>`<span class="ctag tip">💡 ${t}</span>`)].join('');
+  const pillarDays={pecho:999,hombros:999,espalda:999,brazo:999,pierna:999,core:999};
+  S.allLogs.forEach(function(r){
+    if(!r.fecha) return;
+    const p=r.fecha.split('/'); if(p.length<3) return;
+    const d=new Date(+p[2],+p[1]-1,+p[0]);
+    const diff=Math.floor((now-d)/(1000*60*60*24));
+    const pillar=getInfo(r.ejercicio||'').p||'core';
+    if(pillarDays[pillar]!==undefined&&diff<pillarDays[pillar]) pillarDays[pillar]=diff;
+  });
+  function fc(days){return days===999?'var(--border)':days<=1?'var(--red)':days<=3?'var(--yellow)':'var(--green)';}
+  function fl(days){return days===999?'Sin datos':days<=1?'Entrenado hoy':days<=3?'En recuperación':'Listo';}
+  function fs(days){return days===999?'SIN DATOS':days<=1?'RECUPERANDO':days<=3?'DESCANSANDO':'✓ FRESCO';}
 
-  let chatHTML='<div class="cchat" id="cchat"><div class="cmsg bot">👋 Hola! Analizá tus entrenamientos acá. Preguntame sobre volumen, frecuencia, músculos trabajados, progresión de pesos o errores en tu plan.</div>';
-  S.chat.forEach(m=>chatHTML+=`<div class="cmsg ${m.r}">${m.t}</div>`);
-  chatHTML+='</div>';
+  const challProg=Math.min(a.dias7,4);
+  const challPct=Math.round(challProg/4*100);
 
-  document.getElementById('p-coach').innerHTML=`<div style="margin-top:4px">
-    <div class="coachbox">
-      <div class="coachavatar">🤖</div>
-      <div class="coachmsg">${main}</div>
-      <div class="coachdiv"></div>
-      <div class="ctags">${tags}</div>
-    </div>
-    <div class="sgrid">
-      <div class="scard"><div class="sicon">📅</div><div class="sval">${a.dias7}</div><div class="slbl">DÍAS ESTA SEM.</div><div class="strend ${a.dias7>=4?'up':a.dias7>=3?'ne':'dn'}">${a.dias7>=4?'✓ Objetivo':'↓ Subir'}</div></div>
-      <div class="scard"><div class="sicon">⚖️</div><div class="sval">${(Math.round(a.vol7/100)/10).toFixed(1)}k</div><div class="slbl">VOLUMEN SEM.</div><div class="strend ${a.vol7>8000?'up':a.vol7>4000?'ne':'dn'}">${a.vol7>8000?'✓ Excelente':a.vol7>4000?'→ Bien':'↓ Subir'}</div></div>
-      <div class="scard"><div class="sicon">📆</div><div class="sval">${a.dias30}</div><div class="slbl">DÍAS ESTE MES</div><div class="strend ${a.dias30>=16?'up':a.dias30>=10?'ne':'dn'}">${a.dias30>=16?'✓ Constante':a.dias30>=10?'→ Regular':'↓ Mejorar'}</div></div>
-      <div class="scard"><div class="sicon">🏋️</div><div class="sval">${a.logs7}</div><div class="slbl">EJERCICIOS LOG.</div><div class="strend ne">Esta semana</div></div>
-    </div>
-    <div class="stitle">CHAT</div>
-    <div class="coachbox" style="padding:12px">
-      ${chatHTML}
-      <div class="cinput-row">
-        <input type="text" class="cinput" id="cinput" placeholder="Preguntame algo..." onkeydown="if(event.key==='Enter')sendChat()">
-        <button class="csendbtn" onclick="sendChat()">Enviar</button>
-      </div>
-    </div>
-  </div>`;
+  let html='<div style="margin-top:4px">';
+  html+='<div style="font-size:10px;font-weight:700;color:var(--blue);letter-spacing:.12em;margin-bottom:2px">ANÁLISIS POST-ENTRENO</div>';
+  html+='<div style="font-size:30px;font-weight:900;color:var(--text);margin-bottom:16px">Coach</div>';
+
+  // Readiness
+  html+='<div class="card" style="display:flex;align-items:center;gap:16px;margin-bottom:12px">';
+  html+='<div style="position:relative;width:72px;height:72px;flex-shrink:0">';
+  html+='<svg width="72" height="72" viewBox="0 0 72 72"><circle cx="36" cy="36" r="32" fill="none" stroke="var(--border)" stroke-width="6"/>';
+  html+='<circle cx="36" cy="36" r="32" fill="none" stroke="'+readColor+'" stroke-width="6" stroke-dasharray="'+circ+'" stroke-dashoffset="'+offset+'" stroke-linecap="round" transform="rotate(-90 36 36)"/></svg>';
+  html+='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:16px;font-weight:800;color:var(--text)">'+readiness+'</div>';
+  html+='</div><div>';
+  html+='<div style="font-size:17px;font-weight:800;color:var(--text)">Preparación &nbsp;<span style="background:var(--accentbg);color:var(--accent);border:1px solid var(--accent)40;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700">'+readLabel+'</span></div>';
+  html+='<div style="font-size:13px;color:var(--text2);margin-top:4px">'+(readiness>=60?'Buen estado — entrenamiento normal.':'Considerá reducir la intensidad hoy.')+'</div>';
+  html+='</div></div>';
+
+  // Muscle freshness
+  const muscGroups=[{k:'pierna',l:'Piernas'},{k:'espalda',l:'Espalda'},{k:'pecho',l:'Pecho'},{k:'hombros',l:'Hombros'},{k:'brazo',l:'Brazos'},{k:'core',l:'Core'}];
+  html+='<div class="card" style="margin-bottom:12px">';
+  html+='<div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:12px">Frescura muscular</div>';
+  html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">';
+  muscGroups.forEach(function(g){
+    const days=pillarDays[g.k], fcc=fc(days);
+    html+='<div style="background:var(--card2);border-radius:12px;padding:10px 8px;text-align:center;border:1px solid var(--border)">';
+    html+='<div style="width:36px;height:36px;border-radius:50%;border:2.5px solid '+fcc+';display:flex;align-items:center;justify-content:center;margin:0 auto 6px"><div style="width:12px;height:2px;background:'+fcc+'"></div></div>';
+    html+='<div style="font-size:13px;font-weight:700;color:var(--text)">'+g.l+'</div>';
+    html+='<div style="font-size:11px;color:var(--text2);margin-top:1px">'+fl(days)+'</div>';
+    html+='<div style="font-size:9px;font-weight:800;color:'+fcc+';letter-spacing:.06em;margin-top:2px">'+fs(days)+'</div>';
+    html+='</div>';
+  });
+  html+='</div><div style="font-size:11px;color:var(--text2);margin-top:10px">Basado en volumen de última sesión y tiempo de recuperación recomendado por grupo.</div>';
+  html+='</div>';
+
+  // Status
+  html+='<div class="card" style="border-left:3px solid var(--blue);margin-bottom:12px">';
+  if(a.logs7===0){
+    html+='<div style="font-size:11px;font-weight:800;color:var(--blue);letter-spacing:.1em;margin-bottom:4px">SIN ENTRENAMIENTOS</div>';
+    html+='<div style="font-size:14px;color:var(--text)">Completá tu primer entrenamiento para activar el Coach.</div>';
+  } else {
+    html+='<div style="font-size:11px;font-weight:800;color:var(--blue);letter-spacing:.1em;margin-bottom:4px">RESUMEN SEMANAL</div>';
+    html+='<div style="font-size:14px;color:var(--text)">Esta semana: <strong>'+a.dias7+' días</strong>, <strong>'+a.logs7+' ejercicios</strong>'+(a.vol7>0?', <strong>'+Math.round(a.vol7/1000*10)/10+'k kg</strong>':'')+' de volumen.</div>';
+    if(a.warns&&a.warns.length){html+='<div style="margin-top:8px">';a.warns.forEach(function(w){html+='<div style="font-size:12px;color:var(--yellow);margin-top:3px">⚠️ '+w+'</div>';});html+='</div>';}
+  }
+  html+='</div>';
+
+  // Challenge
+  html+='<div class="card" style="margin-bottom:12px">';
+  html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">';
+  html+='<div style="font-size:15px;font-weight:800;color:var(--text)">Desafío de la semana</div>';
+  html+='<button onclick="drawCoach()" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--text2)">↺ nuevo</button>';
+  html+='</div><div style="font-size:14px;color:var(--text);margin-bottom:10px">Completá 4 entrenamientos esta semana</div>';
+  html+='<div style="background:var(--card2);border-radius:4px;height:6px;overflow:hidden"><div style="height:100%;width:'+challPct+'%;background:var(--accent);border-radius:4px"></div></div>';
+  html+='<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:12px;color:var(--text2)"><span>'+challProg+'/4</span><span>'+(challProg>=4?'✓ Completado':'En progreso')+'</span></div>';
+  html+='</div>';
+
+  // Stats
+  html+='<div class="sgrid" style="margin-bottom:14px">';
+  html+='<div class="scard"><div class="sicon">📅</div><div class="sval">'+a.dias7+'</div><div class="slbl">DÍAS SEM.</div></div>';
+  html+='<div class="scard"><div class="sicon">⚖️</div><div class="sval">'+(Math.round(a.vol7/100)/10).toFixed(1)+'k</div><div class="slbl">VOLUMEN</div></div>';
+  html+='<div class="scard"><div class="sicon">📆</div><div class="sval">'+a.dias30+'</div><div class="slbl">DÍAS MES</div></div>';
+  html+='<div class="scard"><div class="sicon">🏋️</div><div class="sval">'+a.logs7+'</div><div class="slbl">EJERCICIOS</div></div>';
+  html+='</div>';
+
+  // Chat
+  html+='<div class="card" style="margin-bottom:20px">';
+  html+='<div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:10px">💬 Chat</div>';
+  html+='<div class="cchat" id="cchat">';
+  html+='<div class="cmsg bot">Hola! Preguntame sobre volumen, frecuencia, músculos o errores en tu plan.</div>';
+  S.chat.forEach(function(m){html+='<div class="cmsg '+m.r+'">'+m.t+'</div>';});
+  html+='</div>';
+  html+='<div class="cinput-row" style="margin-top:8px">';
+  html+='<input type="text" class="cinput" id="cinput" placeholder="Preguntame algo...">';
+  html+='<button class="csendbtn" onclick="sendChat()">Enviar</button>';
+  html+='</div></div>';
+  html+='</div>';
+  document.getElementById('p-coach').innerHTML=html;
+  var cc=document.getElementById('cchat'); if(cc) cc.scrollTop=cc.scrollHeight;
+  // Re-attach Enter key handler
+  var ci=document.getElementById('cinput');
+  if(ci) ci.onkeydown=function(e){if(e.key==='Enter') sendChat();};
 }
 
 function sendChat(){
