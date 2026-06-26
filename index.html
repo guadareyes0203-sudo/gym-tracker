@@ -740,6 +740,27 @@ const S={
     const fv=localStorage.getItem('gbfv'); if(fv) S.favoritos=JSON.parse(fv);
     // Seed AZ2 routines if favoritos is empty
     if(!S.favoritos||!S.favoritos.length) S.favoritos=getAZ2Rutinas();
+    // Fix any libre logs with ISO date format (2026-06-21 → 21/06/2026)
+    S.allLogs.forEach(function(r){
+      if(r.fecha && r.fecha.includes('-') && r.fecha.length===10){
+        const p=r.fecha.split('-');
+        r.fecha=p[2]+'/'+p[1]+'/'+p[0];
+      }
+    });
+    // Also fix libreWO dates
+    (S.libreWO||[]).forEach(function(w){
+      if(w.fecha && w.fecha.includes('-') && w.fecha.length===10){
+        const p=w.fecha.split('-');
+        w.fecha=p[2]+'/'+p[1]+'/'+p[0];
+        // Push exercises to allLogs if not already there
+        (w.ejercicios||[]).forEach(function(ex){
+          var already=S.allLogs.some(function(r){return r.fecha===w.fecha&&r.ejercicio===ex.nombre&&r.dia===w.nombre;});
+          if(!already){
+            S.allLogs.push({fecha:w.fecha,dia:w.nombre,ejercicio:ex.nombre,series:ex.series||'3',reps:ex.reps||'',pesos:ex.pesos||'—',muscs:getInfo(ex.nombre).msc.join(', '),libre:true});
+          }
+        });
+      }
+    });
 
     // ── Migration: recover data from older key names ──
     const OLD_KEYS = {
@@ -2832,33 +2853,73 @@ function rmLibEx(i){
 function saveLib(){
   const nombre=document.getElementById('li-nom')?.value.trim();
   if(!nombre){toast('Poné un nombre a la rutina');return;}
-  const fecha=document.getElementById('li-fecha')?.value||new Date().toLocaleDateString('es-AR');
+
+  // ── Fecha: convertir de ISO (2026-06-21) a dd/mm/yyyy ──
+  const fechaRaw=document.getElementById('li-fecha')?.value||'';
+  let fechaFmt='';
+  if(fechaRaw && fechaRaw.includes('-')){
+    const p=fechaRaw.split('-');
+    fechaFmt=p[2]+'/'+p[1]+'/'+p[0]; // dd/mm/yyyy
+  } else {
+    fechaFmt=fechaRaw||new Date().toLocaleDateString('es-AR');
+  }
+
   const dur=document.getElementById('li-dur')?.value||'';
   const tipo=document.getElementById('li-tipo')?.value||'Libre';
   const notas=document.getElementById('li-notas')?.value.trim()||'';
   const ejercicios=[];
   for(let i=0;i<S.libExCount;i++){
-    const nm=document.getElementById(`le-nm-${i}`)?.value.trim(); if(!nm) continue;
+    const nm=document.getElementById('le-nm-'+i)?.value.trim(); if(!nm) continue;
     ejercicios.push({
       nombre:nm,
-      series:document.getElementById(`le-s-${i}`)?.value||'',
-      reps:document.getElementById(`le-r-${i}`)?.value||'',
-      pesos:document.getElementById(`le-p-${i}`)?.value||'',
-      notas:document.getElementById(`le-n-${i}`)?.value||'',
+      series:document.getElementById('le-s-'+i)?.value||'3',
+      reps:document.getElementById('le-r-'+i)?.value||'',
+      pesos:document.getElementById('le-p-'+i)?.value||'',
+      notas:document.getElementById('le-n-'+i)?.value||'',
     });
   }
-  const wo={nombre,fecha,duracion:dur,tipo,notas,ejercicios,savedAt:new Date().toISOString()};
+  if(!ejercicios.length){toast('Agregá al menos un ejercicio');return;}
+
+  const wo={nombre,fecha:fechaFmt,duracion:dur,tipo,notas,ejercicios,savedAt:new Date().toISOString()};
   S.libreWO.push(wo);
-  // Add to allLogs for progress tracking
-  const dFecha=new Date(fecha).toLocaleDateString('es-AR',{weekday:'long'});
-  ejercicios.forEach(ex=>{
-    S.allLogs.push({fecha,dia:dFecha,ejercicio:ex.nombre,series:ex.series,reps:ex.reps,pesos:ex.pesos,muscs:getInfo(ex.nombre).msc.join(', '),libre:true});
+
+  // ── Agregar a allLogs (historial + progreso) ──────────────
+  ejercicios.forEach(function(ex){
+    S.allLogs.push({
+      fecha:fechaFmt,
+      dia:nombre,
+      ejercicio:ex.nombre,
+      series:ex.series||'3',
+      reps:ex.reps||'',
+      pesos:ex.pesos||'—',
+      muscs:getInfo(ex.nombre).msc.join(', '),
+      libre:true
+    });
   });
+
   save();
-  // Offer to save as favorite
-  toast('✓ Rutina guardada');
+
+  // ── Enviar a Google Sheets ────────────────────────────────
+  if(S.sheetsUrl){
+    ejercicios.forEach(function(ex){
+      const p=new URLSearchParams({
+        fecha:fechaFmt,
+        dia:nombre,
+        ejercicio:ex.nombre,
+        series:ex.series||'3',
+        reps:ex.reps||'',
+        pesos:ex.pesos||'',
+        muscs:getInfo(ex.nombre).msc.join(', ')
+      });
+      fetch(S.sheetsUrl+'?'+p,{method:'GET',mode:'no-cors'}).catch(function(){});
+    });
+    toast('✓ Guardada en historial y Sheets');
+  } else {
+    toast('✓ Guardada en historial');
+  }
+
   setTimeout(function(){
-    if(confirm('¿Guardar esta rutina como favorita? Así la encontrás rápido la próxima vez.')){
+    if(confirm('¿Guardar esta rutina como favorita?')){
       S.favoritos.push(S.libreWO[S.libreWO.length-1]);
       save();
       toast('⭐ Guardada en favoritos');
