@@ -294,6 +294,7 @@ select.fsel{border:1px solid var(--border);border-radius:8px;padding:7px 10px;fo
 <div id="p-4w"    class="panel"></div>
 <div id="p-coach" class="panel"></div>
 <div id="p-misrutinas" class="panel"></div>
+<div id="p-az2" class="panel"></div>
 <div id="p-coachIA"    class="panel"></div>
 
 <!-- BOTTOM NAV -->
@@ -306,8 +307,8 @@ select.fsel{border:1px solid var(--border);border-radius:8px;padding:7px 10px;fo
   <button class="bnav-item"   id="bn-lib"   onclick="go('lib')">  <span class="bnav-icon">✏️</span><span class="bnav-lbl">LIBRE</span></button>
   <button class="bnav-item"   id="bn-4w"    onclick="go('4w')">   <span class="bnav-icon">📆</span><span class="bnav-lbl">4 SEM</span></button>
   <button class="bnav-item"   id="bn-coach"      onclick="go('coach')">     <span class="bnav-icon">🤖</span><span class="bnav-lbl">COACH</span></button>
-  <button class="bnav-item"   id="bn-misrutinas" onclick="go('misrutinas')"><span class="bnav-icon">📝</span><span class="bnav-lbl">MIS RUT.</span></button>
-  <button class="bnav-item"   id="bn-coachIA"    onclick="go('coachIA')">  <span class="bnav-icon">✨</span><span class="bnav-lbl">IA</span></button>
+  <button class="bnav-item"   id="bn-az2"      onclick="go('az2')">     <span class="bnav-icon">⭐</span><span class="bnav-lbl">AZ2</span></button>
+  <button class="bnav-item"   id="bn-coachIA"  onclick="go('coachIA')">  <span class="bnav-icon">✨</span><span class="bnav-lbl">IA</span></button>
 </div>
 
 <script>
@@ -848,7 +849,7 @@ function go(p){
   document.getElementById('p-'+p).className='panel on';
   document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('on'));
   document.getElementById('bn-'+p).classList.add('on');
-  const renders={hoy:drawHoy,plan:drawPlan,prog:drawProg,hist:drawHist,med:drawMed,lib:drawLib,'4w':draw4W,coach:drawCoach,misrutinas:drawMisRutinas,coachIA:drawCoachIA};
+  const renders={hoy:drawHoy,plan:drawPlan,prog:drawProg,hist:drawHist,med:drawMed,lib:drawLib,'4w':draw4W,coach:drawCoach,misrutinas:drawMisRutinas,coachIA:drawCoachIA,az2:drawAZ2};
   if(renders[p]) renders[p]();
 }
 
@@ -1005,7 +1006,7 @@ function tabIdleHTML(key) {
 function buildModeSelector2(active){
   var btns=[
     {id:'hoy',        icon:'📋',label:'Plan'},
-    {id:'misrutinas', icon:'📝',label:'Mis Rutinas'},
+    {id:'az2',        icon:'⭐',label:'AZ2'},
     {id:'lib',        icon:'✏️', label:'Libre'},
     {id:'coachIA',    icon:'✨',label:'IA Coach'},
   ];
@@ -1081,7 +1082,10 @@ function getAZ2Rutinas(){
         {nombre:'Kosaco lateral',              series:'3',reps:'12'},
         {nombre:'Escalón',                     series:'3',reps:'20'},
         {nombre:'Skipping B',                  series:'3',reps:'20 seg'},
-        {nombre:'Burpee',                      series:'4',reps:'10'},
+        {nombre:'Burpee',                      series:'4',reps:'10'},,
+        {nombre:'Sit Up',   series:'1',reps:'Tabata 45seg-15seg x 6min'},
+        {nombre:'V-Sit Up', series:'1',reps:'Tabata 45seg-15seg x 6min'},
+        {nombre:'Side Plank',series:'1',reps:'Tabata 45seg-15seg x 6min'}
       ]
     },
     {
@@ -1092,10 +1096,63 @@ function getAZ2Rutinas(){
         {nombre:'Peso muerto',                 series:'3',reps:'10-8-6'},
         {nombre:'Skipping A',                  series:'3',reps:'20 seg'},
         {nombre:'Construcciones',              series:'3',reps:'16'},
-        {nombre:'Jumping jacks',               series:'3',reps:'20'},
+        {nombre:'Jumping jacks',               series:'3',reps:'20'},,
+        {nombre:'Sit Up',   series:'1',reps:'Tabata 45seg-15seg x 6min'},
+        {nombre:'V-Sit Up', series:'1',reps:'Tabata 45seg-15seg x 6min'},
+        {nombre:'Side Plank',series:'1',reps:'Tabata 45seg-15seg x 6min'}
       ]
     },
   ];
+}
+
+
+function drawAZ2(){
+  var az2=getAZ2Rutinas();
+  var h='<div style="margin-top:4px">';
+  h+=buildModeSelector2('az2');
+  h+='<div style="font-size:10px;font-weight:700;color:var(--blue);letter-spacing:.12em;margin-bottom:2px">RUTINAS PERSONALIZADAS</div>';
+  h+='<div style="font-size:26px;font-weight:900;color:var(--text);margin-bottom:14px">Mis AZ2</div>';
+  az2.forEach(function(r,ri){
+    h+='<div class="card" style="margin-bottom:10px;border:1px solid var(--accent)40">';
+    h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">';
+    h+='<div><div style="font-size:17px;font-weight:800;color:var(--text)">'+r.nombre+'</div>';
+    h+='<div style="font-size:12px;color:var(--text2);margin-top:2px">'+r.ejercicios.length+' ejercicios · '+r.duracion+' min</div></div>';
+    h+='<button data-ri="'+ri+'" onclick="hacerAZ2(+this.dataset.ri)" style="background:var(--accent);border:none;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:800;color:#fff;cursor:pointer;flex-shrink:0">▶ Hacer</button>';
+    h+='</div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:4px">';
+    r.ejercicios.forEach(function(ex){
+      var isAbs=ex.reps.includes('Tabata');
+      h+='<span style="background:'+(isAbs?'rgba(56,189,248,.15)':'var(--accentbg)')+';color:'+(isAbs?'var(--blue)':'var(--accent)')+';font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;border:1px solid '+(isAbs?'var(--blue)30':'var(--accent)30')+'">'+ex.nombre+(isAbs?' 🕐':'')+'</span>';
+    });
+    h+='</div></div>';
+  });
+  h+='</div>';
+  document.getElementById('p-az2').innerHTML=h;
+}
+
+function hacerAZ2(ri){
+  var rutinas=getAZ2Rutinas();
+  var r=rutinas[ri]; if(!r) return;
+  go('lib');
+  setTimeout(function(){
+    var nom=document.getElementById('li-nom');
+    if(nom) nom.value=r.nombre+' - '+new Date().toLocaleDateString('es-AR');
+    var dur=document.getElementById('li-dur'); if(dur) dur.value=r.duracion;
+    var cont=document.getElementById('li-exs');
+    if(cont){
+      cont.innerHTML=''; S.libExCount=0;
+      r.ejercicios.forEach(function(ex,idx){
+        addLibEx();
+        setTimeout(function(){
+          var n=document.getElementById('le-nm-'+idx); if(n) n.value=ex.nombre;
+          var s=document.getElementById('le-s-'+idx);  if(s) s.value=ex.series;
+          var rr=document.getElementById('le-r-'+idx); if(rr) rr.value=ex.reps;
+          var p=document.getElementById('le-p-'+idx);  if(p) p.value='';
+        },60);
+      });
+    }
+    toast('▶ '+r.nombre+' cargada - ponele los pesos y guardá');
+  },150);
 }
 
 function drawMisRutinas(){
@@ -1547,7 +1604,7 @@ function logCardio(inp){
 function buildModeSelector(){
   var btns=[
     {id:'hoy',      icon:'📋',label:'Plan'},
-    {id:'misrutinas',icon:'📝',label:'Mis Rutinas'},
+    {id:'az2',       icon:'⭐',label:'AZ2'},
     {id:'lib',      icon:'✏️', label:'Libre'},
     {id:'coachIA',  icon:'✨', label:'IA Coach'},
   ];
