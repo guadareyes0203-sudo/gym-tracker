@@ -1642,6 +1642,25 @@ function buildModeSelector(){
   return h;
 }
 
+
+// Get last logged weight for an exercise from allLogs
+function getLastWeights(exName){
+  // Find most recent log entry for this exercise
+  for(var i=S.allLogs.length-1;i>=0;i--){
+    var r=S.allLogs[i];
+    if(r.ejercicio===exName && r.pesos && r.pesos!=='—'){
+      return r.pesos; // e.g. "10 kg / 12.5 kg / 15 kg"
+    }
+  }
+  return null;
+}
+
+// Parse "10-8-6" reps into array [10,8,6]
+function parseRepsProgression(repsStr){
+  var parts=String(repsStr||'').split(/[-]/).map(function(x){return parseFloat(x);}).filter(function(n){return !isNaN(n);});
+  return parts.length>1?parts:null; // only return if it's a progression
+}
+
 function drawHoy(){
   const di=S.day, day=PLAN[di];
   const done=day.bloques.filter(b=>!!S.completed[di+'-'+b.n]).length;
@@ -1729,12 +1748,34 @@ function drawHoy(){
 
       let setHTML='<div class="setrow">';
       const ns=Math.min(ex.s,5);
+      // Reference: last session weights + reps progression for this exercise
+      const lastW=getLastWeights(ex.nm);
+      const lastWParts=lastW?lastW.split('/').map(x=>parseFloat(x)||0).filter(n=>n>0):[];
+      const repsProgr=parseRepsProgression(ex.r); // e.g. [10,8,6] from "10-8-6"
+
       for(let si=0;si<ns;si++){
         const lk=di+'-'+b.n+'-'+ei+'-'+si;
         const ld=S.logs[lk]||{}, f=!!ld.kg;
+
+        // Suggested weight for this set:
+        // If progression reps (10-8-6), suggest increasing weights each set
+        // If flat reps (12), suggest same weight all sets
+        let suggestedKg='';
+        if(lastWParts.length){
+          if(repsProgr && lastWParts.length>=ns){
+            // Last time had per-set weights — use them as reference
+            suggestedKg=lastWParts[si]||lastWParts[0]||'';
+          } else {
+            suggestedKg=lastWParts[0]||'';
+          }
+        }
+
+        // placeholder shows suggested weight if no current value
+        const pholder=suggestedKg?('ant: '+suggestedKg+'kg'):'kg';
+
         setHTML+=`<div class="setcol${f?' done':''}" id="sc${lk}">
-          <div class="setlbl">S${si+1}</div>
-          <input type="text" inputmode="decimal" class="setsel" placeholder="kg"
+          <div class="setlbl">S${si+1}${suggestedKg&&!ld.kg?' <span style="font-size:9px;color:#38bdf880">↑'+suggestedKg+'</span>':''}</div>
+          <input type="text" inputmode="decimal" class="setsel" placeholder="${pholder}"
             value="${ld.kg||''}"
             onchange="logKg('${lk}',this.value.replace(',','.'),${di},${b.n},${ei},${si},${ns})"
             oninput="this.value=this.value.replace(',','.')"
@@ -1997,9 +2038,16 @@ function saveBloque(di,bn){
       const pesos=[cd.tiempo?cd.tiempo+'min':'',cd.km?cd.km+'km':'',cd.resist?'R'+cd.resist:''].filter(Boolean).join(' / ')||'—';
       return{fecha:today,dia:day.label,ejercicio:ex.nm,series:1,reps:cd.tiempo?cd.tiempo+'min':'—',pesos,muscs:'Cardio'};
     }
+    // Build per-set weight array — "10/12.5/15" for progression
     const kgs=[];
-    for(let si=0;si<ex.s;si++){const d=S.logs[di+'-'+bn+'-'+ei+'-'+si]||{};kgs.push(d.kg?d.kg+' kg':'—');}
-    return{fecha:today,dia:day.label,ejercicio:ex.nm,series:ex.s,reps:ex.r,pesos:kgs.join(' / '),muscs:getInfo(ex.nm).msc.join(', ')};
+    for(let si=0;si<ex.s;si++){
+      const d=S.logs[di+'-'+bn+'-'+ei+'-'+si]||{};
+      kgs.push(d.kg?String(d.kg):'');
+    }
+    const pesosStr=kgs.filter(Boolean).join('/') || '—';
+    // Count actual sets logged
+    const seriesLog=kgs.filter(Boolean).length||ex.s;
+    return{fecha:today,dia:day.label,ejercicio:ex.nm,series:seriesLog,reps:ex.r,pesos:pesosStr,muscs:getInfo(ex.nm).msc.join(', ')};
   });
 
   S.allLogs=[...S.allLogs,...rows]; save();
@@ -2203,7 +2251,17 @@ function pillarScores(logs){
   logs.forEach(r=>{
     const info=getInfo(r.ejercicio||'');
     const p=info.p||'core';
-    const v=(parseFloat(r.series)||1)*(parseFloat(r.reps)||10);
+    const series=parseFloat(r.series)||1;
+    // Parse reps — handle "10-8-6" → average = 8, "12" → 12
+    const repsRaw=String(r.reps||'10');
+    const repsParts=repsRaw.split(/[-x×,]/).map(x=>parseFloat(x)).filter(n=>!isNaN(n));
+    const repsAvg=repsParts.length?repsParts.reduce((a,b)=>a+b,0)/repsParts.length:10;
+    // Parse pesos — handle "10/12.5/15" → average, or single value
+    const pesosRaw=String(r.pesos||'0');
+    const pesosParts=pesosRaw.split('/').map(x=>parseFloat(x)).filter(n=>!isNaN(n)&&n>0);
+    const pesosAvg=pesosParts.length?pesosParts.reduce((a,b)=>a+b,0)/pesosParts.length:1;
+    // Volume = series × reps_avg × peso_avg
+    const v=series*repsAvg*(pesosAvg||1);
     if(ps[p]!==undefined) ps[p]+=v;
   });
   const mx=Math.max(...Object.values(ps),1);
@@ -2221,9 +2279,12 @@ function drawProg(){
   const flabels={'semana':'Semana','mes':'Mes','6m':'6 Meses','año':'1 Año','inicio':'Todo'};
 
   const totalVol=fl.reduce((a,r)=>{
-    const p=(r.pesos||'').split('/').map(x=>parseFloat(x)||0);
-    const avg=p.length?p.reduce((a,b)=>a+b,0)/p.length:0;
-    return a+avg*(parseFloat(r.series)||1)*(parseFloat(r.reps)||10);
+    const pesosParts=(r.pesos||'').split('/').map(x=>parseFloat(x)||0).filter(n=>n>0);
+    const pesosAvg=pesosParts.length?pesosParts.reduce((a,b)=>a+b,0)/pesosParts.length:0;
+    const repsRaw=String(r.reps||'10');
+    const repsParts=repsRaw.split(/[-x×,]/).map(x=>parseFloat(x)).filter(n=>!isNaN(n));
+    const repsAvg=repsParts.length?repsParts.reduce((a,b)=>a+b,0)/repsParts.length:10;
+    return a+pesosAvg*(parseFloat(r.series)||1)*repsAvg;
   },0);
   const dias=new Set(fl.map(r=>r.fecha)).size;
   const muscs=new Set(fl.flatMap(r=>getInfo(r.ejercicio||'').msc)).size;
@@ -2247,9 +2308,11 @@ function drawProg(){
   const volMap={};
   fl.forEach(r=>{
     if(!r.fecha) return;
-    const p=(r.pesos||'').split('/').map(x=>parseFloat(x)||0);
-    const avg=p.length?p.reduce((a,b)=>a+b,0)/p.length:0;
-    volMap[r.fecha]=(volMap[r.fecha]||0)+avg*(parseFloat(r.series)||1)*(parseFloat(r.reps)||10);
+    const pp=(r.pesos||'').split('/').map(x=>parseFloat(x)||0).filter(n=>n>0);
+    const pa=pp.length?pp.reduce((a,b)=>a+b,0)/pp.length:0;
+    const rr=String(r.reps||'10').split(/[-x×,]/).map(x=>parseFloat(x)).filter(n=>!isNaN(n));
+    const ra=rr.length?rr.reduce((a,b)=>a+b,0)/rr.length:10;
+    volMap[r.fecha]=(volMap[r.fecha]||0)+pa*(parseFloat(r.series)||1)*ra;
   });
   const volEntries=Object.entries(volMap).sort((a,b)=>a[0].localeCompare(b[0])).slice(-14);
 
