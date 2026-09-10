@@ -825,6 +825,16 @@ const S={
         if(!existe) S.allLogs.push(r);
       });
     })();
+    // ── Seed AZ4 Miércoles 9/9 ───────────────────────────────
+    (function(){
+      var mie=[{"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Cangrejo + sentadilla", "series": "3", "reps": "8 c/lado", "pesos": "—", "muscs": "Glúteos,Cuáds,Abductores", "libre": true}, {"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Barbell Back Squat", "series": "3", "reps": "12", "pesos": "40", "muscs": "Cuáds,Glúteos", "libre": true}, {"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Sentadilla búlgara", "series": "3", "reps": "8 c/pierna", "pesos": "8", "muscs": "Cuáds,Glúteos,Isquios", "libre": true}, {"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Puente de glúteo unilateral", "series": "3", "reps": "12", "pesos": "22", "muscs": "Glúteos,Isquios", "libre": true}, {"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Vuelos alternos", "series": "3", "reps": "12", "pesos": "6", "muscs": "Deltoides lat.,Hombros", "libre": true}, {"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Press militar", "series": "3", "reps": "10", "pesos": "6", "muscs": "Hombros,Tríceps", "libre": true}, {"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Plank", "series": "3", "reps": "25seg", "pesos": "—", "muscs": "Core", "libre": true}, {"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Side Plank", "series": "3", "reps": "25seg", "pesos": "—", "muscs": "Core,Oblicuos", "libre": true}, {"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Crunch corto (Toco cielo)", "series": "3", "reps": "25seg", "pesos": "—", "muscs": "Abdomen", "libre": true}, {"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Crunch con giro", "series": "3", "reps": "25seg", "pesos": "10", "muscs": "Oblicuos,Abdomen", "libre": true}, {"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Touch down", "series": "3", "reps": "25seg", "pesos": "—", "muscs": "Cuáds,Glúteos,Core", "libre": true}, {"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Burpee", "series": "3", "reps": "25seg", "pesos": "—", "muscs": "Full Body,Cardio", "libre": true}, {"fecha": "09/09/2026", "dia": "AZ4 Miércoles - 9/9", "ejercicio": "Skipping B", "series": "3", "reps": "25seg", "pesos": "—", "muscs": "Cardio,Isquios", "libre": true}];
+      mie.forEach(function(r){
+        var existe=S.allLogs.some(function(x){
+          return x.fecha===r.fecha&&x.ejercicio===r.ejercicio&&x.dia===r.dia;
+        });
+        if(!existe) S.allLogs.push(r);
+      });
+    })();
     // Also fix libreWO dates
     (S.libreWO||[]).forEach(function(w){
       if(w.fecha && w.fecha.includes('-') && w.fecha.length===10){
