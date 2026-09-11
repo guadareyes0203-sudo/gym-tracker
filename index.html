@@ -767,7 +767,7 @@ const S={
     const ci=localStorage.getItem('gbci'); if(ci) S.coachIAChat=JSON.parse(ci);
     const fv=localStorage.getItem('gbfv'); if(fv) S.favoritos=JSON.parse(fv);
     // Seed AZ2 routines if favoritos is empty
-    if(!S.favoritos||!S.favoritos.length) S.favoritos=getAZ2Rutinas();
+    if(!S.favoritos||!S.favoritos.length) S.favoritos=getAZ2Rutinas().concat(getAZ3Rutinas()).concat(getAZ4Rutinas());
     // Fix any libre logs with ISO date format (2026-06-21 → 21/06/2026)
     S.allLogs.forEach(function(r){
       if(r.fecha && r.fecha.includes('-') && r.fecha.length===10){
@@ -1215,7 +1215,250 @@ function getAZ2Rutinas(){
 }
 
 
+function getAZ3Rutinas(){
+  return [
+    {
+      nombre:'AZ3 Lunes',tipo:'Full Body',duracion:'55',fav:true,
+      ejercicios:[
+        {nombre:'Sky Polea',                      series:'3',reps:'30'},
+        {nombre:'Lunge',                          series:'3',reps:'16'},
+        {nombre:'Remo alterno',                   series:'3',reps:'10'},
+        {nombre:'Burpee',                         series:'3',reps:'10'},
+        {nombre:'Dorsal supino máquina',          series:'3',reps:'12'},
+        {nombre:'Marcha isométrica + press alterno',series:'3',reps:'8'},
+        {nombre:'Barbell Back Squat',             series:'3',reps:'12'},
+        {nombre:'Puente de glúteo + press',       series:'3',reps:'10'},
+      ]
+    },
+    {
+      nombre:'AZ Aeróbico',tipo:'Cardio',duracion:'60',fav:true,
+      ejercicios:[
+        {nombre:'Caminadora',                     series:'7',reps:'1km c/u'},
+        {nombre:'Barbell Back Squat',             series:'1',reps:'20'},
+        {nombre:'Burpee',                         series:'1',reps:'12'},
+        {nombre:'Remo alterno',                   series:'1',reps:'14'},
+        {nombre:'Marcha isométrica + press alterno',series:'1',reps:'20'},
+        {nombre:'Lunge',                          series:'1',reps:'16'},
+        {nombre:'Inverted Row (Australiana)',      series:'1',reps:'10'},
+        {nombre:'Press máquina',                  series:'1',reps:'12'},
+        {nombre:'Crunch corto',                   series:'1',reps:'20'},
+        {nombre:'Plank',                          series:'1',reps:'10'},
+        {nombre:'Ruedita (Ab wheel)',              series:'1',reps:'20'},
+        {nombre:'Abdominales oblicuos',           series:'2',reps:'20'},
+      ]
+    },
+    {
+      nombre:'AZ3 Miércoles',tipo:'Full Body',duracion:'55',fav:true,
+      ejercicios:[
+        {nombre:'Pistol Squat',                   series:'4',reps:'8-8'},
+        {nombre:'Abducciones con disco',          series:'4',reps:'10-10'},
+        {nombre:'Elevación de gemelos',           series:'3',reps:'12'},
+        {nombre:'Sillón de cuádriceps',           series:'3',reps:'12-10-8'},
+        {nombre:'Isquiotibiales máquina',         series:'3',reps:'12-10-8'},
+        {nombre:'Plank',                          series:'3',reps:'25seg'},
+        {nombre:'Side Plank',                     series:'3',reps:'25seg'},
+        {nombre:'Abdominales oblicuos',           series:'3',reps:'25seg'},
+        {nombre:'Crunch corto',                   series:'3',reps:'25seg'},
+        {nombre:'Tríceps tornillos',              series:'3',reps:'10'},
+        {nombre:'Extensión de tríceps en polea',  series:'3',reps:'12'},
+        {nombre:'Dorsal supino máquina',          series:'3',reps:'10'},
+      ]
+    },
+    {
+      nombre:'AZ3 Jueves',tipo:'Full Body',duracion:'55',fav:true,
+      ejercicios:[
+        {nombre:'Puente de glúteo unilateral',    series:'3',reps:'20'},
+        {nombre:'Swing con mancuerna',            series:'3',reps:'14'},
+        {nombre:'Dorsal supino máquina',          series:'3',reps:'12'},
+        {nombre:'Peso muerto unipodal',           series:'3',reps:'10'},
+        {nombre:'Pallof press',                   series:'3',reps:'14'},
+        {nombre:'Skipping B',                     series:'3',reps:'30'},
+        {nombre:'Inverted Row (Australiana)',      series:'3',reps:'10'},
+        {nombre:'Curl de tríceps en polea con soga',series:'3',reps:'10'},
+        {nombre:'Abd alternos (Bisagra)',          series:'3',reps:'20'},
+        {nombre:'Crunch corto',                   series:'3',reps:'20'},
+        {nombre:'Russian twist',                  series:'3',reps:'20'},
+        {nombre:'Crunch corto (Toco cielo)',       series:'3',reps:'20'},
+        {nombre:'Ruedita (Ab wheel)',              series:'3',reps:'20'},
+      ]
+    },
+    {
+      nombre:'AZ3 Viernes',tipo:'Full Body',duracion:'55',fav:true,
+      ejercicios:[
+        {nombre:'Swing con mancuerna',            series:'3',reps:'12'},
+        {nombre:'Estocada trasera con curl',      series:'3',reps:'12'},
+        {nombre:'Sentadilla búlgara',             series:'3',reps:'16'},
+        {nombre:'Peso muerto sumo',               series:'3',reps:'12'},
+        {nombre:'Sillón de cuádriceps',           series:'3',reps:'12'},
+        {nombre:'Peso muerto',                    series:'3',reps:'10'},
+        {nombre:'Curl de tríceps en polea con soga',series:'3',reps:'10'},
+        {nombre:'Curl + press',                   series:'3',reps:'12'},
+        {nombre:'Crunch corto',                   series:'3',reps:'10seg'},
+        {nombre:'Russian twist',                  series:'3',reps:'10seg'},
+        {nombre:'Reverse crunch (Veleta)',         series:'3',reps:'10seg'},
+        {nombre:'Jumping jacks',                  series:'3',reps:'24'},
+        {nombre:'Salto pogo',                     series:'3',reps:'20'},
+        {nombre:'Saltos tijeras',                 series:'3',reps:'22'},
+        {nombre:'Touch down',                     series:'3',reps:'12'},
+      ]
+    },
+  ];
+}
+
+function getAZ4Rutinas(){
+  return [
+    {
+      nombre:'AZ4 Lunes',tipo:'Full Body',duracion:'55',fav:true,
+      ejercicios:[
+        {nombre:'Peso muerto',                    series:'3',reps:'16'},
+        {nombre:'Patada de glúteo en polea',      series:'3',reps:'16'},
+        {nombre:'Swing con mancuerna',            series:'3',reps:'12'},
+        {nombre:'Puente de glúteo unilateral',    series:'3',reps:'12'},
+        {nombre:'Puente de isquiotibiales unilateral',series:'3',reps:'12'},
+        {nombre:'Cosaco lateral con empuje',      series:'3',reps:'12'},
+        {nombre:'Tríceps tornillos',              series:'3',reps:'10'},
+        {nombre:'Halo',                           series:'3',reps:'10'},
+        {nombre:'Elevación frontal con disco',    series:'3',reps:'10'},
+        {nombre:'Russian twist',                  series:'3',reps:'20'},
+        {nombre:'Jumping jacks',                  series:'3',reps:'20'},
+        {nombre:'Crunch corto',                   series:'3',reps:'20'},
+        {nombre:'Estocada con giro',              series:'3',reps:'20'},
+        {nombre:'Plank',                          series:'3',reps:'20seg'},
+        {nombre:'Saltos tijeras',                 series:'3',reps:'20'},
+        {nombre:'Abs bolita',                     series:'3',reps:'20'},
+        {nombre:'Crunch bicicleta',               series:'3',reps:'20'},
+      ]
+    },
+    {
+      nombre:'AZ4 Martes',tipo:'Full Body',duracion:'55',fav:true,
+      ejercicios:[
+        {nombre:'Sillón de cuádriceps',           series:'4',reps:'12-10-8-6'},
+        {nombre:'Lunge',                          series:'3',reps:'16'},
+        {nombre:'Elevación de gemelos',           series:'3',reps:'12'},
+        {nombre:'Snatch unilateral',              series:'3',reps:'8 c/lado'},
+        {nombre:'Thruster',                       series:'3',reps:'12'},
+        {nombre:'Curl + press',                   series:'3',reps:'12'},
+        {nombre:'Curl de bíceps en polea',        series:'3',reps:'10'},
+        {nombre:'Curl martillo',                  series:'3',reps:'10'},
+        {nombre:'Crunch corto',                   series:'1',reps:'30'},
+        {nombre:'Russian twist',                  series:'1',reps:'20'},
+        {nombre:'3 apoyos con rotación',          series:'1',reps:'3'},
+        {nombre:'Crunch corto (Toco cielo)',       series:'1',reps:'20'},
+        {nombre:'Flutter kicks',                  series:'1',reps:'20'},
+        {nombre:'Tijera horizontal',              series:'1',reps:'20'},
+      ]
+    },
+    {
+      nombre:'AZ4 Miércoles',tipo:'Full Body',duracion:'55',fav:true,
+      ejercicios:[
+        {nombre:'Cangrejo + sentadilla',          series:'3',reps:'8 c/lado'},
+        {nombre:'Barbell Back Squat',             series:'3',reps:'12'},
+        {nombre:'Sentadilla búlgara',             series:'3',reps:'8 c/pierna'},
+        {nombre:'Puente de glúteo unilateral',    series:'3',reps:'12'},
+        {nombre:'Vuelos alternos',                series:'3',reps:'12'},
+        {nombre:'Press militar',                  series:'3',reps:'10'},
+        {nombre:'Jalón en polea (Lat Pulldown)',  series:'2',reps:'8'},
+        {nombre:'Plank',                          series:'3',reps:'25seg'},
+        {nombre:'Side Plank',                     series:'3',reps:'25seg'},
+        {nombre:'Crunch corto (Toco cielo)',       series:'3',reps:'25seg'},
+        {nombre:'Crunch con giro',                series:'3',reps:'25seg'},
+        {nombre:'Russian twist',                  series:'3',reps:'25seg'},
+        {nombre:'Skipping B',                     series:'3',reps:'25seg'},
+      ]
+    },
+    {
+      nombre:'AZ4 Jueves',tipo:'Full Body',duracion:'60',fav:true,
+      ejercicios:[
+        {nombre:'Lunge',                          series:'3',reps:'8 c/pierna'},
+        {nombre:'Isquiotibiales máquina',         series:'3',reps:'12'},
+        {nombre:'Sillón de cuádriceps',           series:'3',reps:'10'},
+        {nombre:'Pistola al banco',               series:'3',reps:'8 c/pierna'},
+        {nombre:'Aductores en polea',             series:'3',reps:'8 c/lado'},
+        {nombre:'Curl de bíceps en polea',        series:'3',reps:'12'},
+        {nombre:'Dorsal agarre prono',            series:'3',reps:'12'},
+        {nombre:'Dorsal agarre supino',           series:'3',reps:'12'},
+        {nombre:'Toco talones (reverse)',          series:'4',reps:'25seg'},
+        {nombre:'Inclinación lateral',            series:'4',reps:'25seg'},
+        {nombre:'Reloj (Remo abdominal)',          series:'4',reps:'25seg'},
+        {nombre:'Mountain Climbers',              series:'4',reps:'25seg'},
+        {nombre:'Hollow + patadas con disco',     series:'4',reps:'25seg'},
+        {nombre:'Crunch invertido',               series:'4',reps:'25seg'},
+      ]
+    },
+  ];
+}
+
+
 function drawAZ2(){
+  var az2=getAZ2Rutinas();
+  var az3=getAZ3Rutinas();
+  var az4=getAZ4Rutinas();
+  var h='<div style="margin-top:4px">';
+  h+=buildModeSelector2('az2');
+
+  function renderGroup(title, rutinas, offset){
+    h+='<div style="font-size:11px;font-weight:700;color:var(--blue);letter-spacing:.12em;margin:16px 0 8px">'+title+'</div>';
+    rutinas.forEach(function(r,ri){
+      h+='<div class="card" style="margin-bottom:10px;border:1px solid var(--accent)40">';
+      h+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">';
+      h+='<div>';
+      h+='<div style="font-size:17px;font-weight:800;color:var(--text)">'+r.nombre+'</div>';
+      h+='<div style="font-size:12px;color:var(--text2);margin-top:2px">'+r.ejercicios.length+' ejercicios · '+r.duracion+' min</div>';
+      h+='</div>';
+      h+='<button data-ri="'+(ri+offset)+'" data-group="'+title.replace(/\s/g,'')+'" onclick="hacerRutinaGroup(this)" style="background:var(--accent);border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:800;color:#fff;cursor:pointer;flex-shrink:0">▶ Hacer</button>';
+      h+='</div>';
+      h+='<div style="display:flex;flex-wrap:wrap;gap:4px">';
+      r.ejercicios.forEach(function(ex){
+        var isAbs=String(ex.reps).includes('seg')||String(ex.reps).includes('Tabata');
+        h+='<span style="background:'+(isAbs?'rgba(56,189,248,.15)':'var(--accentbg)')+';color:'+(isAbs?'var(--blue)':'var(--accent)')+';font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;border:1px solid '+(isAbs?'var(--blue)30':'var(--accent)30')+'">'+ex.nombre+'</span>';
+      });
+      h+='</div></div>';
+    });
+  }
+
+  renderGroup('— AZ2 —', az2, 0);
+  renderGroup('— AZ3 —', az3, 100);
+  renderGroup('— AZ4 —', az4, 200);
+
+  h+='</div>';
+  document.getElementById('p-az2').innerHTML=h;
+}
+
+// Helper so each group knows which array to use
+function hacerRutinaGroup(btn){
+  var ri=+btn.dataset.ri, group=btn.dataset.group;
+  var rutinas;
+  if(ri>=200){rutinas=getAZ4Rutinas();ri-=200;}
+  else if(ri>=100){rutinas=getAZ3Rutinas();ri-=100;}
+  else{rutinas=getAZ2Rutinas();}
+  hacerAZ2Direct(rutinas[ri]);
+}
+
+function hacerAZ2Direct(r){
+  if(!r) return;
+  go('lib');
+  setTimeout(function(){
+    var nom=document.getElementById('li-nom');
+    if(nom) nom.value=r.nombre+' - '+new Date().toLocaleDateString('es-AR');
+    var dur=document.getElementById('li-dur'); if(dur) dur.value=r.duracion;
+    var cont=document.getElementById('li-exs');
+    if(cont){
+      cont.innerHTML=''; S.libExCount=0;
+      r.ejercicios.forEach(function(ex,idx){
+        addLibEx();
+        setTimeout(function(){
+          var n=document.getElementById('le-nm-'+idx); if(n) n.value=ex.nombre;
+          var s=document.getElementById('le-s-'+idx);  if(s) s.value=ex.series;
+          var rr=document.getElementById('le-r-'+idx); if(rr) rr.value=ex.reps;
+          var p=document.getElementById('le-p-'+idx);  if(p) p.value='';
+        },60);
+      });
+    }
+    toast('▶ '+r.nombre+' cargada - ponele los pesos y guardá');
+  },150);
+}
+
+function PLACEHOLDER_OLD_drawAZ2(){
   var az2=getAZ2Rutinas();
   var h='<div style="margin-top:4px">';
   h+=buildModeSelector2('az2');
